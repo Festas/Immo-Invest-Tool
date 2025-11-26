@@ -108,16 +108,27 @@ def berechne_annuitaet(
     jaehrliche_rate = darlehensbetrag * annuitaet_prozent / 100
     monatliche_rate = jaehrliche_rate / 12
 
-    # Vereinfachte Gesamtkostenberechnung
-    gesamtkosten = jaehrliche_rate * laufzeit_jahre
-    zinsen_gesamt = gesamtkosten - darlehensbetrag
+    # Exakte Gesamtzinsberechnung mittels Tilgungsplan-Simulation
+    zinssatz = zinssatz_prozent / 100
+    restschuld = darlehensbetrag
+    zinsen_gesamt = 0.0
+
+    for _ in range(laufzeit_jahre):
+        if restschuld <= 0:
+            break
+        zinsanteil = restschuld * zinssatz
+        tilgungsanteil = min(jaehrliche_rate - zinsanteil, restschuld)
+        zinsen_gesamt += zinsanteil
+        restschuld = max(0, restschuld - tilgungsanteil)
+
+    gesamtkosten = darlehensbetrag + zinsen_gesamt
 
     return FinanzierungErgebnis(
         darlehensbetrag=darlehensbetrag,
         monatliche_rate=monatliche_rate,
         jaehrliche_rate=jaehrliche_rate,
-        gesamtkosten=max(gesamtkosten, darlehensbetrag),
-        zinsen_gesamt=max(zinsen_gesamt, 0),
+        gesamtkosten=gesamtkosten,
+        zinsen_gesamt=zinsen_gesamt,
     )
 
 
@@ -288,7 +299,7 @@ def berechne_vermoegensaufbau(
         tilgungsplan: Tilgungsplan als DataFrame
         cashflow_jaehrlich: Jährlicher Cashflow
         wertsteigerung_prozent: Jährliche Wertsteigerung der Immobilie
-        kaufpreis: Kaufpreis für Wertsteigerungsberechnung
+        kaufpreis: Kaufpreis für Wertsteigerungsberechnung (sollte immer angegeben werden)
 
     Returns:
         DataFrame mit Vermögensentwicklung
@@ -298,14 +309,14 @@ def berechne_vermoegensaufbau(
 
     jahre = tilgungsplan["Jahr"].tolist()
     restschulden = tilgungsplan["Restschuld"].tolist()
-    darlehensbetrag = tilgungsplan["Restschuld"].iloc[0] + tilgungsplan["Tilgung kumuliert"].iloc[0] - tilgungsplan["Tilgungsanteil"].iloc[0]
 
     immobilienwerte = []
     nettovermoegen = []
     cashflow_kumuliert = []
     gesamt_vermoegen = []
 
-    immobilienwert = kaufpreis if kaufpreis > 0 else darlehensbetrag + eigenkapital
+    # Verwende Kaufpreis als Startwert, falls nicht angegeben schätze aus Eigenkapital + Restschuld
+    immobilienwert = kaufpreis if kaufpreis > 0 else eigenkapital + restschulden[0]
     cf_kumuliert = 0.0
 
     for i, jahr in enumerate(jahre):

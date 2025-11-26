@@ -289,8 +289,26 @@ def main() -> None:
         laufzeit_jahre=laufzeit,
     )
 
-    # 3. Steuerliche Absetzbarkeit
+    # 3. Steuerliche Absetzbarkeit (Durchschnitt über gesamte Laufzeit für realistischere Darstellung)
+    # Die Zinsen sinken über die Laufzeit, daher berechnen wir den Durchschnitt
+    durchschnittliche_zinsen = (
+        tilgungsplan["Zinsanteil"].mean()
+        if not tilgungsplan.empty
+        else 0
+    )
     steuerdaten = Steuerdaten(
+        kaufpreis=kaufpreis,
+        gebaeude_anteil_prozent=gebaeude_anteil,
+        afa_typ=afa_typ,
+        zinsen_jaehrlich=durchschnittliche_zinsen,
+        mieteinnahmen_jaehrlich=kaltmiete * 12,
+        nicht_umlegbare_kosten_jaehrlich=nicht_umlegbare_kosten * 12,
+        grenzsteuersatz_prozent=grenzsteuersatz,
+    )
+    steuer_ergebnis = berechne_steuerliche_absetzbarkeit(steuerdaten)
+
+    # Für die Detailansicht: Steuerberechnung mit Zinsen des 1. Jahres
+    steuerdaten_jahr1 = Steuerdaten(
         kaufpreis=kaufpreis,
         gebaeude_anteil_prozent=gebaeude_anteil,
         afa_typ=afa_typ,
@@ -299,7 +317,7 @@ def main() -> None:
         nicht_umlegbare_kosten_jaehrlich=nicht_umlegbare_kosten * 12,
         grenzsteuersatz_prozent=grenzsteuersatz,
     )
-    steuer_ergebnis = berechne_steuerliche_absetzbarkeit(steuerdaten)
+    steuer_ergebnis_jahr1 = berechne_steuerliche_absetzbarkeit(steuerdaten_jahr1)
 
     # 4. Cashflow
     cashflow = berechne_cashflow(
@@ -445,32 +463,36 @@ def main() -> None:
             )
 
     with tab4:
+        # Verwende Jahr 1 Daten für die Steuerübersicht
+        zinsen_jahr1 = tilgungsplan["Zinsanteil"].iloc[0] if not tilgungsplan.empty else 0
         st.plotly_chart(
             create_steuer_uebersicht(
-                afa=steuer_ergebnis.afa_betrag,
-                zinsen=steuer_ergebnis.absetzbare_zinsen,
+                afa=steuer_ergebnis_jahr1.afa_betrag,
+                zinsen=zinsen_jahr1,
                 sonstige_werbungskosten=nicht_umlegbare_kosten * 12,
                 mieteinnahmen=kaltmiete * 12,
             ),
             use_container_width=True,
         )
+        st.caption("📌 Darstellung basiert auf Jahr 1 der Finanzierung. Zinsen sinken über die Laufzeit.")
 
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown("#### 📋 Steuerliche Kennzahlen")
-            st.write(f"**AfA ({afa_typ.name.replace('_', ' ')}):** €{steuer_ergebnis.afa_betrag:,.0f}/Jahr")
-            st.write(f"**Absetzbare Zinsen:** €{steuer_ergebnis.absetzbare_zinsen:,.0f}/Jahr")
-            st.write(f"**Werbungskosten gesamt:** €{steuer_ergebnis.werbungskosten:,.0f}/Jahr")
+            st.markdown("#### 📋 Steuerliche Kennzahlen (Jahr 1)")
+            st.write(f"**AfA ({afa_typ.name.replace('_', ' ')}):** €{steuer_ergebnis_jahr1.afa_betrag:,.0f}/Jahr")
+            st.write(f"**Absetzbare Zinsen:** €{zinsen_jahr1:,.0f}/Jahr")
+            st.write(f"**Nicht umlegbare Kosten:** €{nicht_umlegbare_kosten * 12:,.0f}/Jahr")
+            st.write(f"**Werbungskosten gesamt:** €{steuer_ergebnis_jahr1.werbungskosten:,.0f}/Jahr")
 
         with col2:
-            st.markdown("#### 📊 Steuerliche Auswirkung")
-            einkuenfte_vv = steuer_ergebnis.einkuenfte_aus_vv
+            st.markdown("#### 📊 Steuerliche Auswirkung (Jahr 1)")
+            einkuenfte_vv = steuer_ergebnis_jahr1.einkuenfte_aus_vv
             if einkuenfte_vv < 0:
                 st.success(f"**Verlust aus V&V:** €{abs(einkuenfte_vv):,.0f}/Jahr")
-                st.success(f"**Steuervorteil:** €{steuer_ergebnis.steuervorteil:,.0f}/Jahr")
+                st.success(f"**Steuervorteil:** €{steuer_ergebnis_jahr1.steuervorteil:,.0f}/Jahr")
             else:
                 st.warning(f"**Gewinn aus V&V:** €{einkuenfte_vv:,.0f}/Jahr")
-                st.warning(f"**Steuerlast:** €{abs(steuer_ergebnis.steuervorteil):,.0f}/Jahr")
+                st.warning(f"**Steuerlast:** €{abs(steuer_ergebnis_jahr1.steuervorteil):,.0f}/Jahr")
 
     # Detailtabellen
     st.divider()

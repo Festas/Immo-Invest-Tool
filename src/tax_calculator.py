@@ -12,12 +12,21 @@ from typing import Optional
 
 
 class AfATyp(Enum):
-    """AfA-Typen nach deutschem Steuerrecht."""
+    """AfA-Typen nach deutschem Steuerrecht.
+
+    Hinweise:
+    - NEUBAU_AB_2023: Die 3% AfA gilt nur für Gebäude, die nach dem 30.09.2023
+      und vor dem 01.10.2029 fertiggestellt wurden (§ 7 Abs. 5a EStG).
+      Zusätzliche Voraussetzungen: EH 55-Standard oder besser.
+    - DENKMALSCHUTZ: Erhöhte AfA von 9% für 8 Jahre, danach 7% für 4 Jahre
+      bei denkmalgeschützten Gebäuden (§ 7i EStG).
+    """
 
     ALTBAU_VOR_1925 = 2.5  # 2,5% AfA für Altbauten vor 1925
     ALTBAU_AB_1925 = 2.0  # 2% AfA für Gebäude ab 1925
-    NEUBAU_AB_2023 = 3.0  # 3% AfA für Neubauten ab 2023 (§ 7 Abs. 5a EStG)
-    DENKMALSCHUTZ = 9.0  # Erhöhte AfA für denkmalgeschützte Gebäude
+    # 3% AfA für Neubauten ab 2023, befristet bis 2029, EH 55-Standard erforderlich
+    NEUBAU_AB_2023 = 3.0
+    DENKMALSCHUTZ = 9.0  # Erhöhte AfA für denkmalgeschützte Gebäude (erste 8 Jahre)
 
 
 class Bundesland(Enum):
