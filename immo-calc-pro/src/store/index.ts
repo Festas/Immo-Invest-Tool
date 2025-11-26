@@ -18,6 +18,22 @@ import {
   getDefaultPropertyInput,
 } from "@/lib/calculations";
 
+/**
+ * Generate a UUID that works in all environments
+ * Falls back to a simple implementation if crypto.randomUUID is not available
+ */
+function generateId(): string {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback for environments without crypto.randomUUID
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 interface ImmoCalcState {
   // Current calculator input
   currentInput: PropertyInput;
@@ -106,7 +122,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
         const output = calculatePropertyKPIs(state.currentInput);
         
         const newProperty: Property = {
-          id: crypto.randomUUID(),
+          id: generateId(),
           name,
           address,
           createdAt: new Date(),
@@ -148,7 +164,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
         const output = calculatePropertyKPIs(state.currentInput);
         
         const newScenario: Scenario = {
-          id: crypto.randomUUID(),
+          id: generateId(),
           name,
           input: { ...state.currentInput },
           output,

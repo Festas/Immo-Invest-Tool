@@ -41,13 +41,16 @@ function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   return null;
 }
 
+/** Number of years between data points on the amortization chart */
+const CHART_YEAR_INTERVAL = 5;
+
 export function AmortizationChart() {
   const { currentInput } = useImmoCalcStore();
   const output = calculatePropertyKPIs(currentInput);
 
-  // Select key years for chart (every 5 years)
+  // Select key years for chart (every CHART_YEAR_INTERVAL years)
   const chartData = output.amortizationSchedule
-    .filter((year, index) => index % 5 === 0 || index === output.amortizationSchedule.length - 1)
+    .filter((year, index) => index % CHART_YEAR_INTERVAL === 0 || index === output.amortizationSchedule.length - 1)
     .map((year) => ({
       year: `Jahr ${year.year}`,
       Restschuld: Math.round(year.endingBalance),

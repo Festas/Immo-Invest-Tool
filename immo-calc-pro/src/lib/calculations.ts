@@ -376,7 +376,7 @@ export function getDefaultPropertyInput(): PropertyInput {
 
     // Financing
     equity: 60000,
-    loanAmount: 0, // Will be calculated
+    loanAmount: 0, // Calculated from totalInvestment - equity in calculatePropertyKPIs
     interestRate: 3.5,
     repaymentRate: 2.0,
     fixedInterestPeriod: 15,
