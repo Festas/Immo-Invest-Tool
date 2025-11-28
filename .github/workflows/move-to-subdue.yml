@@ -1,0 +1,79 @@
+name: Move subdir to repository root
+
+on:
+  workflow_dispatch:
+
+jobs:
+  move:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Detect single top-level directory and move its contents to root
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          # find top-level directories, excluding .git and .github
+          mapfile -t DIRS < <(find . -maxdepth 1 -mindepth 1 -type d ! -name .git ! -name .github -printf '%P\n')
+          COUNT=${#DIRS[@]}
+          if [ "$COUNT" -ne 1 ]; then
+            echo "ERROR: Erwartet genau ein Top-Level-Verzeichnis, gefunden $COUNT: ${DIRS[*]}"
+            echo "Stelle sicher, dass im Repository-Root genau ein Verzeichnis liegt oder passe das Skript an."
+            exit 1
+          fi
+
+          SUBDIR="${DIRS[0]}"
+          echo "Gefundenes Verzeichnis: $SUBDIR"
+
+          # create and switch to new branch
+          BRANCH="move-subdir-to-root-${GITHUB_RUN_ID}"
+          git checkout -b "$BRANCH"
+
+          # detect conflicts for top-level names
+          conflict=0
+          shopt -s nullglob dotglob || true
+          for p in "$SUBDIR"/* "$SUBDIR"/.[!.]* "$SUBDIR"/..?*; do
+            [ -e "$p" ] || continue
+            name="${p#"$SUBDIR"/}"
+            if [ -e "./$name" ]; then
+              echo "Konflikt: ./$(printf '%s' "$name") existiert bereits im Repository-Root"
+              conflict=1
+            fi
+          done
+          if [ "$conflict" -eq 1 ]; then
+            echo "Abbruch wegen Namenskonflikten. Löse die Konflikte und starte die Action erneut."
+            exit 1
+          fi
+
+          # move files (including hidden)
+          bash -lc 'shopt -s dotglob && mv -- "$SUBDIR"/* . || true'
+          for h in "$SUBDIR"/.[!.]* "$SUBDIR"/..?*; do
+            [ -e "$h" ] || continue
+            mv -- "$h" .
+          done
+
+          # remove empty directory if present
+          if [ -d "$SUBDIR" ] && [ -z "$(ls -A "$SUBDIR")" ]; then
+            rmdir "$SUBDIR" || true
+          fi
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "Nothing to commit after move. Exiting."
+            exit 0
+          fi
+
+          git commit -m "Move project from $SUBDIR to repository root (via GitHub Actions)"
+          git push --set-upstream origin "$BRANCH"
+          echo "Branch $BRANCH created and pushed. Öffne einen Pull Request, um die Änderungen zu mergen."
