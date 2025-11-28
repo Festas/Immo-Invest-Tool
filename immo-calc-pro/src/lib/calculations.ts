@@ -606,9 +606,9 @@ export function calculateExitStrategy(input: ExitStrategyInput): ExitStrategyRes
   
   const grossProfit = currentValue - purchasePrice;
   
-  // Selling costs (typically 5-8% including broker, notary, etc.)
-  const sellingCostsPercent = 6;
-  const sellingCosts = currentValue * (sellingCostsPercent / 100);
+  // Default selling costs percentage (typically 5-8% including broker, notary, etc.)
+  const DEFAULT_SELLING_COSTS_PERCENT = 6;
+  const sellingCosts = currentValue * (DEFAULT_SELLING_COSTS_PERCENT / 100);
   
   // Speculation tax (only if held less than 10 years)
   let speculationTax = 0;
@@ -624,9 +624,12 @@ export function calculateExitStrategy(input: ExitStrategyInput): ExitStrategyRes
     ? (Math.pow((purchasePrice + totalReturn) / purchasePrice, 1 / holdingPeriodYears) - 1) * 100
     : 0;
   
+  // Format currency for recommendation message
+  const formattedTax = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(speculationTax);
+  
   let recommendation: string;
   if (speculationTaxApplies) {
-    recommendation = `⚠️ Spekulationssteuer fällt an (${speculationTax.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}). Ein Verkauf nach der 10-Jahres-Frist wäre steuerlich günstiger.`;
+    recommendation = `⚠️ Spekulationssteuer fällt an (${formattedTax}). Ein Verkauf nach der 10-Jahres-Frist wäre steuerlich günstiger.`;
   } else if (annualizedReturn >= 8) {
     recommendation = "🟢 Sehr gute Rendite! Ein Verkauf kann sinnvoll sein, um Gewinne zu realisieren.";
   } else if (annualizedReturn >= 5) {
