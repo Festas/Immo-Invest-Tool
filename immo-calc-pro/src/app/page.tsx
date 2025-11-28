@@ -10,9 +10,27 @@ import {
   CumulativeCashflowChart,
   ScenarioComparison,
   PortfolioDashboard,
+  RentIndexCalculator,
+  BreakEvenCalculator,
+  RenovationCalculator,
+  ExitStrategyCalculator,
+  DueDiligenceChecklist,
+  LocationAnalysis,
 } from "@/components";
 import { useImmoCalcStore } from "@/store";
-import { Calculator, BarChart3, GitCompare, LayoutDashboard, RotateCcw } from "lucide-react";
+import { 
+  Calculator, 
+  BarChart3, 
+  GitCompare, 
+  LayoutDashboard, 
+  RotateCcw,
+  MapPin,
+  Target,
+  Wrench,
+  LogOut,
+  ClipboardCheck,
+  TrendingUp,
+} from "lucide-react";
 
 export default function Home() {
   const { activeTab, setActiveTab, resetInput, calculate } = useImmoCalcStore();
@@ -37,7 +55,7 @@ export default function Home() {
                   ImmoCalc Pro
                 </h1>
                 <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
-                  Professionelle Immobilienkalkulation
+                  Das All-in-One Immobilien Investment Tool
                 </p>
               </div>
             </div>
@@ -52,26 +70,58 @@ export default function Home() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          {/* Tab Navigation */}
-          <div className="mb-6 overflow-x-auto">
-            <TabsList className="inline-flex w-full sm:w-auto">
-              <TabsTrigger value="calculator" className="flex items-center gap-1 px-3">
-                <Calculator className="h-4 w-4" />
-                <span className="hidden sm:inline">Rechner</span>
-              </TabsTrigger>
-              <TabsTrigger value="charts" className="flex items-center gap-1 px-3">
-                <BarChart3 className="h-4 w-4" />
-                <span className="hidden sm:inline">Charts</span>
-              </TabsTrigger>
-              <TabsTrigger value="comparison" className="flex items-center gap-1 px-3">
-                <GitCompare className="h-4 w-4" />
-                <span className="hidden sm:inline">Vergleich</span>
-              </TabsTrigger>
-              <TabsTrigger value="dashboard" className="flex items-center gap-1 px-3">
-                <LayoutDashboard className="h-4 w-4" />
-                <span className="hidden sm:inline">Dashboard</span>
-              </TabsTrigger>
-            </TabsList>
+          {/* Tab Navigation - Two Rows for Better Organization */}
+          <div className="mb-6 space-y-2">
+            {/* Primary Tabs */}
+            <div className="overflow-x-auto pb-1">
+              <TabsList className="inline-flex w-full sm:w-auto">
+                <TabsTrigger value="calculator" className="flex items-center gap-1 px-3">
+                  <Calculator className="h-4 w-4" />
+                  <span className="hidden sm:inline">Rechner</span>
+                </TabsTrigger>
+                <TabsTrigger value="charts" className="flex items-center gap-1 px-3">
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Charts</span>
+                </TabsTrigger>
+                <TabsTrigger value="comparison" className="flex items-center gap-1 px-3">
+                  <GitCompare className="h-4 w-4" />
+                  <span className="hidden sm:inline">Vergleich</span>
+                </TabsTrigger>
+                <TabsTrigger value="dashboard" className="flex items-center gap-1 px-3">
+                  <LayoutDashboard className="h-4 w-4" />
+                  <span className="hidden sm:inline">Dashboard</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            {/* Secondary Tabs - New Features */}
+            <div className="overflow-x-auto pb-1">
+              <TabsList className="inline-flex w-full sm:w-auto bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950">
+                <TabsTrigger value="rent-index" className="flex items-center gap-1 px-3">
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="hidden sm:inline">Mietspiegel</span>
+                </TabsTrigger>
+                <TabsTrigger value="break-even" className="flex items-center gap-1 px-3">
+                  <Target className="h-4 w-4" />
+                  <span className="hidden sm:inline">Break-Even</span>
+                </TabsTrigger>
+                <TabsTrigger value="renovation" className="flex items-center gap-1 px-3">
+                  <Wrench className="h-4 w-4" />
+                  <span className="hidden sm:inline">Renovierung</span>
+                </TabsTrigger>
+                <TabsTrigger value="exit-strategy" className="flex items-center gap-1 px-3">
+                  <LogOut className="h-4 w-4" />
+                  <span className="hidden sm:inline">Exit</span>
+                </TabsTrigger>
+                <TabsTrigger value="location" className="flex items-center gap-1 px-3">
+                  <MapPin className="h-4 w-4" />
+                  <span className="hidden sm:inline">Standort</span>
+                </TabsTrigger>
+                <TabsTrigger value="checklist" className="flex items-center gap-1 px-3">
+                  <ClipboardCheck className="h-4 w-4" />
+                  <span className="hidden sm:inline">Checkliste</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
           </div>
 
           {/* Calculator Tab */}
@@ -111,6 +161,36 @@ export default function Home() {
           {/* Dashboard Tab */}
           <TabsContent value="dashboard">
             <PortfolioDashboard />
+          </TabsContent>
+
+          {/* Rent Index Tab */}
+          <TabsContent value="rent-index">
+            <RentIndexCalculator />
+          </TabsContent>
+
+          {/* Break-Even Tab */}
+          <TabsContent value="break-even">
+            <BreakEvenCalculator />
+          </TabsContent>
+
+          {/* Renovation Tab */}
+          <TabsContent value="renovation">
+            <RenovationCalculator />
+          </TabsContent>
+
+          {/* Exit Strategy Tab */}
+          <TabsContent value="exit-strategy">
+            <ExitStrategyCalculator />
+          </TabsContent>
+
+          {/* Location Analysis Tab */}
+          <TabsContent value="location">
+            <LocationAnalysis />
+          </TabsContent>
+
+          {/* Due Diligence Checklist Tab */}
+          <TabsContent value="checklist">
+            <DueDiligenceChecklist />
           </TabsContent>
         </Tabs>
       </main>

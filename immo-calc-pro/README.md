@@ -1,6 +1,6 @@
 # 🏠 ImmoCalc Pro
 
-Eine moderne Webanwendung zur Immobilienkalkulation, die klassische Excel-Tools ersetzt und durch Cloud-Funktionalitäten übertrifft. Entwickelt mit Next.js, TypeScript, Tailwind CSS und Recharts.
+Das **All-in-One Immobilien Investment Tool** - eine moderne Webanwendung zur Immobilienkalkulation, die klassische Excel-Tools ersetzt und durch Cloud-Funktionalitäten übertrifft. Entwickelt mit Next.js, TypeScript, Tailwind CSS und Recharts.
 
 ## ✨ Features
 
@@ -29,6 +29,47 @@ Die App führt folgende Berechnungen dynamisch und in Echtzeit durch:
   - Kumulierter Cashflow & Vermögensentwicklung (Liniendiagramm)
 - **📱 Responsiveness**: Mobile-first Design, perfekt auf dem Smartphone bedienbar
 - **💾 Lokale Speicherung**: Immobilien werden im Browser gespeichert
+
+### 3. 🆕 Erweiterte Funktionen (Differenzierungsmerkmale)
+
+Diese neuen Funktionen heben ImmoCalc Pro von der Konkurrenz ab:
+
+#### 📍 Mietpreisspiegel / Marktmieten-Vergleich
+- Vergleich der aktuellen Miete mit lokalen Marktmieten
+- Unterstützung für alle deutschen Großstädte
+- Berücksichtigung von Baujahr, Zustand, Ausstattung, Etage
+- Berechnung des Mieterhöhungspotenzials in € und %
+
+#### 🎯 Break-Even Analyse
+- Berechnung der Amortisationszeit durch Cashflow
+- Berechnung inkl. Wertsteigerung
+- Renditeprognose für 5, 10 und 15 Jahre
+- Visualisierung der langfristigen Vermögensentwicklung
+
+#### 🔧 Renovierungs-ROI Rechner
+- ROI-Berechnung für verschiedene Renovierungsmaßnahmen
+- Richtwerte für typische Kosten und Mietsteigerungen
+- Amortisationsberechnung
+- Empfehlungen basierend auf Kosten-Nutzen-Analyse
+
+#### 🚪 Exit-Strategie / Verkaufsrechner
+- Berechnung des Nettogewinns beim Verkauf
+- Berücksichtigung der Spekulationssteuer (< 10 Jahre)
+- Annualisierte Renditeberechnung
+- Empfehlungen für optimalen Verkaufszeitpunkt
+
+#### 📍 Standortanalyse
+- Bewertung von Standorten nach verschiedenen Kriterien
+- A/B/C/D-Lage Klassifizierung
+- Stärken-/Schwächen-Analyse
+- Investitionsempfehlung und Risikobewertung
+
+#### ✅ Due Diligence Checkliste
+- Umfassende Checkliste für die Immobilienprüfung
+- 29 Prüfpunkte in 5 Kategorien
+- Pflicht- und optionale Punkte markiert
+- Notizen und Fortschrittsverfolgung
+- Lokale Speicherung des Fortschritts
 
 ## 🚀 Tech Stack
 
@@ -59,7 +100,13 @@ immo-calc-pro/
 │   │   ├── PortfolioDashboard.tsx
 │   │   ├── PropertyCalculatorForm.tsx
 │   │   ├── ResultsPanel.tsx
-│   │   └── ScenarioComparison.tsx
+│   │   ├── ScenarioComparison.tsx
+│   │   ├── RentIndexCalculator.tsx    # 🆕 Mietpreisspiegel
+│   │   ├── BreakEvenCalculator.tsx    # 🆕 Break-Even Analyse
+│   │   ├── RenovationCalculator.tsx   # 🆕 Renovierungs-ROI
+│   │   ├── ExitStrategyCalculator.tsx # 🆕 Exit-Strategie
+│   │   ├── LocationAnalysis.tsx       # 🆕 Standortanalyse
+│   │   └── DueDiligenceChecklist.tsx  # 🆕 Due Diligence
 │   ├── lib/
 │   │   ├── calculations.ts    # Zentrale Berechnungslogik
 │   │   └── utils.ts           # Hilfsfunktionen
@@ -86,6 +133,41 @@ const output = calculatePropertyKPIs(input);
 
 console.log(output.yields.returnOnEquity); // EK-Rendite
 console.log(output.cashflow.monthlyCashflowAfterTax); // Monatlicher Cashflow
+```
+
+### Neue Berechnungsfunktionen
+
+```typescript
+import { 
+  calculateRentIndex, 
+  calculateBreakEven, 
+  calculateRenovationROI, 
+  calculateExitStrategy, 
+  calculateLocationAnalysis 
+} from "@/lib/calculations";
+
+// Mietpreisspiegel
+const rentResult = calculateRentIndex({
+  city: "MUENCHEN",
+  livingArea: 75,
+  currentRent: 1000,
+  // ... weitere Parameter
+});
+
+// Break-Even
+const breakEvenResult = calculateBreakEven({
+  totalInvestment: 327210,
+  annualCashflow: -3994,
+  annualAppreciation: 2.0,
+  sellingCostsPercent: 6.0,
+});
+
+// Standortanalyse
+const locationResult = calculateLocationAnalysis({
+  populationTrend: "WACHSEND",
+  employmentRate: "HOCH",
+  // ... weitere Parameter
+});
 ```
 
 ### Annuitätenberechnung
@@ -133,12 +215,21 @@ npm start
 
 ## 📱 Ansichten
 
-Die App bietet vier Hauptansichten:
+Die App bietet zehn Hauptansichten in zwei Navigationsebenen:
 
+### Primäre Funktionen:
 1. **Rechner** - Eingabeformular und Live-Ergebnisse
 2. **Charts** - Tilgungsverlauf und Cashflow-Visualisierung
 3. **Vergleich** - Bis zu 3 Szenarien nebeneinander
 4. **Dashboard** - Portfolio-Übersicht und gespeicherte Immobilien
+
+### Erweiterte Funktionen:
+5. **Mietspiegel** - Marktmieten-Vergleich
+6. **Break-Even** - Amortisationsberechnung
+7. **Renovierung** - ROI für Renovierungsmaßnahmen
+8. **Exit** - Verkaufs- und Exit-Strategie
+9. **Standort** - Standortanalyse und -bewertung
+10. **Checkliste** - Due Diligence Prüfliste
 
 ## 📜 Deutsches Steuerrecht
 
@@ -153,6 +244,8 @@ Die App berücksichtigt das deutsche Steuerrecht (Stand 2024):
 - **Grunderwerbsteuer nach Bundesland**: 3,5% (Bayern) bis 6,5% (Brandenburg, NRW, etc.)
 
 - **Werbungskosten**: AfA + Zinsen + nicht umlegbare Kosten
+
+- **Spekulationssteuer**: Berücksichtigung bei Verkauf innerhalb von 10 Jahren
 
 ## ⚠️ Haftungsausschluss
 
