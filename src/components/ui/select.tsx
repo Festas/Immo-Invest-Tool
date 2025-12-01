@@ -1,20 +1,25 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { HelpTooltip } from "./tooltip";
 
 interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "onChange"> {
   label?: string;
   options: { value: string; label: string }[];
   onChange?: (value: string) => void;
+  helpText?: string;
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, label, options, onChange, value, ...props }, ref) => {
+  ({ className, label, options, onChange, value, helpText, ...props }, ref) => {
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            {label}
-          </label>
+          <div className="flex items-center gap-1 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {label}
+            </label>
+            {helpText && <HelpTooltip content={helpText} />}
+          </div>
         )}
         <select
           ref={ref}

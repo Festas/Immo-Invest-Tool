@@ -4,3 +4,4 @@ export * from "./input";
 export * from "./slider";
 export * from "./select";
 export * from "./tabs";
+export * from "./tooltip";

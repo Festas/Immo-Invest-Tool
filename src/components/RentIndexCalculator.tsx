@@ -28,6 +28,65 @@ const equipmentOptions = [
   { value: "EINFACH", label: "Einfach (Basisausstattung)" },
 ];
 
+// Help texts for rent index calculator
+const helpTexts = {
+  city: `Wählen Sie die Stadt/Region für den Mietspiegelvergleich.
+
+📍 Größere Städte haben höhere Durchschnittsmieten.
+
+💡 Falls Ihre Stadt nicht gelistet ist, wählen Sie eine vergleichbare Stadt oder "Sonstige / Ländlich".`,
+
+  livingArea: `Die Wohnfläche der Immobilie in Quadratmetern.
+
+📍 Wo finden Sie den Wert?
+• Im Mietvertrag
+• Im Grundriss/Exposé
+• Im Grundbuch
+
+💡 Nur die Wohnfläche zählt, nicht Keller oder Terrasse.`,
+
+  currentRent: `Die aktuelle monatliche Nettokaltmiete (ohne Nebenkosten).
+
+📍 Wo finden Sie den Wert?
+• Im Mietvertrag unter "Grundmiete"
+• In der monatlichen Mietabrechnung
+
+💡 Bei Neuvermietung: erwartete Miete eingeben.`,
+
+  yearBuilt: `Das Baujahr der Immobilie.
+
+📍 Wo finden Sie den Wert?
+• Im Energieausweis
+• Im Grundbuchauszug
+• Im Exposé
+
+💡 Ältere Gebäude haben oft niedrigere Mietansätze.`,
+
+  condition: `Der aktuelle Zustand der Immobilie.
+
+📍 Bewertungskriterien:
+• Sehr gut: Neuwertig oder kürzlich saniert
+• Gut: Gepflegt, keine größeren Mängel
+• Mittel: Normale Abnutzung, kleinere Mängel
+• Renovierungsbedürftig: Größerer Sanierungsbedarf`,
+
+  equipment: `Die Ausstattungsqualität der Immobilie.
+
+📍 Kriterien:
+• Gehoben: Parkett, Fußbodenheizung, hochwertige Küche
+• Standard: Normaler Bodenbelag, einfache Küche
+• Einfach: Basisausstattung, ältere Technik`,
+
+  floor: `Die Etage, in der sich die Wohnung befindet.
+
+📍 Einfluss auf die Miete:
+• EG (0): Oft etwas günstiger
+• 1.-3. OG: Standardpreise
+• Ab 4. OG: Aufzug wichtig für Preis
+
+💡 Bei Aufzug ist die Etage weniger relevant.`,
+};
+
 export function RentIndexCalculator() {
   const [input, setInput] = useState<RentIndexInput>({
     city: "MUENCHEN",
@@ -69,6 +128,7 @@ export function RentIndexCalculator() {
               options={cityOptions}
               value={input.city}
               onChange={(value) => setInput({ ...input, city: value })}
+              helpText={helpTexts.city}
             />
 
             <Input
@@ -81,6 +141,7 @@ export function RentIndexCalculator() {
               suffix="m²"
               min={10}
               max={500}
+              helpText={helpTexts.livingArea}
             />
 
             <Input
@@ -92,6 +153,7 @@ export function RentIndexCalculator() {
               }
               suffix="€"
               min={0}
+              helpText={helpTexts.currentRent}
             />
 
             <Input
@@ -103,6 +165,7 @@ export function RentIndexCalculator() {
               }
               min={1800}
               max={new Date().getFullYear()}
+              helpText={helpTexts.yearBuilt}
             />
 
             <Select
@@ -115,6 +178,7 @@ export function RentIndexCalculator() {
                   condition: value as RentIndexInput["condition"],
                 })
               }
+              helpText={helpTexts.condition}
             />
 
             <Select
@@ -127,6 +191,7 @@ export function RentIndexCalculator() {
                   equipment: value as RentIndexInput["equipment"],
                 })
               }
+              helpText={helpTexts.equipment}
             />
 
             <Input
@@ -138,6 +203,7 @@ export function RentIndexCalculator() {
               }
               min={0}
               max={30}
+              helpText={helpTexts.floor}
             />
 
             <div className="space-y-2">

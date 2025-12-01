@@ -30,6 +30,60 @@ const renovationOptions = Object.entries(RenovationTypeLabels).map(
   })
 );
 
+// Help texts for renovation calculator
+const helpTexts = {
+  renovationType: `Wählen Sie die Art der geplanten Renovierung.
+
+📍 Die Richtwerte werden basierend auf Ihrer Auswahl angepasst.
+
+💡 Kombinierte Maßnahmen können Sie einzeln berechnen und vergleichen.`,
+
+  estimatedCost: `Die geschätzten Gesamtkosten der Renovierung.
+
+📍 Wie ermitteln Sie den Wert?
+• Kostenvoranschläge von Handwerkern
+• Online-Kostenrechner
+• Erfahrungswerte
+
+💡 Planen Sie 10-15% Puffer für Unvorhergesehenes ein.`,
+
+  rentIncrease: `Erwartete monatliche Mieterhöhung nach Renovierung.
+
+📍 Orientierung:
+• Mietspiegelvergleich vor/nach
+• Vergleich mit ähnlichen renovierten Objekten
+• Richtwerte aus der Übersicht
+
+💡 Bei Bestandsmietern: Mieterhöhung max. 20% in 3 Jahren!`,
+
+  valueIncrease: `Erwartete Wertsteigerung der Immobilie.
+
+📍 Faustregeln:
+• Bäder/Küchen: 100-150% der Kosten
+• Energetische Sanierung: 80-120%
+• Böden/Malerarbeiten: 50-80%
+
+💡 Ein Gutachter kann den Wert genau bestimmen.`,
+
+  financingPercent: `Anteil der Renovierung, der finanziert werden soll.
+
+📍 Optionen:
+• 0%: Komplett aus Eigenkapital
+• 50%: Teilfinanzierung
+• 100%: Vollfinanzierung
+
+💡 Finanzierung reduziert die Eigenkapitalbindung, aber erhöht die Kosten.`,
+
+  interestRate: `Zinssatz für die Renovierungsfinanzierung.
+
+📍 Typische Sätze (2024):
+• Wohnkredit: 5-8%
+• Modernisierungskredit: 4-6%
+• Nachfinanzierung: 3-5%
+
+💡 KfW-Förderung prüfen für günstigere Konditionen!`,
+};
+
 export function RenovationCalculator() {
   const [input, setInput] = useState<RenovationInput>({
     renovationType: "BAEDER",
@@ -74,6 +128,7 @@ export function RenovationCalculator() {
                 renovationType: value as RenovationInput["renovationType"],
               })
             }
+            helpText={helpTexts.renovationType}
           />
 
           {selectedType && (
@@ -109,6 +164,7 @@ export function RenovationCalculator() {
               suffix="€"
               min={0}
               step={1000}
+              helpText={helpTexts.estimatedCost}
             />
 
             <Input
@@ -124,6 +180,7 @@ export function RenovationCalculator() {
               suffix="€/Monat"
               min={0}
               step={10}
+              helpText={helpTexts.rentIncrease}
             />
 
             <Input
@@ -139,6 +196,7 @@ export function RenovationCalculator() {
               suffix="€"
               min={0}
               step={1000}
+              helpText={helpTexts.valueIncrease}
             />
 
             <div>
@@ -152,6 +210,7 @@ export function RenovationCalculator() {
                   setInput({ ...input, financingPercent: value })
                 }
                 formatValue={(v) => `${v}%`}
+                helpText={helpTexts.financingPercent}
               />
             </div>
           </div>
@@ -171,6 +230,7 @@ export function RenovationCalculator() {
               min={0}
               max={15}
               step={0.1}
+              helpText={helpTexts.interestRate}
             />
           )}
 

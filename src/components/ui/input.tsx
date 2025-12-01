@@ -1,21 +1,26 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { HelpTooltip } from "./tooltip";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   suffix?: string;
   prefix?: string;
   error?: string;
+  helpText?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, label, suffix, prefix, error, ...props }, ref) => {
+  ({ className, type, label, suffix, prefix, error, helpText, ...props }, ref) => {
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            {label}
-          </label>
+          <div className="flex items-center gap-1 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {label}
+            </label>
+            {helpText && <HelpTooltip content={helpText} />}
+          </div>
         )}
         <div className="relative">
           {prefix && (

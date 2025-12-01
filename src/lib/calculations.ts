@@ -19,6 +19,14 @@ import {
   AfARates,
 } from "@/types";
 
+// Reusable currency formatter for German locale
+const currencyFormatter = new Intl.NumberFormat("de-DE", {
+  style: "currency",
+  currency: "EUR",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 /**
  * Calculate side costs (Nebenkosten)
  */
@@ -625,7 +633,7 @@ export function calculateExitStrategy(input: ExitStrategyInput): ExitStrategyRes
     : 0;
   
   // Format currency for recommendation message
-  const formattedTax = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(speculationTax);
+  const formattedTax = currencyFormatter.format(speculationTax);
   
   let recommendation: string;
   if (speculationTaxApplies) {

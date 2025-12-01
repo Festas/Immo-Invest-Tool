@@ -82,7 +82,7 @@ Diese neuen Funktionen heben ImmoCalc Pro von der Konkurrenz ab:
 ## 📁 Projektstruktur
 
 ```
-immo-calc-pro/
+/
 ├── src/
 │   ├── app/
 │   │   ├── globals.css        # Tailwind + Custom Styles

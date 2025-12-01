@@ -10,6 +10,27 @@ import { formatCurrency } from "@/lib/utils";
 import { BreakEvenResult } from "@/types";
 import { Target, Clock, TrendingUp, Calculator, PiggyBank } from "lucide-react";
 
+// Help texts for break-even calculator
+const helpTexts = {
+  appreciation: `Erwartete jährliche Wertsteigerung der Immobilie.
+
+📍 Richtwerte:
+• Konservativ: 1-2% p.a.
+• Normal: 2-3% p.a.
+• Optimistisch: 3-4% p.a.
+
+💡 Historisch sind 2-3% realistisch. In Großstädten kann es mehr sein.`,
+
+  sellingCosts: `Kosten beim Verkauf der Immobilie.
+
+📍 Typische Kosten:
+• Makler: 3-6%
+• Notar: 0,5-1%
+• Sonstige: 0,5-1%
+
+💡 Insgesamt meist 5-8% des Verkaufspreises.`,
+};
+
 export function BreakEvenCalculator() {
   const { currentInput } = useImmoCalcStore();
   const output = calculatePropertyKPIs(currentInput);
@@ -71,6 +92,7 @@ export function BreakEvenCalculator() {
             value={appreciationRate}
             onChange={(value) => setAppreciationRate(value)}
             formatValue={(v) => `${v.toFixed(1)}%`}
+            helpText={helpTexts.appreciation}
           />
 
           <Slider
@@ -81,6 +103,7 @@ export function BreakEvenCalculator() {
             value={sellingCostsPercent}
             onChange={(value) => setSellingCostsPercent(value)}
             formatValue={(v) => `${v.toFixed(1)}%`}
+            helpText={helpTexts.sellingCosts}
           />
 
           <Button onClick={handleCalculate} className="w-full">
