@@ -15,6 +15,15 @@ export function Tooltip({ content, children, className }: TooltipProps) {
   const tooltipRef = React.useRef<HTMLDivElement>(null);
   const triggerRef = React.useRef<HTMLDivElement>(null);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setIsVisible(!isVisible);
+    } else if (e.key === "Escape") {
+      setIsVisible(false);
+    }
+  };
+
   return (
     <div className={cn("relative inline-flex", className)}>
       <div
@@ -23,13 +32,15 @@ export function Tooltip({ content, children, className }: TooltipProps) {
         onMouseLeave={() => setIsVisible(false)}
         onFocus={() => setIsVisible(true)}
         onBlur={() => setIsVisible(false)}
+        onKeyDown={handleKeyDown}
         className="cursor-help"
         tabIndex={0}
         role="button"
+        aria-label="Hilfe anzeigen"
         aria-describedby={isVisible ? "tooltip" : undefined}
       >
         {children || (
-          <HelpCircle className="h-4 w-4 text-gray-400 hover:text-blue-500 transition-colors" />
+          <HelpCircle className="h-4 w-4 text-gray-400 hover:text-blue-500 transition-colors" aria-hidden="true" />
         )}
       </div>
       {isVisible && (
@@ -66,7 +77,7 @@ interface HelpTooltipProps {
 export function HelpTooltip({ content, className }: HelpTooltipProps) {
   return (
     <Tooltip content={content} className={className}>
-      <HelpCircle className="h-4 w-4 text-gray-400 hover:text-blue-500 transition-colors" />
+      <HelpCircle className="h-4 w-4 text-gray-400 hover:text-blue-500 transition-colors" aria-hidden="true" />
     </Tooltip>
   );
 }

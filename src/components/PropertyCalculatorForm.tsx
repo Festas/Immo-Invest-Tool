@@ -184,6 +184,13 @@ export function PropertyCalculatorForm() {
     updateInput({ propertyTransferTaxPercent: taxRate });
   };
 
+  // Memoize the bundesland lookup to avoid recalculating on every render
+  const selectedBundesland = React.useMemo(() => {
+    return Object.keys(BundeslandData).find(
+      (key) => BundeslandData[key as Bundesland].taxRate === currentInput.propertyTransferTaxPercent
+    ) || "BAYERN";
+  }, [currentInput.propertyTransferTaxPercent]);
+
   return (
     <div className="space-y-4">
       {/* Purchase & Costs Section */}
@@ -209,9 +216,7 @@ export function PropertyCalculatorForm() {
           <Select
             label="Bundesland"
             options={bundeslandOptions}
-            value={Object.keys(BundeslandData).find(
-              (key) => BundeslandData[key as Bundesland].taxRate === currentInput.propertyTransferTaxPercent
-            ) || "BAYERN"}
+            value={selectedBundesland}
             onChange={handleBundeslandChange}
             helpText={helpTexts.bundesland}
           />
