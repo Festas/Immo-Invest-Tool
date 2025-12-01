@@ -28,7 +28,7 @@ const TabsList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
     <div
       ref={ref}
       className={cn(
-        "inline-flex h-10 items-center justify-center rounded-lg bg-gray-100 p-1 text-gray-500 dark:bg-gray-800 dark:text-gray-400",
+        "inline-flex h-12 items-center justify-center gap-1 rounded-2xl bg-slate-100/80 p-1.5 text-slate-500 backdrop-blur-sm dark:bg-slate-800/80 dark:text-slate-400 shadow-inner",
         className
       )}
       {...props}
@@ -54,10 +54,10 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
         type="button"
         onClick={() => context.onChange(value)}
         className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          "inline-flex items-center justify-center whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium ring-offset-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
           isActive
-            ? "bg-white text-gray-950 shadow-sm dark:bg-gray-950 dark:text-gray-50"
-            : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50",
+            ? "bg-white text-indigo-700 shadow-md shadow-indigo-100 dark:bg-slate-900 dark:text-indigo-300 dark:shadow-indigo-900/30"
+            : "text-slate-600 hover:text-indigo-600 hover:bg-white/50 dark:text-slate-400 dark:hover:text-indigo-400 dark:hover:bg-slate-700/50",
           className
         )}
         {...props}
@@ -82,9 +82,10 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
       <div
         ref={ref}
         className={cn(
-          "mt-2 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+          "mt-4 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 animate-fade-in",
           className
         )}
+        style={{ animation: 'fadeIn 0.3s ease-out' }}
         {...props}
       />
     );

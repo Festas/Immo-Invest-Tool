@@ -192,16 +192,20 @@ export function PropertyCalculatorForm() {
   }, [currentInput.propertyTransferTaxPercent]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Purchase & Costs Section */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Building2 className="h-5 w-5 text-blue-600" />
-            Kaufpreis & Nebenkosten
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/30 dark:to-purple-950/30">
+          <CardTitle className="flex items-center gap-3 text-base">
+            <div className="p-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/20">
+              <Building2 className="h-4 w-4 text-white" />
+            </div>
+            <span className="bg-gradient-to-r from-indigo-700 to-purple-700 dark:from-indigo-300 dark:to-purple-300 bg-clip-text text-transparent font-bold">
+              Kaufpreis & Nebenkosten
+            </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5 pt-5">
           <Input
             label="Kaufpreis"
             type="number"
@@ -221,7 +225,7 @@ export function PropertyCalculatorForm() {
             helpText={helpTexts.bundesland}
           />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <Input
               label="Makler"
               type="number"
@@ -260,14 +264,18 @@ export function PropertyCalculatorForm() {
       </Card>
 
       {/* Financing Section */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Banknote className="h-5 w-5 text-green-600" />
-            Finanzierung
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-4 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/30 dark:to-teal-950/30">
+          <CardTitle className="flex items-center gap-3 text-base">
+            <div className="p-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/20">
+              <Banknote className="h-4 w-4 text-white" />
+            </div>
+            <span className="bg-gradient-to-r from-emerald-700 to-teal-700 dark:from-emerald-300 dark:to-teal-300 bg-clip-text text-transparent font-bold">
+              Finanzierung
+            </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5 pt-5">
           <Slider
             label="Eigenkapital"
             min={0}
@@ -279,7 +287,7 @@ export function PropertyCalculatorForm() {
             helpText={helpTexts.equity}
           />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <Input
               label="Zinssatz"
               type="number"
@@ -318,14 +326,18 @@ export function PropertyCalculatorForm() {
       </Card>
 
       {/* Rental Income Section */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Home className="h-5 w-5 text-orange-600" />
-            Mieteinnahmen
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-4 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-950/30 dark:to-orange-950/30">
+          <CardTitle className="flex items-center gap-3 text-base">
+            <div className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg shadow-amber-500/20">
+              <Home className="h-4 w-4 text-white" />
+            </div>
+            <span className="bg-gradient-to-r from-amber-700 to-orange-700 dark:from-amber-300 dark:to-orange-300 bg-clip-text text-transparent font-bold">
+              Mieteinnahmen
+            </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5 pt-5">
           <Input
             label="Kaltmiete (IST) monatlich"
             type="number"
@@ -337,7 +349,7 @@ export function PropertyCalculatorForm() {
             helpText={helpTexts.coldRent}
           />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <Input
               label="Nicht umlegbare NK"
               type="number"
@@ -374,14 +386,18 @@ export function PropertyCalculatorForm() {
       </Card>
 
       {/* Tax Section */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Receipt className="h-5 w-5 text-purple-600" />
-            Steuerliche Parameter
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-4 bg-gradient-to-r from-violet-50/50 to-fuchsia-50/50 dark:from-violet-950/30 dark:to-fuchsia-950/30">
+          <CardTitle className="flex items-center gap-3 text-base">
+            <div className="p-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/20">
+              <Receipt className="h-4 w-4 text-white" />
+            </div>
+            <span className="bg-gradient-to-r from-violet-700 to-fuchsia-700 dark:from-violet-300 dark:to-fuchsia-300 bg-clip-text text-transparent font-bold">
+              Steuerliche Parameter
+            </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5 pt-5">
           <Select
             label="AfA-Typ"
             options={afaOptions}
