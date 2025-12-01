@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { HelpTooltip } from "./tooltip";
 
 interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   label?: string;
@@ -9,19 +10,23 @@ interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 
   value: number;
   onChange: (value: number) => void;
   formatValue?: (value: number) => string;
+  helpText?: string;
 }
 
 const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
-  ({ className, label, min, max, step = 1, value, onChange, formatValue, ...props }, ref) => {
+  ({ className, label, min, max, step = 1, value, onChange, formatValue, helpText, ...props }, ref) => {
     const percentage = ((value - min) / (max - min)) * 100;
 
     return (
       <div className="w-full">
         {label && (
           <div className="flex justify-between items-center mb-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              {label}
-            </label>
+            <div className="flex items-center gap-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {label}
+              </label>
+              {helpText && <HelpTooltip content={helpText} />}
+            </div>
             <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
               {formatValue ? formatValue(value) : value}
             </span>

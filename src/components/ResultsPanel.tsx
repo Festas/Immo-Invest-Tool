@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { HelpTooltip } from "@/components/ui/tooltip";
 import { useImmoCalcStore } from "@/store";
 import { formatCurrency } from "@/lib/utils";
 import { calculatePropertyKPIs } from "@/lib/calculations";
@@ -13,6 +14,85 @@ import {
   BarChart3,
   Calculator,
 } from "lucide-react";
+
+// Help texts for results
+const resultHelpTexts = {
+  totalInvestment: `Gesamtinvestition = Kaufpreis + alle Nebenkosten.
+
+📊 Berechnung:
+Kaufpreis + Grunderwerbsteuer + Notar + Makler + Renovierung
+
+Dies ist die Summe, die Sie für den Erwerb der Immobilie aufbringen müssen.`,
+
+  monthlyRate: `Monatliche Darlehensrate (Annuität).
+
+📊 Berechnung:
+Rate = Darlehenssumme × (Zinssatz + Tilgung) / 12
+
+Die Rate bleibt während der Zinsbindung konstant. Der Zinsanteil sinkt, der Tilgungsanteil steigt.`,
+
+  cashflow: `Monatlicher Cashflow nach Steuern.
+
+📊 Berechnung:
+Mieteinnahmen - Betriebskosten - Darlehensrate + Steuerersparnis
+
+✅ Positiv = Sie haben monatlichen Überschuss
+❌ Negativ = Sie müssen monatlich zuschießen`,
+
+  roiEquity: `Eigenkapitalrendite (Return on Equity).
+
+📊 Berechnung:
+EK-Rendite = Jährlicher Cashflow / Eigenkapital × 100
+
+Dies zeigt, wie gut sich Ihr eingesetztes Kapital verzinst. Durch den Hebeleffekt oft höher als die Mietrendite.`,
+
+  grossYield: `Bruttomietrendite = Jahresmiete / Kaufpreis × 100
+
+📊 Einfache Kennzahl ohne Nebenkosten.
+
+💡 Richtwerte:
+• Ab 4% interessant
+• Ab 5% gut
+• Ab 6% sehr gut`,
+
+  netYield: `Nettomietrendite berücksichtigt alle Kosten.
+
+📊 Berechnung:
+(Jahresmiete - Betriebskosten) / Gesamtinvestition × 100
+
+Aussagekräftiger als die Bruttomietrendite.`,
+
+  cashflowYield: `Cashflow-Rendite = Cashflow / Gesamtinvestition × 100
+
+Zeigt die tatsächliche Rendite auf Ihr gesamtes eingesetztes Kapital inkl. Finanzierungskosten.`,
+
+  afaAmount: `AfA (Absetzung für Abnutzung) - jährliche Gebäudeabschreibung.
+
+📊 Berechnung:
+Kaufpreis × Gebäudeanteil × AfA-Satz
+
+Dies ist ein steuerlicher Vorteil, da Sie die AfA von Ihren Mieteinnahmen abziehen können.`,
+
+  deductibleInterest: `Steuerlich absetzbare Darlehenszinsen.
+
+Die Zinsen sind Werbungskosten und mindern Ihre steuerlichen Einkünfte aus Vermietung.`,
+
+  taxEffect: `Jährliche Steuerersparnis oder -belastung.
+
+📊 Berechnung:
+Zu versteuerndes Einkommen × Persönlicher Steuersatz
+
+✅ Positiv = Steuerersparnis (Verluste werden mit anderen Einkünften verrechnet)
+❌ Negativ = Steuerlast auf Mietgewinn`,
+
+  rentalIncome: `Einkünfte aus Vermietung und Verpachtung.
+
+📊 Berechnung:
+Mieteinnahmen - Werbungskosten (AfA, Zinsen, Betriebskosten)
+
+❌ Negativ = Steuerlicher Verlust (wird mit anderen Einkünften verrechnet)
+✅ Positiv = Zu versteuernder Gewinn`,
+};
 
 export function ResultsPanel() {
   const { currentInput } = useImmoCalcStore();
@@ -30,6 +110,7 @@ export function ResultsPanel() {
             <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1">
               <Wallet className="h-4 w-4" />
               <span className="text-xs font-medium">Gesamtinvestition</span>
+              <HelpTooltip content={resultHelpTexts.totalInvestment} />
             </div>
             <p className="text-xl font-bold text-blue-900 dark:text-blue-100">
               {formatCurrency(output.investmentVolume.totalInvestment)}
@@ -46,6 +127,7 @@ export function ResultsPanel() {
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-1">
               <Calculator className="h-4 w-4" />
               <span className="text-xs font-medium">Rate/Monat</span>
+              <HelpTooltip content={resultHelpTexts.monthlyRate} />
             </div>
             <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
               {formatCurrency(output.financing.monthlyPayment)}
@@ -78,6 +160,7 @@ export function ResultsPanel() {
                 <TrendingDown className="h-4 w-4" />
               )}
               <span className="text-xs font-medium">Cashflow/Monat</span>
+              <HelpTooltip content={resultHelpTexts.cashflow} />
             </div>
             <p
               className={`text-xl font-bold ${
@@ -106,6 +189,7 @@ export function ResultsPanel() {
             <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 mb-1">
               <PiggyBank className="h-4 w-4" />
               <span className="text-xs font-medium">EK-Rendite</span>
+              <HelpTooltip content={resultHelpTexts.roiEquity} />
             </div>
             <p className="text-xl font-bold text-purple-900 dark:text-purple-100">
               {output.yields.returnOnEquity.toFixed(2)}%
@@ -128,19 +212,31 @@ export function ResultsPanel() {
         <CardContent>
           <div className="space-y-3">
             <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Bruttomietrendite</span>
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Bruttomietrendite</span>
+                <HelpTooltip content={resultHelpTexts.grossYield} />
+              </div>
               <span className="font-semibold">{output.yields.grossRentalYield.toFixed(2)}%</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Nettomietrendite</span>
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Nettomietrendite</span>
+                <HelpTooltip content={resultHelpTexts.netYield} />
+              </div>
               <span className="font-semibold">{output.yields.netRentalYield.toFixed(2)}%</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Eigenkapitalrendite</span>
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Eigenkapitalrendite</span>
+                <HelpTooltip content={resultHelpTexts.roiEquity} />
+              </div>
               <span className="font-semibold">{output.yields.returnOnEquity.toFixed(2)}%</span>
             </div>
             <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Cashflow-Rendite</span>
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Cashflow-Rendite</span>
+                <HelpTooltip content={resultHelpTexts.cashflowYield} />
+              </div>
               <span className="font-semibold">{output.yields.cashflowYield.toFixed(2)}%</span>
             </div>
           </div>
@@ -154,12 +250,18 @@ export function ResultsPanel() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">AfA (jährlich)</span>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-1">
+                <span className="text-gray-600 dark:text-gray-400">AfA (jährlich)</span>
+                <HelpTooltip content={resultHelpTexts.afaAmount} />
+              </div>
               <span>{formatCurrency(output.tax.afaAmount)}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Absetzbare Zinsen</span>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-1">
+                <span className="text-gray-600 dark:text-gray-400">Absetzbare Zinsen</span>
+                <HelpTooltip content={resultHelpTexts.deductibleInterest} />
+              </div>
               <span>{formatCurrency(output.tax.deductibleInterest)}</span>
             </div>
             <div className="flex justify-between">
@@ -167,8 +269,11 @@ export function ResultsPanel() {
               <span>{formatCurrency(output.tax.totalDeductions)}</span>
             </div>
             <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
-              <div className="flex justify-between font-medium">
-                <span>Einkünfte aus V&V</span>
+              <div className="flex justify-between items-center font-medium">
+                <div className="flex items-center gap-1">
+                  <span>Einkünfte aus V&V</span>
+                  <HelpTooltip content={resultHelpTexts.rentalIncome} />
+                </div>
                 <span
                   className={
                     output.tax.rentalIncomeAfterDeductions < 0 ? "text-green-600" : "text-red-600"
@@ -178,8 +283,11 @@ export function ResultsPanel() {
                 </span>
               </div>
             </div>
-            <div className="flex justify-between font-medium">
-              <span>Steuereffekt (jährlich)</span>
+            <div className="flex justify-between items-center font-medium">
+              <div className="flex items-center gap-1">
+                <span>Steuereffekt (jährlich)</span>
+                <HelpTooltip content={resultHelpTexts.taxEffect} />
+              </div>
               <span className={output.tax.taxEffect > 0 ? "text-green-600" : "text-red-600"}>
                 {output.tax.taxEffect > 0 ? "+" : ""}
                 {formatCurrency(output.tax.taxEffect)}

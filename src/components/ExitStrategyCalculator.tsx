@@ -18,6 +18,26 @@ import {
   Scale,
 } from "lucide-react";
 
+// Help texts for exit strategy calculator
+const helpTexts = {
+  holdingPeriod: `Geplante Haltedauer der Immobilie in Jahren.
+
+📍 Wichtig für die Steuern:
+• Unter 10 Jahre: Spekulationssteuer fällt an!
+• Ab 10 Jahre: Steuerfreier Verkauf möglich
+
+💡 Tipp: Mindestens 10 Jahre halten für steuerfreien Gewinn.`,
+
+  appreciation: `Erwartete jährliche Wertsteigerung der Immobilie.
+
+📍 Historische Werte (Deutschland):
+• Durchschnitt: 2-3% p.a.
+• Großstädte: 3-5% p.a.
+• Ländlich: 0-2% p.a.
+
+💡 Vorsichtig kalkulieren ist besser als zu optimistisch!`,
+};
+
 export function ExitStrategyCalculator() {
   const { currentInput } = useImmoCalcStore();
   const output = calculatePropertyKPIs(currentInput);
@@ -107,6 +127,7 @@ export function ExitStrategyCalculator() {
             value={holdingPeriod}
             onChange={(value) => setHoldingPeriod(value)}
             formatValue={(v) => `${v} Jahre`}
+            helpText={helpTexts.holdingPeriod}
           />
 
           {holdingPeriod < 10 && (
@@ -127,6 +148,7 @@ export function ExitStrategyCalculator() {
             value={appreciationRate}
             onChange={(value) => setAppreciationRate(value)}
             formatValue={(v) => `${v.toFixed(1)}%`}
+            helpText={helpTexts.appreciation}
           />
 
           <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
