@@ -40,7 +40,7 @@ export function Tooltip({ content, children, className }: TooltipProps) {
         aria-describedby={isVisible ? "tooltip" : undefined}
       >
         {children || (
-          <HelpCircle className="h-4 w-4 text-gray-400 hover:text-blue-500 transition-colors" aria-hidden="true" />
+          <HelpCircle className="h-4 w-4 text-slate-400 hover:text-indigo-500 transition-colors duration-200" aria-hidden="true" />
         )}
       </div>
       {isVisible && (
@@ -50,17 +50,17 @@ export function Tooltip({ content, children, className }: TooltipProps) {
           role="tooltip"
           className={cn(
             "absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2",
-            "px-3 py-2 text-sm text-white bg-gray-900 dark:bg-gray-700",
-            "rounded-lg shadow-lg max-w-xs w-max",
+            "px-4 py-3 text-sm text-white bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800",
+            "rounded-xl shadow-xl shadow-slate-900/20 max-w-xs w-max border border-slate-700/50",
             "animate-in fade-in-0 zoom-in-95 duration-200"
           )}
         >
-          <div className="whitespace-pre-wrap">{content}</div>
+          <div className="whitespace-pre-wrap leading-relaxed">{content}</div>
           {/* Arrow */}
           <div
             className={cn(
               "absolute top-full left-1/2 -translate-x-1/2",
-              "border-8 border-transparent border-t-gray-900 dark:border-t-gray-700"
+              "border-8 border-transparent border-t-slate-900 dark:border-t-slate-800"
             )}
           />
         </div>
@@ -77,7 +77,7 @@ interface HelpTooltipProps {
 export function HelpTooltip({ content, className }: HelpTooltipProps) {
   return (
     <Tooltip content={content} className={className}>
-      <HelpCircle className="h-4 w-4 text-gray-400 hover:text-blue-500 transition-colors" aria-hidden="true" />
+      <HelpCircle className="h-4 w-4 text-slate-400 hover:text-indigo-500 transition-colors duration-200" aria-hidden="true" />
     </Tooltip>
   );
 }

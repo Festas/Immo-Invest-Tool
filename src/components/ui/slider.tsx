@@ -20,19 +20,26 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
     return (
       <div className="w-full">
         {label && (
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center gap-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <div className="flex justify-between items-center mb-3">
+            <div className="flex items-center gap-1.5">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 {label}
               </label>
               {helpText && <HelpTooltip content={helpText} />}
             </div>
-            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+            <span className="text-sm font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-purple-400">
               {formatValue ? formatValue(value) : value}
             </span>
           </div>
         )}
-        <div className="relative">
+        <div className="relative py-2">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full h-2 bg-slate-200 rounded-full dark:bg-slate-700" />
+            <div 
+              className="absolute h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-150"
+              style={{ width: `${percentage}%` }}
+            />
+          </div>
           <input
             type="range"
             ref={ref}
@@ -42,17 +49,13 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
             value={value}
             onChange={(e) => onChange(parseFloat(e.target.value))}
             className={cn(
-              "w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700",
-              "slider-thumb",
+              "w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer relative z-10",
               className
             )}
-            style={{
-              background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`,
-            }}
             {...props}
           />
         </div>
-        <div className="flex justify-between text-xs text-gray-500 mt-1">
+        <div className="flex justify-between text-xs text-slate-500 mt-2 font-medium">
           <span>{formatValue ? formatValue(min) : min}</span>
           <span>{formatValue ? formatValue(max) : max}</span>
         </div>
