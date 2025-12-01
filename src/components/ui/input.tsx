@@ -39,7 +39,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-slate-50",
               "dark:border-slate-700 dark:bg-slate-900/80 dark:ring-offset-slate-950 dark:hover:border-indigo-700 dark:focus-visible:border-indigo-500 dark:focus-visible:ring-indigo-500/20",
               prefix && "pl-10",
-              suffix && "pr-14",
+              suffix && "pr-12",
               error && "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/10",
               className
             )}

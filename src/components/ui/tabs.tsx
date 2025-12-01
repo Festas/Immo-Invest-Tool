@@ -85,7 +85,6 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
           "mt-4 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 animate-fade-in",
           className
         )}
-        style={{ animation: 'fadeIn 0.3s ease-out' }}
         {...props}
       />
     );

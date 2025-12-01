@@ -18,6 +18,7 @@ import {
   Line,
   ReferenceLine,
 } from "recharts";
+import { BarChart3, TrendingUp } from "lucide-react";
 
 interface ChartTooltipProps {
   active?: boolean;
@@ -28,10 +29,10 @@ interface ChartTooltipProps {
 function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-        <p className="font-medium mb-2">{label}</p>
+      <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm p-4 rounded-xl shadow-xl border border-slate-200/50 dark:border-slate-700/50">
+        <p className="font-semibold mb-2 text-slate-900 dark:text-white">{label}</p>
         {payload.map((entry, index) => (
-          <p key={index} style={{ color: entry.color }} className="text-sm">
+          <p key={index} style={{ color: entry.color }} className="text-sm font-medium">
             {entry.name}: {formatCurrency(entry.value)}
           </p>
         ))}
@@ -59,58 +60,79 @@ export function AmortizationChart() {
     }));
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">📊 Tilgungsverlauf</CardTitle>
+    <Card className="overflow-hidden">
+      <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/30 dark:to-purple-950/30">
+        <CardTitle className="flex items-center gap-3 text-base">
+          <div className="p-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/20">
+            <BarChart3 className="h-4 w-4 text-white" />
+          </div>
+          <span className="bg-gradient-to-r from-indigo-700 to-purple-700 dark:from-indigo-300 dark:to-purple-300 bg-clip-text text-transparent font-bold">
+            Tilgungsverlauf
+          </span>
+        </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <div className="h-[300px] md:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <defs>
+                <linearGradient id="restschuldGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#f87171" />
+                  <stop offset="100%" stopColor="#ef4444" />
+                </linearGradient>
+                <linearGradient id="getilgtGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#4ade80" />
+                  <stop offset="100%" stopColor="#22c55e" />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis
                 dataKey="year"
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: '#64748b' }}
                 tickLine={false}
+                axisLine={{ stroke: '#e2e8f0' }}
               />
               <YAxis
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: '#64748b' }}
                 tickLine={false}
                 axisLine={false}
               />
               <Tooltip content={<ChartTooltip />} />
-              <Legend />
+              <Legend 
+                wrapperStyle={{ paddingTop: '20px' }}
+                iconType="circle"
+              />
               <Bar
                 dataKey="Restschuld"
                 name="Restschuld"
-                fill="#ef4444"
-                radius={[4, 4, 0, 0]}
+                fill="url(#restschuldGradient)"
+                radius={[6, 6, 0, 0]}
               />
               <Bar
                 dataKey="Getilgt"
                 name="Getilgter Betrag"
-                fill="#22c55e"
-                radius={[4, 4, 0, 0]}
+                fill="url(#getilgtGradient)"
+                radius={[6, 6, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-          <div className="text-center p-3 bg-red-50 dark:bg-red-950 rounded-lg">
-            <p className="text-red-600 dark:text-red-400">Restschuld nach {currentInput.fixedInterestPeriod} Jahren</p>
-            <p className="font-bold text-lg">
+        <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
+          <div className="text-center p-4 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/50 dark:to-rose-950/50 rounded-xl border border-red-100 dark:border-red-900/50">
+            <p className="text-red-600 dark:text-red-400 font-medium mb-1">Restschuld nach {currentInput.fixedInterestPeriod} Jahren</p>
+            <p className="font-bold text-xl text-red-700 dark:text-red-300">
               {formatCurrency(
                 output.amortizationSchedule[output.amortizationSchedule.length - 1]?.endingBalance || 0
               )}
             </p>
           </div>
-          <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded-lg">
-            <p className="text-green-600 dark:text-green-400">Gesamt getilgt</p>
-            <p className="font-bold text-lg">
+          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+            <p className="text-emerald-600 dark:text-emerald-400 font-medium mb-1">Gesamt getilgt</p>
+            <p className="font-bold text-xl text-emerald-700 dark:text-emerald-300">
               {formatCurrency(
                 output.amortizationSchedule[output.amortizationSchedule.length - 1]?.cumulativePrincipal || 0
               )}
@@ -134,46 +156,67 @@ export function CumulativeCashflowChart() {
   }));
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">📈 Kumulierter Cashflow & Vermögensentwicklung</CardTitle>
+    <Card className="overflow-hidden">
+      <CardHeader className="pb-4 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/30 dark:to-teal-950/30">
+        <CardTitle className="flex items-center gap-3 text-base">
+          <div className="p-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/20">
+            <TrendingUp className="h-4 w-4 text-white" />
+          </div>
+          <span className="bg-gradient-to-r from-emerald-700 to-teal-700 dark:from-emerald-300 dark:to-teal-300 bg-clip-text text-transparent font-bold">
+            Kumulierter Cashflow & Vermögensentwicklung
+          </span>
+        </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <div className="h-[300px] md:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={chartData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <defs>
+                <linearGradient id="cashflowLineGradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#6366f1" />
+                  <stop offset="100%" stopColor="#8b5cf6" />
+                </linearGradient>
+                <linearGradient id="netWorthLineGradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#10b981" />
+                  <stop offset="100%" stopColor="#14b8a6" />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis
                 dataKey="year"
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: '#64748b' }}
                 tickLine={false}
+                axisLine={{ stroke: '#e2e8f0' }}
               />
               <YAxis
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: '#64748b' }}
                 tickLine={false}
                 axisLine={false}
               />
               <Tooltip content={<ChartTooltip />} />
-              <Legend />
-              <ReferenceLine y={0} stroke="#9ca3af" strokeDasharray="3 3" />
+              <Legend 
+                wrapperStyle={{ paddingTop: '20px' }}
+                iconType="circle"
+              />
+              <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="3 3" />
               <Line
                 type="monotone"
                 dataKey="Cashflow"
                 name="Kumulierter Cashflow"
-                stroke="#3b82f6"
-                strokeWidth={2}
+                stroke="url(#cashflowLineGradient)"
+                strokeWidth={3}
                 dot={false}
               />
               <Line
                 type="monotone"
                 dataKey="Nettovermögen"
                 name="Nettovermögen"
-                stroke="#22c55e"
-                strokeWidth={2}
+                stroke="url(#netWorthLineGradient)"
+                strokeWidth={3}
                 dot={false}
               />
               <Line
@@ -188,22 +231,22 @@ export function CumulativeCashflowChart() {
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-          <div className="text-center p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
-            <p className="text-blue-600 dark:text-blue-400">
+        <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
+          <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
+            <p className="text-indigo-600 dark:text-indigo-400 font-medium mb-1">
               Cashflow nach {currentInput.fixedInterestPeriod} Jahren
             </p>
-            <p className="font-bold text-lg">
+            <p className="font-bold text-xl text-indigo-700 dark:text-indigo-300">
               {formatCurrency(
                 output.cumulativeCashflow[output.cumulativeCashflow.length - 1]?.cumulativeCashflow || 0
               )}
             </p>
           </div>
-          <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded-lg">
-            <p className="text-green-600 dark:text-green-400">
+          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+            <p className="text-emerald-600 dark:text-emerald-400 font-medium mb-1">
               Nettovermögen nach {currentInput.fixedInterestPeriod} Jahren
             </p>
-            <p className="font-bold text-lg">
+            <p className="font-bold text-xl text-emerald-700 dark:text-emerald-300">
               {formatCurrency(
                 output.cumulativeCashflow[output.cumulativeCashflow.length - 1]?.netWorth || 0
               )}
