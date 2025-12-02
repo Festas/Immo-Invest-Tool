@@ -100,7 +100,7 @@ export function LocationAnalysis() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             Bewerten Sie die Attraktivität eines Standorts für Ihre
             Immobilieninvestition anhand verschiedener Faktoren.
           </p>
@@ -163,7 +163,7 @@ export function LocationAnalysis() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
               <Train className="h-5 w-5 text-blue-500" />
               <Slider
                 label="ÖPNV-Anbindung"
@@ -178,7 +178,7 @@ export function LocationAnalysis() {
               />
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
               <ShoppingBag className="h-5 w-5 text-orange-500" />
               <Slider
                 label="Einkaufsmöglichkeiten"
@@ -193,7 +193,7 @@ export function LocationAnalysis() {
               />
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
               <GraduationCap className="h-5 w-5 text-purple-500" />
               <Slider
                 label="Schulen & Bildung"
@@ -208,7 +208,7 @@ export function LocationAnalysis() {
               />
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
               <Home className="h-5 w-5 text-green-500" />
               <Slider
                 label="Allgemeine Infrastruktur"
@@ -278,10 +278,10 @@ export function LocationAnalysis() {
                     <span className={`text-4xl font-bold ${getScoreColor(result.overallScore)}`}>
                       {result.overallScore}
                     </span>
-                    <span className="text-lg text-gray-500 ml-1">/100</span>
+                    <span className="text-lg text-slate-500 dark:text-slate-400 ml-1">/100</span>
                   </div>
                 </div>
-                <p className="text-sm text-gray-500 mt-2">Standort-Score</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Standort-Score</p>
               </div>
 
               {/* Key Indicators */}
@@ -290,13 +290,13 @@ export function LocationAnalysis() {
                   className={`text-center p-4 rounded-lg ${
                     result.investmentRecommendation === "STARK_EMPFOHLEN" ||
                     result.investmentRecommendation === "EMPFOHLEN"
-                      ? "bg-green-50 dark:bg-green-950"
+                      ? "bg-green-50 dark:bg-green-950/50"
                       : result.investmentRecommendation === "NEUTRAL"
-                      ? "bg-yellow-50 dark:bg-yellow-950"
-                      : "bg-red-50 dark:bg-red-950"
+                      ? "bg-yellow-50 dark:bg-yellow-950/50"
+                      : "bg-red-50 dark:bg-red-950/50"
                   }`}
                 >
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">
                     Investitionsempfehlung
                   </p>
                   <div className="flex items-center justify-center gap-1">
@@ -338,13 +338,13 @@ export function LocationAnalysis() {
                 <div
                   className={`text-center p-4 rounded-lg ${
                     result.riskLevel === "NIEDRIG"
-                      ? "bg-green-50 dark:bg-green-950"
+                      ? "bg-green-50 dark:bg-green-950/50"
                       : result.riskLevel === "MITTEL"
-                      ? "bg-yellow-50 dark:bg-yellow-950"
-                      : "bg-red-50 dark:bg-red-950"
+                      ? "bg-yellow-50 dark:bg-yellow-950/50"
+                      : "bg-red-50 dark:bg-red-950/50"
                   }`}
                 >
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">
                     Risikostufe
                   </p>
                   <div className="flex items-center justify-center gap-1">
@@ -375,8 +375,8 @@ export function LocationAnalysis() {
                   </div>
                 </div>
 
-                <div className="text-center p-4 rounded-lg bg-blue-50 dark:bg-blue-950">
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                <div className="text-center p-4 rounded-lg bg-blue-50 dark:bg-blue-950/50">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">
                     Lagequalität
                   </p>
                   <span
@@ -420,7 +420,7 @@ export function LocationAnalysis() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
                     Keine besonderen Stärken identifiziert.
                   </p>
                 )}
@@ -448,7 +448,7 @@ export function LocationAnalysis() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
                     Keine wesentlichen Schwächen identifiziert.
                   </p>
                 )}
@@ -459,30 +459,30 @@ export function LocationAnalysis() {
           {/* Explanation */}
           <Card>
             <CardContent className="py-4">
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <h4 className="font-medium mb-2">Erläuterung der Lagequalität</h4>
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                <h4 className="font-medium mb-2 text-slate-900 dark:text-slate-100">Erläuterung der Lagequalität</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                   <div>
-                    <span className="font-bold text-green-600">A-Lage:</span>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <span className="font-bold text-green-600 dark:text-green-400">A-Lage:</span>
+                    <p className="text-slate-600 dark:text-slate-400">
                       Beste Lagen, hohe Nachfrage, stabile Wertentwicklung
                     </p>
                   </div>
                   <div>
-                    <span className="font-bold text-blue-600">B-Lage:</span>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <span className="font-bold text-blue-600 dark:text-blue-400">B-Lage:</span>
+                    <p className="text-slate-600 dark:text-slate-400">
                       Gute Lagen, solide Nachfrage, Aufwertungspotenzial
                     </p>
                   </div>
                   <div>
-                    <span className="font-bold text-yellow-600">C-Lage:</span>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <span className="font-bold text-yellow-600 dark:text-yellow-400">C-Lage:</span>
+                    <p className="text-slate-600 dark:text-slate-400">
                       Durchschnitt, moderate Nachfrage, höheres Risiko
                     </p>
                   </div>
                   <div>
-                    <span className="font-bold text-red-600">D-Lage:</span>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <span className="font-bold text-red-600 dark:text-red-400">D-Lage:</span>
+                    <p className="text-slate-600 dark:text-slate-400">
                       Schwierige Lagen, geringe Nachfrage, hohes Risiko
                     </p>
                   </div>

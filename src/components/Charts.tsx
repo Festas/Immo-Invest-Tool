@@ -3,6 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useImmoCalcStore } from "@/store";
+import { useTheme } from "@/components/theme";
 import { calculatePropertyKPIs } from "@/lib/calculations";
 import { formatCurrency } from "@/lib/utils";
 import {
@@ -47,7 +48,13 @@ const CHART_YEAR_INTERVAL = 5;
 
 export function AmortizationChart() {
   const { currentInput } = useImmoCalcStore();
+  const { resolvedTheme } = useTheme();
   const output = calculatePropertyKPIs(currentInput);
+  const isDark = resolvedTheme === "dark";
+
+  // Theme-aware colors
+  const gridColor = isDark ? "#334155" : "#e2e8f0";
+  const axisColor = isDark ? "#94a3b8" : "#64748b";
 
   // Select key years for chart (every CHART_YEAR_INTERVAL years)
   const chartData = output.amortizationSchedule
@@ -88,16 +95,16 @@ export function AmortizationChart() {
                   <stop offset="100%" stopColor="#22c55e" />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
               <XAxis
                 dataKey="year"
-                tick={{ fontSize: 12, fill: '#64748b' }}
+                tick={{ fontSize: 12, fill: axisColor }}
                 tickLine={false}
-                axisLine={{ stroke: '#e2e8f0' }}
+                axisLine={{ stroke: gridColor }}
               />
               <YAxis
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                tick={{ fontSize: 12, fill: '#64748b' }}
+                tick={{ fontSize: 12, fill: axisColor }}
                 tickLine={false}
                 axisLine={false}
               />
@@ -146,7 +153,14 @@ export function AmortizationChart() {
 
 export function CumulativeCashflowChart() {
   const { currentInput } = useImmoCalcStore();
+  const { resolvedTheme } = useTheme();
   const output = calculatePropertyKPIs(currentInput);
+  const isDark = resolvedTheme === "dark";
+
+  // Theme-aware colors
+  const gridColor = isDark ? "#334155" : "#e2e8f0";
+  const axisColor = isDark ? "#94a3b8" : "#64748b";
+  const referenceLineColor = isDark ? "#64748b" : "#94a3b8";
 
   const chartData = output.cumulativeCashflow.map((point) => ({
     year: `Jahr ${point.year}`,
@@ -184,16 +198,16 @@ export function CumulativeCashflowChart() {
                   <stop offset="100%" stopColor="#14b8a6" />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
               <XAxis
                 dataKey="year"
-                tick={{ fontSize: 12, fill: '#64748b' }}
+                tick={{ fontSize: 12, fill: axisColor }}
                 tickLine={false}
-                axisLine={{ stroke: '#e2e8f0' }}
+                axisLine={{ stroke: gridColor }}
               />
               <YAxis
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                tick={{ fontSize: 12, fill: '#64748b' }}
+                tick={{ fontSize: 12, fill: axisColor }}
                 tickLine={false}
                 axisLine={false}
               />
@@ -202,7 +216,7 @@ export function CumulativeCashflowChart() {
                 wrapperStyle={{ paddingTop: '20px' }}
                 iconType="circle"
               />
-              <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="3 3" />
+              <ReferenceLine y={0} stroke={referenceLineColor} strokeDasharray="3 3" />
               <Line
                 type="monotone"
                 dataKey="Cashflow"
