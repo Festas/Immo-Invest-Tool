@@ -28,7 +28,10 @@ const TabsList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
     <div
       ref={ref}
       className={cn(
-        "inline-flex h-12 items-center justify-center gap-1 rounded-2xl bg-slate-100/80 p-1.5 text-slate-500 backdrop-blur-sm dark:bg-slate-800/80 dark:text-slate-400 shadow-inner",
+        "inline-flex h-12 items-center justify-center gap-1 rounded-2xl p-1.5",
+        "bg-slate-100/90 dark:bg-slate-800/90 backdrop-blur-sm",
+        "border border-slate-200/50 dark:border-slate-700/50",
+        "shadow-inner shadow-slate-200/50 dark:shadow-black/20",
         className
       )}
       {...props}
@@ -54,10 +57,14 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
         type="button"
         onClick={() => context.onChange(value)}
         className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium ring-offset-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          "inline-flex items-center justify-center whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium",
+          "ring-offset-white dark:ring-offset-slate-950",
+          "transition-all duration-200 ease-out",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+          "disabled:pointer-events-none disabled:opacity-50",
           isActive
-            ? "bg-white text-indigo-700 shadow-md shadow-indigo-100 dark:bg-slate-900 dark:text-indigo-300 dark:shadow-indigo-900/30"
-            : "text-slate-600 hover:text-indigo-600 hover:bg-white/50 dark:text-slate-400 dark:hover:text-indigo-400 dark:hover:bg-slate-700/50",
+            ? "bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 shadow-md shadow-slate-200/50 dark:shadow-black/30 border border-slate-200/50 dark:border-slate-700/50"
+            : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white/50 dark:hover:bg-slate-700/50",
           className
         )}
         {...props}
