@@ -43,7 +43,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "transition-all duration-200",
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-slate-50 dark:disabled:bg-slate-800",
               prefix && "pl-10",
-              suffix && "pr-14",
+              suffix && "pr-12",
               error && "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/10",
               className
             )}
@@ -51,7 +51,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {suffix && (
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 text-sm font-medium bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 text-sm font-medium bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
               {suffix}
             </span>
           )}

@@ -22,15 +22,19 @@ export default function RootLayout({
               (function() {
                 try {
                   var theme = localStorage.getItem('immocalc-theme');
-                  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.classList.add('dark');
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  var resolvedTheme;
+                  
+                  if (theme === 'dark') {
+                    resolvedTheme = 'dark';
                   } else if (theme === 'light') {
-                    document.documentElement.classList.add('light');
+                    resolvedTheme = 'light';
                   } else {
-                    document.documentElement.classList.add(
-                      window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-                    );
+                    // 'system' theme or no theme stored - use system preference
+                    resolvedTheme = prefersDark ? 'dark' : 'light';
                   }
+                  
+                  document.documentElement.classList.add(resolvedTheme);
                 } catch (e) {}
               })();
             `,
