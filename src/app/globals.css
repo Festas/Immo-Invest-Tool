@@ -337,6 +337,24 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+/* Dark mode form elements */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #1e293b !important;
+  border-color: #475569 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark input::placeholder {
+  color: #94a3b8 !important;
+}
+
+.dark select option {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+
 /* Focus styles */
 *:focus-visible {
   outline: 2px solid var(--primary);
