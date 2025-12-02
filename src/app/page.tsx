@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme";
 import {
   PropertyCalculatorForm,
   ResultsPanel,
@@ -64,10 +65,13 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={resetInput}>
-              <RotateCcw className="h-4 w-4 mr-1.5" />
-              <span className="hidden sm:inline">Zurücksetzen</span>
-            </Button>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <Button variant="outline" size="sm" onClick={resetInput}>
+                <RotateCcw className="h-4 w-4 mr-1.5" />
+                <span className="hidden sm:inline">Zurücksetzen</span>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
