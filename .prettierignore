@@ -21,7 +21,6 @@ test-results/
 
 # IDE and editor files
 .idea/
-.vscode/
 *.swp
 *.swo
 
@@ -42,6 +41,3 @@ public/
 
 # Database files
 *.sql
-
-# Markdown files (keep unformatted for readability)
-*.md
