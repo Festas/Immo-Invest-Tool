@@ -3,6 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useImmoCalcStore } from "@/store";
+import { useTheme } from "@/components/theme";
 import { calculatePropertyKPIs } from "@/lib/calculations";
 import { formatCurrency } from "@/lib/utils";
 import {
@@ -47,7 +48,13 @@ const CHART_YEAR_INTERVAL = 5;
 
 export function AmortizationChart() {
   const { currentInput } = useImmoCalcStore();
+  const { resolvedTheme } = useTheme();
   const output = calculatePropertyKPIs(currentInput);
+  const isDark = resolvedTheme === "dark";
+
+  // Theme-aware colors
+  const gridColor = isDark ? "#334155" : "#e2e8f0";
+  const axisColor = isDark ? "#94a3b8" : "#64748b";
 
   // Select key years for chart (every CHART_YEAR_INTERVAL years)
   const chartData = output.amortizationSchedule
@@ -61,7 +68,7 @@ export function AmortizationChart() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/30 dark:to-purple-950/30">
+      <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/50 dark:to-purple-900/50">
         <CardTitle className="flex items-center gap-3 text-base">
           <div className="p-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/20">
             <BarChart3 className="h-4 w-4 text-white" />
@@ -88,16 +95,16 @@ export function AmortizationChart() {
                   <stop offset="100%" stopColor="#22c55e" />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
               <XAxis
                 dataKey="year"
-                tick={{ fontSize: 12, fill: '#64748b' }}
+                tick={{ fontSize: 12, fill: axisColor }}
                 tickLine={false}
-                axisLine={{ stroke: '#e2e8f0' }}
+                axisLine={{ stroke: gridColor }}
               />
               <YAxis
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                tick={{ fontSize: 12, fill: '#64748b' }}
+                tick={{ fontSize: 12, fill: axisColor }}
                 tickLine={false}
                 axisLine={false}
               />
@@ -122,7 +129,7 @@ export function AmortizationChart() {
           </ResponsiveContainer>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-          <div className="text-center p-4 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/50 dark:to-rose-950/50 rounded-xl border border-red-100 dark:border-red-900/50">
+          <div className="text-center p-4 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900 dark:to-rose-900 rounded-xl border border-red-100 dark:border-red-800">
             <p className="text-red-600 dark:text-red-400 font-medium mb-1">Restschuld nach {currentInput.fixedInterestPeriod} Jahren</p>
             <p className="font-bold text-xl text-red-700 dark:text-red-300">
               {formatCurrency(
@@ -130,7 +137,7 @@ export function AmortizationChart() {
               )}
             </p>
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900 dark:to-teal-900 rounded-xl border border-emerald-100 dark:border-emerald-800">
             <p className="text-emerald-600 dark:text-emerald-400 font-medium mb-1">Gesamt getilgt</p>
             <p className="font-bold text-xl text-emerald-700 dark:text-emerald-300">
               {formatCurrency(
@@ -146,7 +153,14 @@ export function AmortizationChart() {
 
 export function CumulativeCashflowChart() {
   const { currentInput } = useImmoCalcStore();
+  const { resolvedTheme } = useTheme();
   const output = calculatePropertyKPIs(currentInput);
+  const isDark = resolvedTheme === "dark";
+
+  // Theme-aware colors
+  const gridColor = isDark ? "#334155" : "#e2e8f0";
+  const axisColor = isDark ? "#94a3b8" : "#64748b";
+  const referenceLineColor = isDark ? "#64748b" : "#94a3b8";
 
   const chartData = output.cumulativeCashflow.map((point) => ({
     year: `Jahr ${point.year}`,
@@ -157,7 +171,7 @@ export function CumulativeCashflowChart() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="pb-4 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/30 dark:to-teal-950/30">
+      <CardHeader className="pb-4 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-900/50 dark:to-teal-900/50">
         <CardTitle className="flex items-center gap-3 text-base">
           <div className="p-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/20">
             <TrendingUp className="h-4 w-4 text-white" />
@@ -184,16 +198,16 @@ export function CumulativeCashflowChart() {
                   <stop offset="100%" stopColor="#14b8a6" />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
               <XAxis
                 dataKey="year"
-                tick={{ fontSize: 12, fill: '#64748b' }}
+                tick={{ fontSize: 12, fill: axisColor }}
                 tickLine={false}
-                axisLine={{ stroke: '#e2e8f0' }}
+                axisLine={{ stroke: gridColor }}
               />
               <YAxis
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                tick={{ fontSize: 12, fill: '#64748b' }}
+                tick={{ fontSize: 12, fill: axisColor }}
                 tickLine={false}
                 axisLine={false}
               />
@@ -202,7 +216,7 @@ export function CumulativeCashflowChart() {
                 wrapperStyle={{ paddingTop: '20px' }}
                 iconType="circle"
               />
-              <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="3 3" />
+              <ReferenceLine y={0} stroke={referenceLineColor} strokeDasharray="3 3" />
               <Line
                 type="monotone"
                 dataKey="Cashflow"
@@ -232,7 +246,7 @@ export function CumulativeCashflowChart() {
           </ResponsiveContainer>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-          <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
+          <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900 dark:to-purple-900 rounded-xl border border-indigo-100 dark:border-indigo-800">
             <p className="text-indigo-600 dark:text-indigo-400 font-medium mb-1">
               Cashflow nach {currentInput.fixedInterestPeriod} Jahren
             </p>
@@ -242,7 +256,7 @@ export function CumulativeCashflowChart() {
               )}
             </p>
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900 dark:to-teal-900 rounded-xl border border-emerald-100 dark:border-emerald-800">
             <p className="text-emerald-600 dark:text-emerald-400 font-medium mb-1">
               Nettovermögen nach {currentInput.fixedInterestPeriod} Jahren
             </p>

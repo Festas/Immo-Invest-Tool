@@ -195,7 +195,7 @@ export function PropertyCalculatorForm() {
     <div className="space-y-5">
       {/* Purchase & Costs Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/30 dark:to-purple-950/30">
+        <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/50 dark:to-purple-900/50">
           <CardTitle className="flex items-center gap-3 text-base">
             <div className="p-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/20">
               <Building2 className="h-4 w-4 text-white" />
@@ -265,7 +265,7 @@ export function PropertyCalculatorForm() {
 
       {/* Financing Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-4 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/30 dark:to-teal-950/30">
+        <CardHeader className="pb-4 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-900/50 dark:to-teal-900/50">
           <CardTitle className="flex items-center gap-3 text-base">
             <div className="p-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/20">
               <Banknote className="h-4 w-4 text-white" />
@@ -327,7 +327,7 @@ export function PropertyCalculatorForm() {
 
       {/* Rental Income Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-4 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-950/30 dark:to-orange-950/30">
+        <CardHeader className="pb-4 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-900/50 dark:to-orange-900/50">
           <CardTitle className="flex items-center gap-3 text-base">
             <div className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg shadow-amber-500/20">
               <Home className="h-4 w-4 text-white" />
@@ -387,7 +387,7 @@ export function PropertyCalculatorForm() {
 
       {/* Tax Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-4 bg-gradient-to-r from-violet-50/50 to-fuchsia-50/50 dark:from-violet-950/30 dark:to-fuchsia-950/30">
+        <CardHeader className="pb-4 bg-gradient-to-r from-violet-50/50 to-fuchsia-50/50 dark:from-violet-900/50 dark:to-fuchsia-900/50">
           <CardTitle className="flex items-center gap-3 text-base">
             <div className="p-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/20">
               <Receipt className="h-4 w-4 text-white" />

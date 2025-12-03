@@ -83,13 +83,13 @@ export function ExitStrategyCalculator() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             Planen Sie Ihren Ausstieg und berechnen Sie Ihren Gewinn beim Verkauf
             der Immobilie. Diese Analyse berücksichtigt die Spekulationssteuer und
             alle relevanten Kosten.
           </p>
 
-          <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+          <div className="p-4 bg-blue-50 dark:bg-blue-950/50 rounded-lg border border-blue-100 dark:border-blue-900/50">
             <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
               Ausgangswerte (aus aktuellem Rechner):
             </p>
@@ -131,8 +131,8 @@ export function ExitStrategyCalculator() {
           />
 
           {holdingPeriod < 10 && (
-            <div className="p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0" />
+            <div className="p-3 bg-yellow-50 dark:bg-yellow-950/50 rounded-lg border border-yellow-100 dark:border-yellow-900/50 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
               <p className="text-sm text-yellow-800 dark:text-yellow-200">
                 <strong>Achtung:</strong> Bei einer Haltedauer unter 10 Jahren
                 fällt Spekulationssteuer auf den Gewinn an!
@@ -151,34 +151,34 @@ export function ExitStrategyCalculator() {
             helpText={helpTexts.appreciation}
           />
 
-          <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <p className="text-sm font-medium mb-2">
+          <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
+            <p className="text-sm font-medium mb-2 text-slate-900 dark:text-slate-100">
               Geschätzte Werte nach {holdingPeriod} Jahren:
             </p>
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-slate-600 dark:text-slate-400">
                   Immobilienwert:
                 </span>
-                <p className="font-semibold text-green-600">
+                <p className="font-semibold text-green-600 dark:text-green-400">
                   {formatCurrency(currentValue)}
                 </p>
               </div>
               <div>
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-slate-600 dark:text-slate-400">
                   Restschuld:
                 </span>
-                <p className="font-semibold text-red-600">
+                <p className="font-semibold text-red-600 dark:text-red-400">
                   {formatCurrency(remainingDebt)}
                 </p>
               </div>
               <div>
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-slate-600 dark:text-slate-400">
                   Kum. Cashflow:
                 </span>
                 <p
                   className={`font-semibold ${
-                    cumulativeCashflow >= 0 ? "text-green-600" : "text-red-600"
+                    cumulativeCashflow >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                   }`}
                 >
                   {formatCurrency(cumulativeCashflow)}
@@ -205,66 +205,66 @@ export function ExitStrategyCalculator() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-gray-600 dark:text-gray-400">
+                <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">
                     Bruttogewinn (Wertzuwachs)
                   </span>
                   <span
                     className={`font-semibold ${
-                      result.grossProfit >= 0 ? "text-green-600" : "text-red-600"
+                      result.grossProfit >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                     }`}
                   >
                     {formatCurrency(result.grossProfit)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-gray-600 dark:text-gray-400">
+                <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">
                     Verkaufsnebenkosten (ca. 6%)
                   </span>
-                  <span className="font-semibold text-red-600">
+                  <span className="font-semibold text-red-600 dark:text-red-400">
                     -{formatCurrency(result.sellingCosts)}
                   </span>
                 </div>
                 {result.speculationTax > 0 && (
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800 bg-yellow-50 dark:bg-yellow-950 -mx-4 px-4">
+                  <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800 bg-yellow-50 dark:bg-yellow-950/50 -mx-4 px-4">
                     <span className="text-yellow-800 dark:text-yellow-200 flex items-center gap-1">
                       <AlertTriangle className="h-4 w-4" />
                       Spekulationssteuer
                     </span>
-                    <span className="font-semibold text-red-600">
+                    <span className="font-semibold text-red-600 dark:text-red-400">
                       -{formatCurrency(result.speculationTax)}
                     </span>
                   </div>
                 )}
-                <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-                  <span className="font-medium">Nettogewinn aus Verkauf</span>
+                <div className="flex justify-between items-center py-2 border-b border-slate-200 dark:border-slate-700">
+                  <span className="font-medium text-slate-900 dark:text-slate-100">Nettogewinn aus Verkauf</span>
                   <span
                     className={`font-bold text-lg ${
-                      result.netProfit >= 0 ? "text-green-600" : "text-red-600"
+                      result.netProfit >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                     }`}
                   >
                     {formatCurrency(result.netProfit)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-gray-600 dark:text-gray-400">
+                <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">
                     + Kumulierter Cashflow
                   </span>
                   <span
                     className={`font-semibold ${
-                      cumulativeCashflow >= 0 ? "text-green-600" : "text-red-600"
+                      cumulativeCashflow >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                     }`}
                   >
                     {formatCurrency(cumulativeCashflow)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-3 bg-purple-50 dark:bg-purple-950 -mx-4 px-4 rounded">
+                <div className="flex justify-between items-center py-3 bg-purple-50 dark:bg-purple-950/50 -mx-4 px-4 rounded">
                   <span className="font-bold text-purple-900 dark:text-purple-100">
                     GESAMTRENDITE
                   </span>
                   <span
                     className={`font-bold text-xl ${
-                      result.totalReturn >= 0 ? "text-green-600" : "text-red-600"
+                      result.totalReturn >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                     }`}
                   >
                     {formatCurrency(result.totalReturn)}
@@ -275,7 +275,7 @@ export function ExitStrategyCalculator() {
           </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
+            <Card className="!bg-transparent bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 border-purple-200 dark:border-purple-800">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 mb-1">
                   <TrendingUp className="h-4 w-4" />
@@ -298,7 +298,7 @@ export function ExitStrategyCalculator() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
+            <Card className="!bg-transparent bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 border-green-200 dark:border-green-800">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-green-600 dark:text-green-400 mb-1">
                   <Wallet className="h-4 w-4" />
@@ -321,17 +321,17 @@ export function ExitStrategyCalculator() {
               <div
                 className={`p-4 rounded-lg border-l-4 ${
                   result.annualizedReturn >= 5
-                    ? "bg-green-50 border-green-500"
+                    ? "bg-green-50 dark:bg-green-950/50 border-green-500"
                     : result.annualizedReturn >= 2
-                    ? "bg-yellow-50 border-yellow-500"
-                    : "bg-red-50 border-red-500"
+                    ? "bg-yellow-50 dark:bg-yellow-950/50 border-yellow-500"
+                    : "bg-red-50 dark:bg-red-950/50 border-red-500"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <Clock className="h-5 w-5" />
-                  <p className="font-medium">Empfehlung</p>
+                  <Clock className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                  <p className="font-medium text-slate-900 dark:text-slate-100">Empfehlung</p>
                 </div>
-                <p className="text-sm">{result.recommendation}</p>
+                <p className="text-sm text-slate-700 dark:text-slate-300">{result.recommendation}</p>
               </div>
             </CardContent>
           </Card>

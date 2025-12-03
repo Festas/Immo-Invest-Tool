@@ -117,7 +117,7 @@ export function RentIndexCalculator() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             Vergleichen Sie Ihre aktuelle Miete mit dem lokalen Mietpreisspiegel und
             ermitteln Sie Ihr Mieterhöhungspotenzial.
           </p>
@@ -207,25 +207,25 @@ export function RentIndexCalculator() {
             />
 
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm">
+              <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                 <input
                   type="checkbox"
                   checked={input.hasBalcony}
                   onChange={(e) =>
                     setInput({ ...input, hasBalcony: e.target.checked })
                   }
-                  className="rounded border-gray-300"
+                  className="rounded border-slate-300 dark:border-slate-600 dark:bg-slate-800"
                 />
                 Balkon/Terrasse vorhanden
               </label>
-              <label className="flex items-center gap-2 text-sm">
+              <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                 <input
                   type="checkbox"
                   checked={input.hasElevator}
                   onChange={(e) =>
                     setInput({ ...input, hasElevator: e.target.checked })
                   }
-                  className="rounded border-gray-300"
+                  className="rounded border-slate-300 dark:border-slate-600 dark:bg-slate-800"
                 />
                 Aufzug vorhanden
               </label>
@@ -249,35 +249,35 @@ export function RentIndexCalculator() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+              <div className="text-center p-3 bg-blue-50 dark:bg-blue-950/50 rounded-lg border border-blue-100 dark:border-blue-900/50">
                 <p className="text-xs text-blue-600 dark:text-blue-400">
                   Ihre Miete/m²
                 </p>
-                <p className="text-lg font-bold">
+                <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   {result.currentRentPerSqm.toFixed(2)} €
                 </p>
               </div>
-              <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+              <div className="text-center p-3 bg-green-50 dark:bg-green-950/50 rounded-lg border border-green-100 dark:border-green-900/50">
                 <p className="text-xs text-green-600 dark:text-green-400">
                   Marktmiete/m²
                 </p>
-                <p className="text-lg font-bold">
+                <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   {result.marketRentPerSqm.toFixed(2)} €
                 </p>
               </div>
-              <div className="text-center p-3 bg-purple-50 dark:bg-purple-950 rounded-lg">
+              <div className="text-center p-3 bg-purple-50 dark:bg-purple-950/50 rounded-lg border border-purple-100 dark:border-purple-900/50">
                 <p className="text-xs text-purple-600 dark:text-purple-400">
                   Marktmiete (Monat)
                 </p>
-                <p className="text-lg font-bold">
+                <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   {formatCurrency(result.adjustedMarketRent)}
                 </p>
               </div>
               <div
-                className={`text-center p-3 rounded-lg ${
+                className={`text-center p-3 rounded-lg border ${
                   result.rentPotential > 0
-                    ? "bg-green-50 dark:bg-green-950"
-                    : "bg-red-50 dark:bg-red-950"
+                    ? "bg-green-50 dark:bg-green-950/50 border-green-100 dark:border-green-900/50"
+                    : "bg-red-50 dark:bg-red-950/50 border-red-100 dark:border-red-900/50"
                 }`}
               >
                 <p
@@ -296,13 +296,13 @@ export function RentIndexCalculator() {
               </div>
             </div>
 
-            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <p className="text-sm font-medium mb-2">Marktspanne für diese Region:</p>
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
+              <p className="text-sm font-medium mb-2 text-slate-900 dark:text-slate-100">Marktspanne für diese Region:</p>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-sm text-slate-600 dark:text-slate-400">
                   {result.marketRentRange.min.toFixed(2)} €/m²
                 </span>
-                <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-green-400 to-green-600"
                     style={{
@@ -314,7 +314,7 @@ export function RentIndexCalculator() {
                     }}
                   />
                 </div>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-sm text-slate-600 dark:text-slate-400">
                   {result.marketRentRange.max.toFixed(2)} €/m²
                 </span>
               </div>
@@ -323,17 +323,17 @@ export function RentIndexCalculator() {
             <div
               className={`p-4 rounded-lg border-l-4 ${
                 result.rentPotential > 10
-                  ? "bg-green-50 border-green-500"
+                  ? "bg-green-50 dark:bg-green-950/50 border-green-500"
                   : result.rentPotential > 0
-                  ? "bg-yellow-50 border-yellow-500"
-                  : "bg-red-50 border-red-500"
+                  ? "bg-yellow-50 dark:bg-yellow-950/50 border-yellow-500"
+                  : "bg-red-50 dark:bg-red-950/50 border-red-500"
               }`}
             >
-              <p className="font-medium">{result.recommendation}</p>
+              <p className="font-medium text-slate-900 dark:text-slate-100">{result.recommendation}</p>
             </div>
 
             {result.rentPotential > 5 && (
-              <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+              <div className="p-4 bg-blue-50 dark:bg-blue-950/50 rounded-lg border border-blue-100 dark:border-blue-900/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Home className="h-5 w-5 text-blue-600" />
                   <p className="font-medium text-blue-900 dark:text-blue-100">

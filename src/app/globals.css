@@ -337,6 +337,24 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+/* Dark mode form elements - using CSS variables for consistency */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: var(--surface-3) !important;
+  border-color: var(--border) !important;
+  color: var(--foreground) !important;
+}
+
+.dark input::placeholder {
+  color: var(--muted-foreground) !important;
+}
+
+.dark select option {
+  background-color: var(--surface-3) !important;
+  color: var(--foreground) !important;
+}
+
 /* Focus styles */
 *:focus-visible {
   outline: 2px solid var(--primary);

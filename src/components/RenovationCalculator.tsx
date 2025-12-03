@@ -113,7 +113,7 @@ export function RenovationCalculator() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             Berechnen Sie die Rentabilität von Renovierungsmaßnahmen und ob sich
             die Investition lohnt.
           </p>
@@ -132,7 +132,7 @@ export function RenovationCalculator() {
           />
 
           {selectedType && (
-            <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-lg text-sm">
+            <div className="p-3 bg-blue-50 dark:bg-blue-950/50 rounded-lg border border-blue-100 dark:border-blue-900/50 text-sm">
               <p className="font-medium text-blue-900 dark:text-blue-100">
                 <Lightbulb className="inline h-4 w-4 mr-1" />
                 Richtwerte für {selectedType.label}:
@@ -251,15 +251,15 @@ export function RenovationCalculator() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+              <div className="text-center p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                <p className="text-xs text-slate-600 dark:text-slate-400">
                   Gesamtkosten
                 </p>
-                <p className="text-lg font-bold">
+                <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   {formatCurrency(result.totalCost)}
                 </p>
               </div>
-              <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+              <div className="text-center p-3 bg-green-50 dark:bg-green-950/50 rounded-lg border border-green-100 dark:border-green-900/50">
                 <p className="text-xs text-green-600 dark:text-green-400">
                   Mehreinnahmen/Jahr
                 </p>
@@ -268,10 +268,10 @@ export function RenovationCalculator() {
                 </p>
               </div>
               <div
-                className={`text-center p-3 rounded-lg ${
+                className={`text-center p-3 rounded-lg border ${
                   result.paybackPeriodYears <= 10
-                    ? "bg-green-50 dark:bg-green-950"
-                    : "bg-orange-50 dark:bg-orange-950"
+                    ? "bg-green-50 dark:bg-green-950/50 border-green-100 dark:border-green-900/50"
+                    : "bg-orange-50 dark:bg-orange-950/50 border-orange-100 dark:border-orange-900/50"
                 }`}
               >
                 <p
@@ -290,12 +290,12 @@ export function RenovationCalculator() {
                 </p>
               </div>
               <div
-                className={`text-center p-3 rounded-lg ${
+                className={`text-center p-3 rounded-lg border ${
                   result.roiPercent >= 8
-                    ? "bg-green-50 dark:bg-green-950"
+                    ? "bg-green-50 dark:bg-green-950/50 border-green-100 dark:border-green-900/50"
                     : result.roiPercent >= 4
-                    ? "bg-yellow-50 dark:bg-yellow-950"
-                    : "bg-red-50 dark:bg-red-950"
+                    ? "bg-yellow-50 dark:bg-yellow-950/50 border-yellow-100 dark:border-yellow-900/50"
+                    : "bg-red-50 dark:bg-red-950/50 border-red-100 dark:border-red-900/50"
                 }`}
               >
                 <p
@@ -315,7 +315,7 @@ export function RenovationCalculator() {
               </div>
             </div>
 
-            <div className="p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+            <div className="p-4 bg-purple-50 dark:bg-purple-950/50 rounded-lg border border-purple-100 dark:border-purple-900/50">
               <p className="text-sm font-medium text-purple-900 dark:text-purple-100 mb-2">
                 Wertsteigerungsrendite
               </p>
@@ -336,26 +336,26 @@ export function RenovationCalculator() {
             <div
               className={`p-4 rounded-lg border-l-4 flex items-start gap-3 ${
                 result.isRecommended
-                  ? "bg-green-50 border-green-500"
-                  : "bg-red-50 border-red-500"
+                  ? "bg-green-50 dark:bg-green-950/50 border-green-500"
+                  : "bg-red-50 dark:bg-red-950/50 border-red-500"
               }`}
             >
               {result.isRecommended ? (
-                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
               ) : (
-                <XCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
               )}
               <div>
-                <p className="font-medium">{result.recommendation}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{result.recommendation}</p>
               </div>
             </div>
 
-            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
               <div className="flex items-center gap-2 mb-2">
-                <Hammer className="h-5 w-5 text-gray-600" />
-                <p className="font-medium">Zusammenfassung</p>
+                <Hammer className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                <p className="font-medium text-slate-900 dark:text-slate-100">Zusammenfassung</p>
               </div>
-              <ul className="text-sm space-y-1 text-gray-600 dark:text-gray-400">
+              <ul className="text-sm space-y-1 text-slate-600 dark:text-slate-400">
                 <li>
                   • Die Investition von{" "}
                   <strong>{formatCurrency(result.totalCost)}</strong> in{" "}
