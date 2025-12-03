@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Coverage and test reports
+coverage/
+playwright-report/
+test-results/
+
+# Environment files
+.env*
+!.env.example
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Lock files (optional, uncomment if preferred)
+# package-lock.json
+# yarn.lock
+
+# Generated files
+next-env.d.ts
+*.tsbuildinfo
+
+# Public assets that shouldn't be formatted
+public/
+
+# Database files
+*.sql
+
+# Markdown files (keep unformatted for readability)
+*.md

@@ -1,5 +1,11 @@
 # 🏠 ImmoCalc Pro
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-20.x-brightgreen.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB.svg)](https://reactjs.org/)
+
 Das **All-in-One Immobilien Investment Tool** - eine moderne Webanwendung zur Immobilienkalkulation, die klassische Excel-Tools ersetzt und durch Cloud-Funktionalitäten übertrifft. Entwickelt mit Next.js, TypeScript, Tailwind CSS und Recharts.
 
 ## ✨ Features
@@ -363,6 +369,41 @@ ImmoCalc Pro kann als Progressive Web App installiert werden:
 - Offline-Unterstützung via Service Worker
 - Installierbar auf Desktop und Mobile
 - App-Icon und Splash Screen
+
+## 🐳 Docker
+
+ImmoCalc Pro kann mit Docker ausgeführt werden:
+
+### Production Build
+
+```bash
+# Mit Docker Compose bauen und starten
+docker compose up --build
+
+# Oder manuell mit Docker
+docker build -t immo-calc-pro .
+docker run -p 3000:3000 immo-calc-pro
+```
+
+### Development Mode
+
+```bash
+# Entwicklungsumgebung mit Hot Reload
+docker compose --profile dev up dev
+```
+
+Die App ist dann unter [http://localhost:3000](http://localhost:3000) erreichbar.
+
+## 🤝 Contributing
+
+Wir freuen uns über Beiträge! Bitte lesen Sie unsere [Contributing Guidelines](CONTRIBUTING.md) für Details zu:
+
+- Wie Sie die Entwicklungsumgebung einrichten
+- Code-Style Guidelines
+- Pull Request Prozess
+- Testing Anforderungen
+
+Für Sicherheitsprobleme lesen Sie bitte unsere [Security Policy](SECURITY.md).
 
 ## ⚠️ Haftungsausschluss
 

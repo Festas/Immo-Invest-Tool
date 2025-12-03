@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+
+# Build outputs (not needed for build context)
+.next/
+out/
+build/
+dist/
+
+# Coverage and test reports
+coverage/
+playwright-report/
+test-results/
+
+# Environment files (except example)
+.env*
+!.env.example
+
+# IDE and editor files
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (optional, reduce image size)
+*.md
+!README.md
+
+# Test files
+**/__tests__/
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+vitest.config.ts
+playwright.config.ts
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Lock files (keep package-lock.json for reproducible builds)
+yarn.lock
+pnpm-lock.yaml
+
+# Database files
+database/
+
+# Husky hooks (not needed in container)
+.husky/
