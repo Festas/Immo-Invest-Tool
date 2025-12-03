@@ -71,13 +71,26 @@ Diese neuen Funktionen heben ImmoCalc Pro von der Konkurrenz ab:
 - Notizen und Fortschrittsverfolgung
 - Lokale Speicherung des Fortschritts
 
+#### 🤖 KI-gestützte Analyse (NEU)
+- Deal-Scoring mit Kategorieauswertung (Cashflow, Rendite, Finanzierung, Standort, Potenzial)
+- Automatische Risikoerkennung und Empfehlungen
+- Investment-Berater Chatbot für Fragen zur Immobilie
+- Stärken-/Schwächen-Analyse
+
+#### 📊 Erweiterte Analysen (NEU)
+- Monte-Carlo-Simulation für probabilistische Renditeprognosen
+- Infrastruktur-Scoring für Standorte
+- API-Struktur für Hypothekenzinsen und Marktdaten
+
 ## 🚀 Tech Stack
 
 - **Frontend**: Next.js 16, React 19, TypeScript
 - **Styling**: Tailwind CSS 4, Custom UI Components (Shadcn/UI-inspired)
 - **Charts**: Recharts
 - **State Management**: Zustand mit Persist-Middleware
+- **Testing**: Vitest (Unit Tests), Playwright (E2E Tests)
 - **Database**: Supabase-ready Schema (PostgreSQL)
+- **PWA**: Service Worker für Offline-Unterstützung
 
 ## 📁 Projektstruktur
 
@@ -90,34 +103,77 @@ Diese neuen Funktionen heben ImmoCalc Pro von der Konkurrenz ab:
 │   │   └── page.tsx           # Haupt-Dashboard
 │   ├── components/
 │   │   ├── ui/                # UI Basis-Komponenten
-│   │   │   ├── button.tsx
-│   │   │   ├── card.tsx
-│   │   │   ├── input.tsx
-│   │   │   ├── select.tsx
-│   │   │   ├── slider.tsx
-│   │   │   └── tabs.tsx
-│   │   ├── Charts.tsx         # Recharts Visualisierungen
-│   │   ├── PortfolioDashboard.tsx
-│   │   ├── PropertyCalculatorForm.tsx
-│   │   ├── ResultsPanel.tsx
-│   │   ├── ScenarioComparison.tsx
-│   │   ├── RentIndexCalculator.tsx    # 🆕 Mietpreisspiegel
-│   │   ├── BreakEvenCalculator.tsx    # 🆕 Break-Even Analyse
-│   │   ├── RenovationCalculator.tsx   # 🆕 Renovierungs-ROI
-│   │   ├── ExitStrategyCalculator.tsx # 🆕 Exit-Strategie
-│   │   ├── LocationAnalysis.tsx       # 🆕 Standortanalyse
-│   │   └── DueDiligenceChecklist.tsx  # 🆕 Due Diligence
+│   │   ├── auth/              # 🆕 Authentifizierung
+│   │   ├── ai/                # 🆕 KI-Komponenten
+│   │   ├── analytics/         # 🆕 Analysekomponenten
+│   │   ├── export/            # 🆕 Export-Komponenten
+│   │   └── ...                # Feature-Komponenten
 │   ├── lib/
 │   │   ├── calculations.ts    # Zentrale Berechnungslogik
-│   │   └── utils.ts           # Hilfsfunktionen
+│   │   ├── api/               # 🆕 API-Integrationen
+│   │   ├── supabase/          # 🆕 Supabase Client & Auth
+│   │   ├── ai/                # 🆕 KI-Analyse
+│   │   ├── analytics/         # 🆕 Monte Carlo etc.
+│   │   ├── export/            # 🆕 PDF/Excel Export
+│   │   └── location/          # 🆕 Standort-Analyse
+│   ├── locales/               # 🆕 i18n (DE/EN)
 │   ├── store/
 │   │   └── index.ts           # Zustand Store
 │   └── types/
 │       └── index.ts           # TypeScript Types
-├── database/
-│   └── schema.sql             # PostgreSQL Schema
+├── src/__tests__/             # 🆕 Tests
+│   ├── unit/                  # Unit Tests (Vitest)
+│   └── e2e/                   # E2E Tests (Playwright)
+├── .github/workflows/         # 🆕 CI/CD
+│   ├── ci.yml                 # Lint, Test, Build
+│   └── deploy.yml             # Vercel Deployment
+├── public/
+│   ├── manifest.json          # 🆕 PWA Manifest
+│   └── sw.js                  # 🆕 Service Worker
 └── package.json
 ```
+
+## 🧪 Tests
+
+### Unit Tests ausführen
+
+```bash
+# Interaktiver Modus
+npm run test
+
+# Einmaliger Durchlauf
+npm run test:run
+
+# Mit Coverage
+npm run test:coverage
+```
+
+### E2E Tests ausführen
+
+```bash
+# E2E Tests
+npm run test:e2e
+
+# Mit UI
+npm run test:e2e:ui
+```
+
+## 🔧 Umgebungsvariablen
+
+Kopieren Sie `.env.example` nach `.env.local` und füllen Sie die Werte aus:
+
+```bash
+cp .env.example .env.local
+```
+
+| Variable | Beschreibung | Erforderlich |
+|----------|--------------|--------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Projekt-URL | Nein (für Cloud-Sync) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Anon Key | Nein (für Cloud-Sync) |
+| `OPENAI_API_KEY` | OpenAI API Key | Nein (für KI) |
+| `NEXT_PUBLIC_GOOGLE_MAPS_KEY` | Google Maps API Key | Nein (für Karten) |
+
+> **Hinweis**: Alle Features funktionieren offline ohne externe APIs (Graceful Degradation).
 
 ## 🧮 Berechnungslogik
 
@@ -170,6 +226,36 @@ const locationResult = calculateLocationAnalysis({
 });
 ```
 
+### KI-Analyse
+
+```typescript
+import { analyzeDeal, generateInsights } from "@/lib/ai/analysis";
+
+const analysis = analyzeDeal(input, output);
+console.log(analysis.score.overall); // Deal-Score 0-100
+console.log(analysis.risks); // Identifizierte Risiken
+console.log(analysis.recommendation); // STRONG_BUY | BUY | HOLD | AVOID
+```
+
+### Monte Carlo Simulation
+
+```typescript
+import { runMonteCarloSimulation } from "@/lib/analytics/monte-carlo";
+
+const result = runMonteCarloSimulation({
+  initialInvestment: 300000,
+  annualCashflow: 5000,
+  cashflowVariability: 10,
+  annualAppreciation: 2.0,
+  appreciationVariability: 5,
+  yearsToSimulate: 15,
+  numberOfSimulations: 1000,
+});
+
+console.log(result.percentiles.p50); // Median-Ergebnis
+console.log(result.probabilityOfLoss); // Verlustwahrscheinlichkeit
+```
+
 ### Annuitätenberechnung
 ```
 Annuität = Darlehensbetrag × (Zinssatz + Tilgung) / 100
@@ -211,6 +297,12 @@ npm run build
 
 # Produktionsserver starten
 npm start
+
+# Tests ausführen
+npm run test:run
+
+# Linting
+npm run lint
 ```
 
 ## 📱 Ansichten
@@ -231,6 +323,18 @@ Die App bietet zehn Hauptansichten in zwei Navigationsebenen:
 9. **Standort** - Standortanalyse und -bewertung
 10. **Checkliste** - Due Diligence Prüfliste
 
+## 🔌 API-Integrationen
+
+Die App ist vorbereitet für folgende API-Integrationen:
+
+| API | Datei | Status |
+|-----|-------|--------|
+| Hypothekenzinsen | `src/lib/api/mortgage-rates.ts` | Mock-Daten |
+| Marktdaten | `src/lib/api/market-data.ts` | Mock-Daten |
+| Mietpreisspiegel | `src/lib/api/rent-index.ts` | Mock-Daten |
+
+> Bei fehlender API-Konfiguration werden automatisch Mock-Daten verwendet.
+
 ## 📜 Deutsches Steuerrecht
 
 Die App berücksichtigt das deutsche Steuerrecht (Stand 2024):
@@ -246,6 +350,19 @@ Die App berücksichtigt das deutsche Steuerrecht (Stand 2024):
 - **Werbungskosten**: AfA + Zinsen + nicht umlegbare Kosten
 
 - **Spekulationssteuer**: Berücksichtigung bei Verkauf innerhalb von 10 Jahren
+
+## 🌐 Internationalisierung
+
+Die App unterstützt Deutsch und Englisch. Übersetzungsdateien befinden sich in:
+- `src/locales/de.json` - Deutsche Übersetzungen
+- `src/locales/en.json` - Englische Übersetzungen
+
+## 📱 PWA-Unterstützung
+
+ImmoCalc Pro kann als Progressive Web App installiert werden:
+- Offline-Unterstützung via Service Worker
+- Installierbar auf Desktop und Mobile
+- App-Icon und Splash Screen
 
 ## ⚠️ Haftungsausschluss
 
