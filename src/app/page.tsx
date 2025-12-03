@@ -104,7 +104,7 @@ export default function Home() {
             </div>
             {/* Secondary Tabs - New Features */}
             <div className="overflow-x-auto pb-1 -mx-4 px-4">
-              <TabsList className="inline-flex w-full sm:w-auto bg-gradient-to-r from-indigo-50/80 via-purple-50/80 to-pink-50/80 dark:from-indigo-950/50 dark:via-purple-950/50 dark:to-pink-950/50">
+              <TabsList className="inline-flex w-full sm:w-auto bg-gradient-to-r from-indigo-50/80 via-purple-50/80 to-pink-50/80 dark:from-indigo-900/50 dark:via-purple-900/50 dark:to-pink-900/50">
                 <TabsTrigger value="rent-index" className="flex items-center gap-2 px-4">
                   <TrendingUp className="h-4 w-4" />
                   <span className="hidden sm:inline">Mietspiegel</span>

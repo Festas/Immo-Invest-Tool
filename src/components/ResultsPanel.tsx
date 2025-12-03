@@ -106,7 +106,7 @@ export function ResultsPanel() {
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-2 gap-4">
         {/* Total Investment */}
-        <Card className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-100 dark:from-indigo-950 dark:via-purple-950 dark:to-indigo-900 border-indigo-200/50 dark:border-indigo-800/50 overflow-hidden relative">
+        <Card className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-100 dark:from-indigo-900/80 dark:via-purple-900/80 dark:to-indigo-800/80 border-indigo-200/50 dark:border-indigo-700 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-400/20 to-purple-400/20 rounded-full -translate-y-8 translate-x-8" />
           <CardContent className="p-5 relative">
             <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 mb-2">
@@ -126,7 +126,7 @@ export function ResultsPanel() {
         </Card>
 
         {/* Monthly Payment */}
-        <Card className="bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border-slate-200/50 dark:border-slate-700/50 overflow-hidden relative">
+        <Card className="bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 dark:from-slate-800/80 dark:via-slate-700/80 dark:to-slate-800/80 border-slate-200/50 dark:border-slate-600 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-slate-400/10 to-gray-400/10 rounded-full -translate-y-8 translate-x-8" />
           <CardContent className="p-5 relative">
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 mb-2">
@@ -149,8 +149,8 @@ export function ResultsPanel() {
         <Card
           className={`overflow-hidden relative ${
             isPositiveCashflow
-              ? "bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100 dark:from-emerald-950 dark:via-teal-950 dark:to-emerald-900 border-emerald-200/50 dark:border-emerald-800/50"
-              : "bg-gradient-to-br from-red-50 via-rose-50 to-red-100 dark:from-red-950 dark:via-rose-950 dark:to-red-900 border-red-200/50 dark:border-red-800/50"
+              ? "bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100 dark:from-emerald-900/80 dark:via-teal-900/80 dark:to-emerald-800/80 border-emerald-200/50 dark:border-emerald-700"
+              : "bg-gradient-to-br from-red-50 via-rose-50 to-red-100 dark:from-red-900/80 dark:via-rose-900/80 dark:to-red-800/80 border-red-200/50 dark:border-red-700"
           }`}
         >
           <div className={`absolute top-0 right-0 w-24 h-24 rounded-full -translate-y-8 translate-x-8 ${
@@ -196,7 +196,7 @@ export function ResultsPanel() {
         </Card>
 
         {/* ROI */}
-        <Card className="bg-gradient-to-br from-violet-50 via-fuchsia-50 to-violet-100 dark:from-violet-950 dark:via-fuchsia-950 dark:to-violet-900 border-violet-200/50 dark:border-violet-800/50 overflow-hidden relative">
+        <Card className="bg-gradient-to-br from-violet-50 via-fuchsia-50 to-violet-100 dark:from-violet-900/80 dark:via-fuchsia-900/80 dark:to-violet-800/80 border-violet-200/50 dark:border-violet-700 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-violet-400/20 to-fuchsia-400/20 rounded-full -translate-y-8 translate-x-8" />
           <CardContent className="p-5 relative">
             <div className="flex items-center gap-2 text-violet-600 dark:text-violet-400 mb-2">
@@ -218,7 +218,7 @@ export function ResultsPanel() {
 
       {/* Yield Metrics */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-3 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/30 dark:to-purple-950/30">
+        <CardHeader className="pb-3 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/50 dark:to-purple-900/50">
           <CardTitle className="flex items-center gap-3 text-base">
             <div className="p-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/20">
               <BarChart3 className="h-4 w-4 text-white" />
@@ -264,7 +264,7 @@ export function ResultsPanel() {
 
       {/* Tax Overview */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-3 bg-gradient-to-r from-violet-50/50 to-fuchsia-50/50 dark:from-violet-950/30 dark:to-fuchsia-950/30">
+        <CardHeader className="pb-3 bg-gradient-to-r from-violet-50/50 to-fuchsia-50/50 dark:from-violet-900/50 dark:to-fuchsia-900/50">
           <CardTitle className="flex items-center gap-3 text-base">
             <div className="p-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/20">
               <Sparkles className="h-4 w-4 text-white" />
@@ -309,7 +309,7 @@ export function ResultsPanel() {
                 </span>
               </div>
             </div>
-            <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30">
+            <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/50 dark:to-purple-900/50">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-slate-700 dark:text-slate-300">Steuereffekt (jährlich)</span>
                 <HelpTooltip content={resultHelpTexts.taxEffect} />
@@ -325,7 +325,7 @@ export function ResultsPanel() {
 
       {/* Side Costs Breakdown */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-950/30 dark:to-orange-950/30">
+        <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-900/50 dark:to-orange-900/50">
           <CardTitle className="flex items-center gap-3 text-base">
             <div className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg shadow-amber-500/20">
               <Wallet className="h-4 w-4 text-white" />
@@ -356,7 +356,7 @@ export function ResultsPanel() {
               </div>
             )}
             <div className="border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">
-              <div className="flex justify-between py-2 px-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/30">
+              <div className="flex justify-between py-2 px-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/50 dark:to-orange-900/50">
                 <span className="font-bold text-slate-700 dark:text-slate-300">Nebenkosten gesamt</span>
                 <div className="text-right">
                   <span className="font-bold text-slate-900 dark:text-white">{formatCurrency(output.investmentVolume.sideCosts.totalSideCosts)}</span>

@@ -68,7 +68,7 @@ export function AmortizationChart() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/30 dark:to-purple-950/30">
+      <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/50 dark:to-purple-900/50">
         <CardTitle className="flex items-center gap-3 text-base">
           <div className="p-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/20">
             <BarChart3 className="h-4 w-4 text-white" />
@@ -129,7 +129,7 @@ export function AmortizationChart() {
           </ResponsiveContainer>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-          <div className="text-center p-4 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/50 dark:to-rose-950/50 rounded-xl border border-red-100 dark:border-red-900/50">
+          <div className="text-center p-4 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/50 dark:to-rose-900/50 rounded-xl border border-red-100 dark:border-red-800">
             <p className="text-red-600 dark:text-red-400 font-medium mb-1">Restschuld nach {currentInput.fixedInterestPeriod} Jahren</p>
             <p className="font-bold text-xl text-red-700 dark:text-red-300">
               {formatCurrency(
@@ -137,7 +137,7 @@ export function AmortizationChart() {
               )}
             </p>
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/50 dark:to-teal-900/50 rounded-xl border border-emerald-100 dark:border-emerald-800">
             <p className="text-emerald-600 dark:text-emerald-400 font-medium mb-1">Gesamt getilgt</p>
             <p className="font-bold text-xl text-emerald-700 dark:text-emerald-300">
               {formatCurrency(
@@ -171,7 +171,7 @@ export function CumulativeCashflowChart() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="pb-4 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/30 dark:to-teal-950/30">
+      <CardHeader className="pb-4 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-900/50 dark:to-teal-900/50">
         <CardTitle className="flex items-center gap-3 text-base">
           <div className="p-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/20">
             <TrendingUp className="h-4 w-4 text-white" />
@@ -246,7 +246,7 @@ export function CumulativeCashflowChart() {
           </ResponsiveContainer>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-          <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
+          <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/50 dark:to-purple-900/50 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
             <p className="text-indigo-600 dark:text-indigo-400 font-medium mb-1">
               Cashflow nach {currentInput.fixedInterestPeriod} Jahren
             </p>
@@ -256,7 +256,7 @@ export function CumulativeCashflowChart() {
               )}
             </p>
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/50 dark:to-teal-900/50 rounded-xl border border-emerald-100 dark:border-emerald-800">
             <p className="text-emerald-600 dark:text-emerald-400 font-medium mb-1">
               Nettovermögen nach {currentInput.fixedInterestPeriod} Jahren
             </p>
