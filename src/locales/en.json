@@ -1,0 +1,200 @@
+{
+  "app": {
+    "title": "ImmoCalc Pro",
+    "subtitle": "Real Estate Investment Calculator"
+  },
+  "nav": {
+    "calculator": "Calculator",
+    "charts": "Charts",
+    "comparison": "Comparison",
+    "dashboard": "Dashboard",
+    "rentIndex": "Rent Index",
+    "breakEven": "Break-Even",
+    "renovation": "Renovation",
+    "exit": "Exit Strategy",
+    "location": "Location",
+    "checklist": "Checklist"
+  },
+  "calculator": {
+    "purchasePrice": "Purchase Price",
+    "brokerFee": "Broker Fee",
+    "notaryFee": "Notary Costs",
+    "transferTax": "Transfer Tax",
+    "renovationCosts": "Renovation Costs",
+    "equity": "Equity",
+    "loanAmount": "Loan Amount",
+    "interestRate": "Interest Rate",
+    "repaymentRate": "Repayment Rate",
+    "fixedPeriod": "Fixed Period",
+    "coldRent": "Cold Rent",
+    "coldRentActual": "Cold Rent (Actual)",
+    "coldRentTarget": "Cold Rent (Target)",
+    "operatingCosts": "Non-recoverable Costs",
+    "maintenanceReserve": "Maintenance Reserve",
+    "vacancyRisk": "Vacancy Risk",
+    "taxRate": "Personal Tax Rate",
+    "buildingShare": "Building Share",
+    "afaType": "Depreciation Type"
+  },
+  "results": {
+    "title": "Results",
+    "totalInvestment": "Total Investment",
+    "sideCosts": "Side Costs",
+    "financing": "Financing",
+    "monthlyPayment": "Monthly Payment",
+    "annualPayment": "Annual Payment",
+    "cashflow": "Cash Flow",
+    "cashflowBeforeTax": "Cash Flow Before Tax",
+    "cashflowAfterTax": "Cash Flow After Tax",
+    "monthly": "monthly",
+    "annual": "annual"
+  },
+  "yields": {
+    "title": "Yield Metrics",
+    "grossYield": "Gross Rental Yield",
+    "netYield": "Net Rental Yield",
+    "returnOnEquity": "Return on Equity",
+    "cashflowYield": "Cash Flow Yield"
+  },
+  "tax": {
+    "title": "Tax Effects",
+    "afaAmount": "Depreciation Amount",
+    "deductibleInterest": "Deductible Interest",
+    "deductibleCosts": "Deductible Costs",
+    "totalDeductions": "Total Deductions",
+    "taxEffect": "Tax Effect"
+  },
+  "dashboard": {
+    "title": "Portfolio Dashboard",
+    "totalProperties": "Total Properties",
+    "totalInvestment": "Total Investment",
+    "totalCashflow": "Total Cash Flow",
+    "averageYield": "Average Yield",
+    "savedProperties": "Saved Properties",
+    "noProperties": "No properties saved"
+  },
+  "comparison": {
+    "title": "Scenario Comparison",
+    "scenario": "Scenario",
+    "addScenario": "Add Scenario",
+    "removeScenario": "Remove Scenario"
+  },
+  "charts": {
+    "amortization": "Amortization Schedule",
+    "cashflowProjection": "Cash Flow Projection",
+    "remainingDebt": "Remaining Debt",
+    "cumulativePrincipal": "Cumulative Principal",
+    "cumulativeInterest": "Cumulative Interest",
+    "propertyValue": "Property Value",
+    "netWorth": "Net Worth"
+  },
+  "rentIndex": {
+    "title": "Rent Index",
+    "city": "City",
+    "livingArea": "Living Area",
+    "currentRent": "Current Rent",
+    "yearBuilt": "Year Built",
+    "condition": "Condition",
+    "equipment": "Equipment",
+    "hasBalcony": "Balcony/Terrace",
+    "hasElevator": "Elevator",
+    "floor": "Floor",
+    "marketRent": "Market Rent",
+    "rentPotential": "Rent Increase Potential"
+  },
+  "breakEven": {
+    "title": "Break-Even Analysis",
+    "cashflowBreakEven": "Break-Even via Cash Flow",
+    "totalBreakEven": "Break-Even incl. Appreciation",
+    "yearsLabel": "Years",
+    "returnAt5Years": "Return at 5 Years",
+    "returnAt10Years": "Return at 10 Years",
+    "returnAt15Years": "Return at 15 Years"
+  },
+  "renovation": {
+    "title": "Renovation ROI",
+    "renovationType": "Renovation Type",
+    "estimatedCost": "Estimated Cost",
+    "expectedRentIncrease": "Expected Rent Increase",
+    "expectedValueIncrease": "Expected Value Increase",
+    "paybackPeriod": "Payback Period",
+    "roi": "ROI"
+  },
+  "exit": {
+    "title": "Exit Strategy",
+    "currentValue": "Current Value",
+    "holdingPeriod": "Holding Period",
+    "remainingDebt": "Remaining Debt",
+    "grossProfit": "Gross Profit",
+    "sellingCosts": "Selling Costs",
+    "speculationTax": "Speculation Tax",
+    "netProfit": "Net Profit",
+    "totalReturn": "Total Return"
+  },
+  "location": {
+    "title": "Location Analysis",
+    "populationTrend": "Population Trend",
+    "employmentRate": "Employment Rate",
+    "infrastructure": "Infrastructure",
+    "publicTransport": "Public Transport",
+    "shopping": "Shopping",
+    "schools": "Schools",
+    "crimeRate": "Crime Rate",
+    "rentalDemand": "Rental Demand",
+    "locationQuality": "Location Quality",
+    "investmentRecommendation": "Investment Recommendation"
+  },
+  "checklist": {
+    "title": "Due Diligence Checklist",
+    "documents": "Documents",
+    "inspection": "Inspection",
+    "finances": "Finances",
+    "legal": "Legal",
+    "technical": "Technical",
+    "completed": "Completed",
+    "pending": "Pending",
+    "required": "Required"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "export": "Export",
+    "import": "Import",
+    "calculate": "Calculate",
+    "reset": "Reset",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "yes": "Yes",
+    "no": "No",
+    "years": "years",
+    "months": "months",
+    "perMonth": "per month",
+    "perYear": "per year",
+    "sqm": "sqm"
+  },
+  "conditions": {
+    "SEHR_GUT": "Excellent",
+    "GUT": "Good",
+    "MITTEL": "Average",
+    "RENOVIERUNGSBEDUERFTIG": "Needs Renovation"
+  },
+  "equipment": {
+    "GEHOBEN": "High-end",
+    "STANDARD": "Standard",
+    "EINFACH": "Basic"
+  },
+  "trends": {
+    "WACHSEND": "Growing",
+    "STABIL": "Stable",
+    "SCHRUMPFEND": "Shrinking"
+  },
+  "levels": {
+    "SEHR_HOCH": "Very High",
+    "HOCH": "High",
+    "MITTEL": "Medium",
+    "NIEDRIG": "Low"
+  }
+}
