@@ -5,7 +5,7 @@
  * Falls back to anonymous/localStorage mode when not configured.
  */
 
-import { getSupabaseClient, isSupabaseConfigured } from './client';
+import { getSupabaseClient, isSupabaseConfigured, type SupabaseUser } from './client';
 
 export interface User {
   id: string;
@@ -34,12 +34,7 @@ export interface SignInData {
 }
 
 // Convert Supabase user to our User type
-function toUser(supabaseUser: {
-  id: string;
-  email?: string;
-  user_metadata?: { name?: string; avatar_url?: string };
-  created_at?: string;
-}): User {
+function toUser(supabaseUser: SupabaseUser): User {
   return {
     id: supabaseUser.id,
     email: supabaseUser.email || '',
@@ -63,18 +58,7 @@ export async function signUp(data: SignUpData): Promise<{ user: User | null; err
       return { user: null, error: new Error('Supabase client not available') };
     }
 
-    const { data: authData, error } = await (supabase as {
-      auth: {
-        signUp: (params: {
-          email: string;
-          password: string;
-          options?: { data?: { name?: string } };
-        }) => Promise<{
-          data: { user: { id: string; email?: string; user_metadata?: { name?: string }; created_at?: string } | null };
-          error: Error | null;
-        }>;
-      };
-    }).auth.signUp({
+    const { data: authData, error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
@@ -111,17 +95,7 @@ export async function signIn(data: SignInData): Promise<{ user: User | null; err
       return { user: null, error: new Error('Supabase client not available') };
     }
 
-    const { data: authData, error } = await (supabase as {
-      auth: {
-        signInWithPassword: (params: {
-          email: string;
-          password: string;
-        }) => Promise<{
-          data: { user: { id: string; email?: string; user_metadata?: { name?: string }; created_at?: string } | null };
-          error: Error | null;
-        }>;
-      };
-    }).auth.signInWithPassword({
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
     });
@@ -153,12 +127,7 @@ export async function signOut(): Promise<{ error: Error | null }> {
       return { error: null };
     }
 
-    const { error } = await (supabase as {
-      auth: {
-        signOut: () => Promise<{ error: Error | null }>;
-      };
-    }).auth.signOut();
-
+    const { error } = await supabase.auth.signOut();
     return { error };
   } catch (error) {
     return { error: error as Error };
@@ -179,14 +148,7 @@ export async function getCurrentUser(): Promise<User | null> {
       return null;
     }
 
-    const { data: { user } } = await (supabase as {
-      auth: {
-        getUser: () => Promise<{
-          data: { user: { id: string; email?: string; user_metadata?: { name?: string }; created_at?: string } | null };
-        }>;
-      };
-    }).auth.getUser();
-
+    const { data: { user } } = await supabase.auth.getUser();
     return user ? toUser(user) : null;
   } catch {
     return null;
@@ -207,12 +169,7 @@ export async function resetPassword(email: string): Promise<{ error: Error | nul
       return { error: new Error('Supabase client not available') };
     }
 
-    const { error } = await (supabase as {
-      auth: {
-        resetPasswordForEmail: (email: string) => Promise<{ error: Error | null }>;
-      };
-    }).auth.resetPasswordForEmail(email);
-
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
     return { error };
   } catch (error) {
     return { error: error as Error };

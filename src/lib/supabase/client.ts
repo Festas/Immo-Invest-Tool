@@ -13,6 +13,27 @@ export interface SupabaseConfig {
   anonKey: string;
 }
 
+/**
+ * Supabase client interface for type safety.
+ * This matches the essential methods used by the auth module.
+ */
+export interface SupabaseClientInterface {
+  auth: {
+    signUp: (params: { email: string; password: string; options?: { data?: Record<string, unknown> } }) => Promise<{ data: { user: SupabaseUser | null }; error: Error | null }>;
+    signInWithPassword: (params: { email: string; password: string }) => Promise<{ data: { user: SupabaseUser | null }; error: Error | null }>;
+    signOut: () => Promise<{ error: Error | null }>;
+    getUser: () => Promise<{ data: { user: SupabaseUser | null } }>;
+    resetPasswordForEmail: (email: string) => Promise<{ error: Error | null }>;
+  };
+}
+
+export interface SupabaseUser {
+  id: string;
+  email?: string;
+  user_metadata?: { name?: string; avatar_url?: string };
+  created_at?: string;
+}
+
 // Check if Supabase is configured
 export function isSupabaseConfigured(): boolean {
   return !!(
@@ -33,15 +54,14 @@ export function getSupabaseConfig(): SupabaseConfig | null {
   return { url, anonKey };
 }
 
-// Type-safe way to use supabase when available
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let supabaseClient: any = null;
+// Type-safe Supabase client holder
+let supabaseClient: SupabaseClientInterface | null = null;
 
 /**
  * Get Supabase client - returns null if not configured or library not installed.
  * To enable cloud sync, install @supabase/supabase-js and configure environment variables.
  */
-export async function getSupabaseClient() {
+export async function getSupabaseClient(): Promise<SupabaseClientInterface | null> {
   if (!isSupabaseConfigured()) {
     return null;
   }
@@ -69,7 +89,7 @@ export async function getSupabaseClient() {
           persistSession: true,
           detectSessionInUrl: true,
         },
-      });
+      }) as SupabaseClientInterface;
     }
     
     return supabaseClient;

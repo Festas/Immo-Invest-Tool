@@ -59,10 +59,23 @@ export interface RiskMetrics {
 function randomNormal(mean: number, stdDev: number): number {
   let u1 = 0;
   let u2 = 0;
+  let iterations = 0;
+  const maxIterations = 100;
   
-  // Avoid log(0)
-  while (u1 === 0) u1 = Math.random();
-  while (u2 === 0) u2 = Math.random();
+  // Avoid log(0) with safety limit
+  while (u1 === 0 && iterations < maxIterations) {
+    u1 = Math.random();
+    iterations++;
+  }
+  iterations = 0;
+  while (u2 === 0 && iterations < maxIterations) {
+    u2 = Math.random();
+    iterations++;
+  }
+  
+  // Fallback to small positive value if somehow still 0
+  if (u1 === 0) u1 = Number.MIN_VALUE;
+  if (u2 === 0) u2 = Number.MIN_VALUE;
   
   const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
   return mean + stdDev * z;
