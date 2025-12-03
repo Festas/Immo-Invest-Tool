@@ -246,7 +246,7 @@ export function CumulativeCashflowChart() {
           </ResponsiveContainer>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-          <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/50 dark:to-purple-900/50 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
+          <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/50 dark:to-purple-900/50 rounded-xl border border-indigo-100 dark:border-indigo-800">
             <p className="text-indigo-600 dark:text-indigo-400 font-medium mb-1">
               Cashflow nach {currentInput.fixedInterestPeriod} Jahren
             </p>
