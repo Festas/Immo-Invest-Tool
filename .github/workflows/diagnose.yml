@@ -9,6 +9,8 @@ on:
         default: 'false'
         type: boolean
 
+permissions: {}
+
 jobs:
   diagnose:
     name: Run Diagnostics
@@ -84,7 +86,7 @@ jobs:
             echo "📝 6. CADDY LOGS (TLS/SSL ERRORS)"
             echo "=============================================="
             echo "Checking Caddy logs for immocalc, errors, TLS, and certificate issues..."
-            docker logs caddy_server 2>&1 | grep -iE "immocalc|error|tls|certificate|acme|ssl" | tail -30 || echo "No matching log entries found"
+            docker logs caddy_server 2>&1 | grep -iE "immocalc|error|tls|certificate|acme|ssl" | tail -50 || echo "No matching log entries found"
             echo ""
 
             echo "=============================================="
@@ -133,7 +135,7 @@ jobs:
             echo "=============================================="
 
       - name: Attempt automatic fixes
-        if: ${{ inputs.auto_fix == 'true' }}
+        if: ${{ inputs.auto_fix }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
