@@ -91,7 +91,7 @@ export function LocationAnalysis() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -99,13 +99,13 @@ export function LocationAnalysis() {
             Standortanalyse
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <p className="text-sm text-slate-600 dark:text-slate-400">
             Bewerten Sie die Attraktivität eines Standorts für Ihre Immobilieninvestition anhand
             verschiedener Faktoren.
           </p>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <Select
               label="Stadt/Region"
               options={cityOptions}
@@ -162,7 +162,7 @@ export function LocationAnalysis() {
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
               <Train className="h-5 w-5 text-blue-500" />
               <Slider
@@ -238,7 +238,7 @@ export function LocationAnalysis() {
                 </span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               {/* Score Meter */}
               <div className="text-center">
                 <div className="relative inline-block">
@@ -277,7 +277,7 @@ export function LocationAnalysis() {
               </div>
 
               {/* Key Indicators */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-6">
                 <div
                   className={`rounded-lg p-4 text-center ${
                     result.investmentRecommendation === "STARK_EMPFOHLEN" ||
@@ -386,7 +386,7 @@ export function LocationAnalysis() {
           </Card>
 
           {/* Strengths and Weaknesses */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <Card className="border-green-200 dark:border-green-800">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base text-green-700 dark:text-green-300">

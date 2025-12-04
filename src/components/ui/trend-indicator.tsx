@@ -194,7 +194,7 @@ function MetricBadge({ label, value, trend, className }: MetricBadgeProps) {
   return (
     <div
       className={cn(
-        "inline-flex flex-col items-center rounded-xl border px-4 py-2",
+        "inline-flex flex-col items-center rounded-lg border px-4 py-2",
         trend ? trendColors[trend] : trendColors.neutral,
         className
       )}

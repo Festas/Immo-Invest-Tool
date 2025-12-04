@@ -31,7 +31,7 @@ interface ChartTooltipProps {
 function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   if (active && payload && payload.length) {
     return (
-      <div className="animate-fade-in rounded-xl border border-slate-200/50 bg-white/95 p-4 shadow-xl backdrop-blur-md dark:border-slate-700/50 dark:bg-slate-800/95">
+      <div className="animate-fade-in rounded-lg border border-slate-200/50 bg-white/95 p-4 shadow-xl backdrop-blur-md dark:border-slate-700/50 dark:bg-slate-800/95">
         <p className="mb-3 border-b border-slate-200 pb-2 font-semibold text-slate-900 dark:border-slate-700 dark:text-white">
           {label}
         </p>
@@ -92,7 +92,7 @@ export function AmortizationChart() {
     <Card className="overflow-hidden" animate>
       <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100/50 pb-4 dark:from-slate-800/50 dark:to-slate-800/30">
         <CardTitle className="flex items-center gap-3 text-base">
-          <div className="rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg dark:from-slate-500 dark:to-slate-600">
+          <div className="rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg dark:from-slate-500 dark:to-slate-600">
             <BarChart3 className="h-4 w-4 text-white" />
           </div>
           <span className="font-bold text-slate-900 dark:text-white">Tilgungsverlauf</span>
@@ -156,7 +156,7 @@ export function AmortizationChart() {
           </ResponsiveContainer>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-          <div className="group rounded-xl border border-red-100 bg-gradient-to-br from-red-50 to-red-100/50 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-red-800 dark:from-red-900/30 dark:to-red-900/20">
+          <div className="group rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-red-100/50 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-red-800 dark:from-red-900/30 dark:to-red-900/20">
             <div className="mb-2 flex items-center justify-center gap-2">
               <TrendingDown className="h-4 w-4 text-red-500 dark:text-red-400" />
               <p className="font-medium text-red-600 dark:text-red-400">
@@ -167,7 +167,7 @@ export function AmortizationChart() {
               {formatCurrency(finalBalance)}
             </p>
           </div>
-          <div className="group rounded-xl border border-green-100 bg-gradient-to-br from-green-50 to-green-100/50 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-green-800 dark:from-green-900/30 dark:to-green-900/20">
+          <div className="group rounded-lg border border-green-100 bg-gradient-to-br from-green-50 to-green-100/50 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-green-800 dark:from-green-900/30 dark:to-green-900/20">
             <div className="mb-2 flex items-center justify-center gap-2">
               <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
               <p className="font-medium text-green-600 dark:text-green-400">Gesamt getilgt</p>
@@ -209,7 +209,7 @@ export function CumulativeCashflowChart() {
     <Card className="overflow-hidden" animate>
       <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100/50 pb-4 dark:from-slate-800/50 dark:to-slate-800/30">
         <CardTitle className="flex items-center gap-3 text-base">
-          <div className="rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg dark:from-slate-500 dark:to-slate-600">
+          <div className="rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg dark:from-slate-500 dark:to-slate-600">
             <TrendingUp className="h-4 w-4 text-white" />
           </div>
           <span className="font-bold text-slate-900 dark:text-white">
@@ -297,7 +297,7 @@ export function CumulativeCashflowChart() {
           </ResponsiveContainer>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-          <div className="group rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/50 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/50 dark:to-slate-800/30">
+          <div className="group rounded-lg border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/50 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/50 dark:to-slate-800/30">
             <p className="mb-2 font-medium text-slate-600 dark:text-slate-400">
               Cashflow nach {currentInput.fixedInterestPeriod} Jahren
             </p>
@@ -311,7 +311,7 @@ export function CumulativeCashflowChart() {
               {formatCurrency(finalCashflow)}
             </p>
           </div>
-          <div className="group rounded-xl border border-green-100 bg-gradient-to-br from-green-50 to-green-100/50 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-green-800 dark:from-green-900/30 dark:to-green-900/20">
+          <div className="group rounded-lg border border-green-100 bg-gradient-to-br from-green-50 to-green-100/50 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-green-800 dark:from-green-900/30 dark:to-green-900/20">
             <div className="mb-2 flex items-center justify-center gap-2">
               <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
               <p className="font-medium text-green-600 dark:text-green-400">

@@ -51,7 +51,7 @@ export function InvestmentAdvisor({ input, output }: InvestmentAdvisorProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Insights Card */}
       {showInsights && insights.length > 0 && (
         <Card>
@@ -68,10 +68,10 @@ export function InvestmentAdvisor({ input, output }: InvestmentAdvisorProps) {
                   key={index}
                   className={`rounded-lg border p-3 ${
                     insight.confidence === "HIGH"
-                      ? "border-green-200 bg-green-50"
+                      ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/50"
                       : insight.confidence === "MEDIUM"
-                        ? "border-blue-200 bg-blue-50"
-                        : "border-gray-200 bg-gray-50"
+                        ? "border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/50"
+                        : "border-gray-200 bg-gray-50 dark:border-slate-700 dark:bg-slate-800/50"
                   }`}
                 >
                   <div className="flex items-start gap-2">

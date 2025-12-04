@@ -42,15 +42,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             type={type}
             className={cn(
-              "flex h-12 w-full rounded-xl px-4 py-3 text-sm font-medium",
-              "bg-white dark:!bg-slate-800",
-              "border-2 border-slate-200 dark:!border-slate-600",
-              "text-slate-900 dark:!text-slate-100",
+              "flex h-12 w-full rounded-lg px-4 py-3 text-sm font-medium",
+              "bg-[var(--input)]",
+              "border-2 border-[var(--input-border)]",
+              "text-[var(--foreground)]",
               "placeholder:text-slate-400 dark:placeholder:text-slate-400",
-              "ring-offset-white dark:ring-offset-slate-900",
+              "ring-offset-[var(--background)]",
               "focus-visible:border-indigo-500 focus-visible:outline-none dark:focus-visible:border-indigo-400",
               "focus-visible:ring-4 focus-visible:ring-indigo-500/10 dark:focus-visible:ring-indigo-400/20",
-              "hover:border-slate-300 dark:hover:border-slate-500",
+              "hover:border-[var(--border-hover)]",
               "transition-all duration-200",
               "disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-50 dark:disabled:bg-slate-700",
               prefix && "pl-10",
@@ -76,8 +76,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               className={cn(
                 "absolute top-1/2 right-4 -translate-y-1/2 rounded-lg border px-2 py-1 text-sm font-medium transition-colors",
                 isFocused
-                  ? "border-slate-300/50 bg-slate-200 text-slate-600 dark:border-slate-500/50 dark:!bg-slate-600 dark:text-slate-200"
-                  : "border-slate-200/50 bg-slate-100 text-slate-500 dark:border-slate-600/50 dark:!bg-slate-700 dark:text-slate-300"
+                  ? "border-[var(--border)] bg-[var(--surface-3)] text-[var(--foreground-secondary)]"
+                  : "border-[var(--border)] bg-[var(--surface-2)] text-[var(--muted-foreground)]"
               )}
             >
               {suffix}

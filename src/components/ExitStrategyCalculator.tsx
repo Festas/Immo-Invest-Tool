@@ -65,7 +65,7 @@ export function ExitStrategyCalculator() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -73,7 +73,7 @@ export function ExitStrategyCalculator() {
             Exit-Strategie / Verkaufsrechner
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <p className="text-sm text-slate-600 dark:text-slate-400">
             Planen Sie Ihren Ausstieg und berechnen Sie Ihren Gewinn beim Verkauf der Immobilie.
             Diese Analyse berücksichtigt die Spekulationssteuer und alle relevanten Kosten.
@@ -139,7 +139,7 @@ export function ExitStrategyCalculator() {
             <p className="mb-2 text-sm font-medium text-slate-900 dark:text-slate-100">
               Geschätzte Werte nach {holdingPeriod} Jahren:
             </p>
-            <div className="grid grid-cols-3 gap-4 text-sm">
+            <div className="grid grid-cols-3 gap-6 text-sm">
               <div>
                 <span className="text-slate-600 dark:text-slate-400">Immobilienwert:</span>
                 <p className="font-semibold text-green-600 dark:text-green-400">
@@ -262,7 +262,7 @@ export function ExitStrategyCalculator() {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <Card className="border-slate-200 !bg-transparent bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
               <CardContent className="p-4">
                 <div className="mb-1 flex items-center gap-2 text-slate-600 dark:text-slate-400">

@@ -200,7 +200,7 @@ export function PropertyCalculatorForm() {
       <Card className="overflow-hidden">
         <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
+            <div className="rounded-lg bg-slate-600 p-2 shadow-md dark:bg-slate-500">
               <Building2 className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-slate-900 dark:text-white">
@@ -228,7 +228,7 @@ export function PropertyCalculatorForm() {
             helpText={helpTexts.bundesland}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             <Input
               label="Makler"
               type="number"
@@ -270,7 +270,7 @@ export function PropertyCalculatorForm() {
       <Card className="overflow-hidden">
         <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
+            <div className="rounded-lg bg-slate-600 p-2 shadow-md dark:bg-slate-500">
               <Banknote className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-slate-900 dark:text-white">Finanzierung</span>
@@ -288,7 +288,7 @@ export function PropertyCalculatorForm() {
             helpText={helpTexts.equity}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             <Input
               label="Zinssatz"
               type="number"
@@ -330,7 +330,7 @@ export function PropertyCalculatorForm() {
       <Card className="overflow-hidden">
         <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
+            <div className="rounded-lg bg-slate-600 p-2 shadow-md dark:bg-slate-500">
               <Home className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-slate-900 dark:text-white">Mieteinnahmen</span>
@@ -348,7 +348,7 @@ export function PropertyCalculatorForm() {
             helpText={helpTexts.coldRent}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             <Input
               label="Nicht umlegbare NK"
               type="number"
@@ -390,7 +390,7 @@ export function PropertyCalculatorForm() {
       <Card className="overflow-hidden">
         <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
+            <div className="rounded-lg bg-slate-600 p-2 shadow-md dark:bg-slate-500">
               <Receipt className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-slate-900 dark:text-white">Steuerliche Parameter</span>

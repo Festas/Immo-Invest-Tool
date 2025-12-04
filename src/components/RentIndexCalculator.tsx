@@ -108,7 +108,7 @@ export function RentIndexCalculator() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -116,13 +116,13 @@ export function RentIndexCalculator() {
             Mietpreisspiegel - Marktmieten-Vergleich
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <p className="text-sm text-slate-600 dark:text-slate-400">
             Vergleichen Sie Ihre aktuelle Miete mit dem lokalen Mietpreisspiegel und ermitteln Sie
             Ihr Mieterhöhungspotenzial.
           </p>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <Select
               label="Stadt/Region"
               options={cityOptions}
@@ -235,8 +235,8 @@ export function RentIndexCalculator() {
               Analyseergebnis
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
               <div className="rounded-lg border border-blue-100 bg-blue-50 p-3 text-center dark:border-blue-900/50 dark:bg-blue-950/50">
                 <p className="text-xs text-blue-600 dark:text-blue-400">Ihre Miete/m²</p>
                 <p className="text-lg font-bold text-slate-900 dark:text-slate-100">

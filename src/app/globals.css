@@ -57,7 +57,7 @@
   --input: #ffffff;
   --input-border: #e2e8f0;
   --ring: #475569;
-  --radius: 0.875rem;
+  --radius: 0.5rem;
 
   /* Single accent color for consistency */
   --accent-color: #475569;

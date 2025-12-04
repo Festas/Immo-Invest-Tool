@@ -18,7 +18,7 @@ export function ThemeToggle() {
   // Don't render anything until mounted to avoid hydration mismatch
   if (!mounted) {
     return (
-      <div className="h-10 w-[100px] animate-pulse rounded-xl bg-slate-100/80 dark:bg-slate-800/80" />
+      <div className="h-10 w-[100px] animate-pulse rounded-lg bg-slate-100/80 dark:bg-slate-800/80" />
     );
   }
 
@@ -26,7 +26,7 @@ export function ThemeToggle() {
     <button
       onClick={cycleTheme}
       className={cn(
-        "relative inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4",
+        "relative inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4",
         "text-sm font-medium transition-all duration-300",
         "bg-slate-100/80 backdrop-blur-sm dark:bg-slate-800/80",
         "border border-slate-200/60 dark:border-slate-700/60",

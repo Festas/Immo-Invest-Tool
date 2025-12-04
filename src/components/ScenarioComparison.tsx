@@ -26,7 +26,7 @@ export function ScenarioComparison() {
   const currentOutput = calculatePropertyKPIs(currentInput);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
