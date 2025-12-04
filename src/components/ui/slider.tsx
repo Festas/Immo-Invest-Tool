@@ -19,6 +19,8 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
     ref
   ) => {
     const percentage = ((value - min) / (max - min)) * 100;
+    const [isHovered, setIsHovered] = React.useState(false);
+    const [isDragging, setIsDragging] = React.useState(false);
 
     return (
       <div className="w-full">
@@ -30,16 +32,37 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
               </label>
               {helpText && <HelpTooltip content={helpText} />}
             </div>
-            <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+            <span
+              className={cn(
+                "text-sm font-bold tabular-nums transition-all duration-200",
+                isDragging
+                  ? "scale-110 text-indigo-600 dark:text-indigo-400"
+                  : "text-slate-700 dark:text-slate-300"
+              )}
+            >
               {formatValue ? formatValue(value) : value}
             </span>
           </div>
         )}
-        <div className="relative py-2">
+        <div
+          className="relative py-2"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <div className="absolute inset-0 flex items-center">
-            <div className="h-2.5 w-full rounded-full bg-slate-200 shadow-inner dark:bg-slate-700" />
             <div
-              className="absolute h-2.5 rounded-full bg-slate-600 shadow-sm transition-all duration-150 dark:bg-slate-500"
+              className={cn(
+                "h-2.5 w-full rounded-full shadow-inner transition-all duration-200",
+                isHovered || isDragging
+                  ? "bg-slate-300 dark:bg-slate-600"
+                  : "bg-slate-200 dark:bg-slate-700"
+              )}
+            />
+            <div
+              className={cn(
+                "absolute h-2.5 rounded-full shadow-sm transition-all duration-150",
+                isDragging ? "bg-indigo-600 dark:bg-indigo-500" : "bg-slate-600 dark:bg-slate-500"
+              )}
               style={{ width: `${percentage}%` }}
             />
           </div>
@@ -51,6 +74,10 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
             step={step}
             value={value}
             onChange={(e) => onChange(parseFloat(e.target.value))}
+            onMouseDown={() => setIsDragging(true)}
+            onMouseUp={() => setIsDragging(false)}
+            onTouchStart={() => setIsDragging(true)}
+            onTouchEnd={() => setIsDragging(false)}
             className={cn(
               "relative z-10 h-2.5 w-full cursor-pointer appearance-none rounded-lg bg-transparent",
               className
@@ -59,8 +86,8 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
           />
         </div>
         <div className="mt-2 flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
-          <span>{formatValue ? formatValue(min) : min}</span>
-          <span>{formatValue ? formatValue(max) : max}</span>
+          <span className="tabular-nums">{formatValue ? formatValue(min) : min}</span>
+          <span className="tabular-nums">{formatValue ? formatValue(max) : max}</span>
         </div>
       </div>
     );

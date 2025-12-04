@@ -1,22 +1,13 @@
 /**
  * ImmoCalc Pro - Zustand Store
- * 
+ *
  * Central state management for the application
  */
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {
-  PropertyInput,
-  PropertyOutput,
-  Property,
-  Scenario,
-  PortfolioSummary,
-} from "@/types";
-import {
-  calculatePropertyKPIs,
-  getDefaultPropertyInput,
-} from "@/lib/calculations";
+import { PropertyInput, PropertyOutput, Property, Scenario, PortfolioSummary } from "@/types";
+import { calculatePropertyKPIs, getDefaultPropertyInput } from "@/lib/calculations";
 
 /**
  * Generate a UUID that works in all environments
@@ -54,21 +45,21 @@ interface ImmoCalcState {
   updateInput: (updates: Partial<PropertyInput>) => void;
   resetInput: () => void;
   calculate: () => void;
-  
+
   // Property actions
   saveProperty: (name: string, address?: string) => void;
   loadProperty: (id: string) => void;
   deleteProperty: (id: string) => void;
-  
+
   // Scenario actions
   addScenario: (name: string) => void;
   updateScenario: (id: string, updates: Partial<PropertyInput>) => void;
   removeScenario: (id: string) => void;
   clearScenarios: () => void;
-  
+
   // UI actions
   setActiveTab: (tab: string) => void;
-  
+
   // Portfolio
   getPortfolioSummary: () => PortfolioSummary;
 }
@@ -120,7 +111,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       saveProperty: (name, address) => {
         const state = get();
         const output = calculatePropertyKPIs(state.currentInput);
-        
+
         const newProperty: Property = {
           id: generateId(),
           name,
@@ -153,8 +144,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       deleteProperty: (id) => {
         set((state) => ({
           properties: state.properties.filter((p) => p.id !== id),
-          selectedPropertyId:
-            state.selectedPropertyId === id ? null : state.selectedPropertyId,
+          selectedPropertyId: state.selectedPropertyId === id ? null : state.selectedPropertyId,
         }));
       },
 
@@ -162,7 +152,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       addScenario: (name) => {
         const state = get();
         const output = calculatePropertyKPIs(state.currentInput);
-        
+
         const newScenario: Scenario = {
           id: generateId(),
           name,
@@ -212,7 +202,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       // Get portfolio summary
       getPortfolioSummary: () => {
         const properties = get().properties;
-        
+
         if (properties.length === 0) {
           return {
             totalProperties: 0,

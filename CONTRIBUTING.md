@@ -46,16 +46,19 @@ This project and everyone participating in it is governed by our commitment to m
 ### Setup
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. Copy the environment file:
+
    ```bash
    cp .env.example .env.local
    ```
 
 3. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -64,18 +67,18 @@ This project and everyone participating in it is governed by our commitment to m
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format code with Prettier |
-| `npm run format:check` | Check code formatting |
-| `npm run test` | Run unit tests in watch mode |
-| `npm run test:run` | Run unit tests once |
-| `npm run test:coverage` | Run tests with coverage |
-| `npm run test:e2e` | Run E2E tests |
+| Command                 | Description                  |
+| ----------------------- | ---------------------------- |
+| `npm run dev`           | Start development server     |
+| `npm run build`         | Build for production         |
+| `npm run start`         | Start production server      |
+| `npm run lint`          | Run ESLint                   |
+| `npm run format`        | Format code with Prettier    |
+| `npm run format:check`  | Check code formatting        |
+| `npm run test`          | Run unit tests in watch mode |
+| `npm run test:run`      | Run unit tests once          |
+| `npm run test:coverage` | Run tests with coverage      |
+| `npm run test:e2e`      | Run E2E tests                |
 
 ## Code Style Guidelines
 
@@ -127,6 +130,7 @@ Pre-commit hooks will automatically format and lint staged files.
 ## Making Changes
 
 1. **Sync with upstream** before starting work:
+
    ```bash
    git fetch upstream
    git checkout main
@@ -139,6 +143,7 @@ Pre-commit hooks will automatically format and lint staged files.
 3. **Write or update tests** as needed
 
 4. **Ensure all tests pass**:
+
    ```bash
    npm run test:run
    npm run lint

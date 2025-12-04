@@ -1,6 +1,6 @@
 /**
  * Supabase Client Configuration
- * 
+ *
  * Initialize and configure the Supabase client for authentication and database access.
  * The Supabase library is optional - all features work offline when not installed.
  */
@@ -19,8 +19,15 @@ export interface SupabaseConfig {
  */
 export interface SupabaseClientInterface {
   auth: {
-    signUp: (params: { email: string; password: string; options?: { data?: Record<string, unknown> } }) => Promise<{ data: { user: SupabaseUser | null }; error: Error | null }>;
-    signInWithPassword: (params: { email: string; password: string }) => Promise<{ data: { user: SupabaseUser | null }; error: Error | null }>;
+    signUp: (params: {
+      email: string;
+      password: string;
+      options?: { data?: Record<string, unknown> };
+    }) => Promise<{ data: { user: SupabaseUser | null }; error: Error | null }>;
+    signInWithPassword: (params: {
+      email: string;
+      password: string;
+    }) => Promise<{ data: { user: SupabaseUser | null }; error: Error | null }>;
     signOut: () => Promise<{ error: Error | null }>;
     getUser: () => Promise<{ data: { user: SupabaseUser | null } }>;
     resetPasswordForEmail: (email: string) => Promise<{ error: Error | null }>;
@@ -36,10 +43,7 @@ export interface SupabaseUser {
 
 // Check if Supabase is configured
 export function isSupabaseConfigured(): boolean {
-  return !!(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+  return !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 }
 
 // Get Supabase configuration
@@ -55,7 +59,7 @@ export function getSupabaseConfig(): SupabaseConfig | null {
 }
 
 // Type-safe Supabase client holder
-let supabaseClient: SupabaseClientInterface | null = null;
+const supabaseClient: SupabaseClientInterface | null = null;
 
 /**
  * Get Supabase client - returns null if not configured or library not installed.
@@ -73,9 +77,11 @@ export async function getSupabaseClient(): Promise<SupabaseClientInterface | nul
   // Supabase is optional - this stub returns null when not installed
   // To enable: npm install @supabase/supabase-js
   // Then uncomment the dynamic import below
-  console.warn('Supabase client not available. Install @supabase/supabase-js to enable cloud sync.');
+  console.warn(
+    "Supabase client not available. Install @supabase/supabase-js to enable cloud sync."
+  );
   return null;
-  
+
   // Uncomment when @supabase/supabase-js is installed:
   /*
   try {

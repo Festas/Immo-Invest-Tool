@@ -5,3 +5,6 @@ export * from "./slider";
 export * from "./select";
 export * from "./tabs";
 export * from "./tooltip";
+export * from "./skeleton";
+export * from "./animated-number";
+export * from "./trend-indicator";

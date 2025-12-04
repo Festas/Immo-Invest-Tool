@@ -14,7 +14,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full">
         {label && (
-          <div className="flex items-center gap-1.5 mb-2">
+          <div className="mb-2 flex items-center gap-1.5">
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">
               {label}
             </label>
@@ -26,22 +26,26 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
           className={cn(
-            "flex h-12 w-full rounded-xl px-4 py-3 text-sm font-medium cursor-pointer",
+            "flex h-12 w-full cursor-pointer rounded-xl px-4 py-3 text-sm font-medium",
             "bg-white dark:bg-slate-800",
             "border-2 border-slate-200 dark:border-slate-600",
             "text-slate-900 dark:text-slate-100",
             "ring-offset-white dark:ring-offset-slate-900",
-            "focus-visible:outline-none focus-visible:border-indigo-500 dark:focus-visible:border-indigo-400",
+            "focus-visible:border-indigo-500 focus-visible:outline-none dark:focus-visible:border-indigo-400",
             "focus-visible:ring-4 focus-visible:ring-indigo-500/10 dark:focus-visible:ring-indigo-400/20",
             "hover:border-slate-300 dark:hover:border-slate-500",
             "transition-all duration-200",
-            "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-slate-50 dark:disabled:bg-slate-700",
+            "disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-50 dark:disabled:bg-slate-700",
             className
           )}
           {...props}
         >
           {options.map((option) => (
-            <option key={option.value} value={option.value} className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+            <option
+              key={option.value}
+              value={option.value}
+              className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100"
+            >
               {option.label}
             </option>
           ))}

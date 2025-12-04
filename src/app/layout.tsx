@@ -4,7 +4,8 @@ import { ThemeProvider } from "@/components/theme";
 
 export const metadata: Metadata = {
   title: "ImmoCalc Pro - Immobilienrechner",
-  description: "Professionelle Immobilienkalkulation für Investoren. Berechne Rendite, Cashflow und Finanzierung nach deutschem Standard.",
+  description:
+    "Professionelle Immobilienkalkulation für Investoren. Berechne Rendite, Cashflow und Finanzierung nach deutschem Standard.",
   keywords: ["Immobilien", "Kalkulation", "Rendite", "Cashflow", "Investment", "Finanzierung"],
 };
 
@@ -41,10 +42,8 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased font-sans">
-        <ThemeProvider defaultTheme="system">
-          {children}
-        </ThemeProvider>
+      <body className="font-sans antialiased">
+        <ThemeProvider defaultTheme="system">{children}</ThemeProvider>
       </body>
     </html>
   );

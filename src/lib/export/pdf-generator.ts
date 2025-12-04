@@ -1,11 +1,11 @@
 /**
  * PDF Export Generator
- * 
+ *
  * Generate professional PDF reports for property investments.
  * Uses basic structure - can be enhanced with @react-pdf/renderer or jspdf.
  */
 
-import type { PropertyInput, PropertyOutput, Property } from '@/types';
+import type { PropertyInput, PropertyOutput, Property } from "@/types";
 
 export interface PDFReportData {
   property: Property;
@@ -14,7 +14,7 @@ export interface PDFReportData {
   generatedAt: Date;
   includeCharts?: boolean;
   includeAmortization?: boolean;
-  language?: 'de' | 'en';
+  language?: "de" | "en";
 }
 
 export interface ReportSection {
@@ -26,9 +26,9 @@ export interface ReportSection {
  * Format currency for German locale
  */
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('de-DE', {
-    style: 'currency',
-    currency: 'EUR',
+  return new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
@@ -47,105 +47,105 @@ function formatPercent(value: number, decimals: number = 2): string {
 export function generateReportSections(data: PDFReportData): ReportSection[] {
   const { property, input, output } = data;
   const sections: ReportSection[] = [];
-  
+
   // Header section
   sections.push({
-    title: 'Immobilien-Investitionsanalyse',
+    title: "Immobilien-Investitionsanalyse",
     content: {
-      'Objektname': property.name,
-      'Adresse': property.address || 'Nicht angegeben',
-      'PLZ': property.postalCode || 'Nicht angegeben',
-      'Erstellt am': data.generatedAt.toLocaleDateString('de-DE'),
+      Objektname: property.name,
+      Adresse: property.address || "Nicht angegeben",
+      PLZ: property.postalCode || "Nicht angegeben",
+      "Erstellt am": data.generatedAt.toLocaleDateString("de-DE"),
     },
   });
-  
+
   // Investment summary
   sections.push({
-    title: 'Investitionsübersicht',
+    title: "Investitionsübersicht",
     content: {
-      'Kaufpreis': formatCurrency(input.purchasePrice),
-      'Nebenkosten': formatCurrency(output.investmentVolume.sideCosts.totalSideCosts),
-      'Gesamtinvestition': formatCurrency(output.investmentVolume.totalInvestment),
-      'Eigenkapital': formatCurrency(input.equity),
-      'Finanzierungssumme': formatCurrency(output.financing.loanAmount),
+      Kaufpreis: formatCurrency(input.purchasePrice),
+      Nebenkosten: formatCurrency(output.investmentVolume.sideCosts.totalSideCosts),
+      Gesamtinvestition: formatCurrency(output.investmentVolume.totalInvestment),
+      Eigenkapital: formatCurrency(input.equity),
+      Finanzierungssumme: formatCurrency(output.financing.loanAmount),
     },
   });
-  
+
   // Side costs breakdown
   sections.push({
-    title: 'Nebenkosten',
+    title: "Nebenkosten",
     content: {
-      'Maklerkosten': `${formatCurrency(output.investmentVolume.sideCosts.brokerCost)} (${input.brokerPercent}%)`,
-      'Notarkosten': `${formatCurrency(output.investmentVolume.sideCosts.notaryCost)} (${input.notaryPercent}%)`,
-      'Grunderwerbsteuer': `${formatCurrency(output.investmentVolume.sideCosts.propertyTransferTax)} (${input.propertyTransferTaxPercent}%)`,
-      'Renovierungskosten': formatCurrency(output.investmentVolume.sideCosts.renovationCosts),
-      'Gesamt': `${formatCurrency(output.investmentVolume.sideCosts.totalSideCosts)} (${output.investmentVolume.sideCosts.totalSideCostsPercent.toFixed(1)}%)`,
+      Maklerkosten: `${formatCurrency(output.investmentVolume.sideCosts.brokerCost)} (${input.brokerPercent}%)`,
+      Notarkosten: `${formatCurrency(output.investmentVolume.sideCosts.notaryCost)} (${input.notaryPercent}%)`,
+      Grunderwerbsteuer: `${formatCurrency(output.investmentVolume.sideCosts.propertyTransferTax)} (${input.propertyTransferTaxPercent}%)`,
+      Renovierungskosten: formatCurrency(output.investmentVolume.sideCosts.renovationCosts),
+      Gesamt: `${formatCurrency(output.investmentVolume.sideCosts.totalSideCosts)} (${output.investmentVolume.sideCosts.totalSideCostsPercent.toFixed(1)}%)`,
     },
   });
-  
+
   // Financing details
   sections.push({
-    title: 'Finanzierung',
+    title: "Finanzierung",
     content: {
-      'Darlehenssumme': formatCurrency(output.financing.loanAmount),
-      'Zinssatz': formatPercent(input.interestRate),
-      'Anfängliche Tilgung': formatPercent(input.repaymentRate),
-      'Zinsbindung': `${input.fixedInterestPeriod} Jahre`,
-      'Monatliche Rate': formatCurrency(output.financing.monthlyPayment),
-      'Jährliche Rate': formatCurrency(output.financing.annualPayment),
+      Darlehenssumme: formatCurrency(output.financing.loanAmount),
+      Zinssatz: formatPercent(input.interestRate),
+      "Anfängliche Tilgung": formatPercent(input.repaymentRate),
+      Zinsbindung: `${input.fixedInterestPeriod} Jahre`,
+      "Monatliche Rate": formatCurrency(output.financing.monthlyPayment),
+      "Jährliche Rate": formatCurrency(output.financing.annualPayment),
     },
   });
-  
+
   // Rental income
   sections.push({
-    title: 'Mieteinnahmen',
+    title: "Mieteinnahmen",
     content: {
-      'Kaltmiete (IST)': `${formatCurrency(input.coldRentActual)}/Monat`,
-      'Kaltmiete (SOLL)': `${formatCurrency(input.coldRentTarget)}/Monat`,
-      'Jahresmiete brutto': formatCurrency(output.cashflow.grossRentalIncome),
-      'Leerstandsabzug': formatCurrency(output.cashflow.vacancyDeduction),
-      'Jahresmiete netto': formatCurrency(output.cashflow.netRentalIncome),
+      "Kaltmiete (IST)": `${formatCurrency(input.coldRentActual)}/Monat`,
+      "Kaltmiete (SOLL)": `${formatCurrency(input.coldRentTarget)}/Monat`,
+      "Jahresmiete brutto": formatCurrency(output.cashflow.grossRentalIncome),
+      Leerstandsabzug: formatCurrency(output.cashflow.vacancyDeduction),
+      "Jahresmiete netto": formatCurrency(output.cashflow.netRentalIncome),
     },
   });
-  
+
   // Cashflow
   sections.push({
-    title: 'Cashflow-Analyse',
+    title: "Cashflow-Analyse",
     content: {
-      'Netto-Mieteinnahmen': formatCurrency(output.cashflow.netRentalIncome),
-      'Betriebskosten': formatCurrency(output.cashflow.operatingCosts),
-      'Kapitaldienst': formatCurrency(output.cashflow.annualDebtService),
-      'Cashflow vor Steuern': formatCurrency(output.cashflow.cashflowBeforeTax),
-      'Steuereffekt': formatCurrency(output.cashflow.taxEffect),
-      'Cashflow nach Steuern': formatCurrency(output.cashflow.cashflowAfterTax),
-      'Monatlicher Cashflow': formatCurrency(output.cashflow.monthlyCashflowAfterTax),
+      "Netto-Mieteinnahmen": formatCurrency(output.cashflow.netRentalIncome),
+      Betriebskosten: formatCurrency(output.cashflow.operatingCosts),
+      Kapitaldienst: formatCurrency(output.cashflow.annualDebtService),
+      "Cashflow vor Steuern": formatCurrency(output.cashflow.cashflowBeforeTax),
+      Steuereffekt: formatCurrency(output.cashflow.taxEffect),
+      "Cashflow nach Steuern": formatCurrency(output.cashflow.cashflowAfterTax),
+      "Monatlicher Cashflow": formatCurrency(output.cashflow.monthlyCashflowAfterTax),
     },
   });
-  
+
   // Key metrics
   sections.push({
-    title: 'Renditekennzahlen',
+    title: "Renditekennzahlen",
     content: {
-      'Bruttomietrendite': formatPercent(output.yields.grossRentalYield),
-      'Nettomietrendite': formatPercent(output.yields.netRentalYield),
-      'Eigenkapitalrendite': formatPercent(output.yields.returnOnEquity),
-      'Cashflow-Rendite': formatPercent(output.yields.cashflowYield),
+      Bruttomietrendite: formatPercent(output.yields.grossRentalYield),
+      Nettomietrendite: formatPercent(output.yields.netRentalYield),
+      Eigenkapitalrendite: formatPercent(output.yields.returnOnEquity),
+      "Cashflow-Rendite": formatPercent(output.yields.cashflowYield),
     },
   });
-  
+
   // Tax effects
   sections.push({
-    title: 'Steuerliche Auswirkungen',
+    title: "Steuerliche Auswirkungen",
     content: {
-      'AfA-Betrag': formatCurrency(output.tax.afaAmount),
-      'Abzugsfähige Zinsen': formatCurrency(output.tax.deductibleInterest),
-      'Weitere abzugsfähige Kosten': formatCurrency(output.tax.deductibleCosts),
-      'Gesamte Werbungskosten': formatCurrency(output.tax.totalDeductions),
-      'Zu versteuerndes Ergebnis': formatCurrency(output.tax.rentalIncomeAfterDeductions),
-      'Jährlicher Steuereffekt': formatCurrency(output.tax.taxEffect),
+      "AfA-Betrag": formatCurrency(output.tax.afaAmount),
+      "Abzugsfähige Zinsen": formatCurrency(output.tax.deductibleInterest),
+      "Weitere abzugsfähige Kosten": formatCurrency(output.tax.deductibleCosts),
+      "Gesamte Werbungskosten": formatCurrency(output.tax.totalDeductions),
+      "Zu versteuerndes Ergebnis": formatCurrency(output.tax.rentalIncomeAfterDeductions),
+      "Jährlicher Steuereffekt": formatCurrency(output.tax.taxEffect),
     },
   });
-  
+
   return sections;
 }
 
@@ -155,18 +155,18 @@ export function generateReportSections(data: PDFReportData): ReportSection[] {
 export function generatePlainTextReport(data: PDFReportData): string {
   const sections = generateReportSections(data);
   const lines: string[] = [];
-  
-  lines.push('═'.repeat(60));
-  lines.push('IMMOBILIEN-INVESTITIONSANALYSE');
-  lines.push('═'.repeat(60));
-  lines.push('');
-  
+
+  lines.push("═".repeat(60));
+  lines.push("IMMOBILIEN-INVESTITIONSANALYSE");
+  lines.push("═".repeat(60));
+  lines.push("");
+
   for (const section of sections) {
-    lines.push('─'.repeat(60));
+    lines.push("─".repeat(60));
     lines.push(section.title.toUpperCase());
-    lines.push('─'.repeat(60));
-    
-    if (typeof section.content === 'string') {
+    lines.push("─".repeat(60));
+
+    if (typeof section.content === "string") {
       lines.push(section.content);
     } else if (Array.isArray(section.content)) {
       for (const item of section.content) {
@@ -177,16 +177,16 @@ export function generatePlainTextReport(data: PDFReportData): string {
         lines.push(`${key}: ${value}`);
       }
     }
-    
-    lines.push('');
+
+    lines.push("");
   }
-  
-  lines.push('═'.repeat(60));
-  lines.push('Dieses Dokument dient nur zu Informationszwecken.');
-  lines.push('Alle Berechnungen basieren auf vereinfachten Annahmen.');
-  lines.push('═'.repeat(60));
-  
-  return lines.join('\n');
+
+  lines.push("═".repeat(60));
+  lines.push("Dieses Dokument dient nur zu Informationszwecken.");
+  lines.push("Alle Berechnungen basieren auf vereinfachten Annahmen.");
+  lines.push("═".repeat(60));
+
+  return lines.join("\n");
 }
 
 /**
@@ -194,7 +194,7 @@ export function generatePlainTextReport(data: PDFReportData): string {
  */
 export function generateHTMLReport(data: PDFReportData): string {
   const sections = generateReportSections(data);
-  
+
   const html = `
 <!DOCTYPE html>
 <html lang="de">
@@ -216,22 +216,31 @@ export function generateHTMLReport(data: PDFReportData): string {
 </head>
 <body>
   <h1>🏠 Immobilien-Investitionsanalyse</h1>
-  <p><strong>${data.property.name}</strong> | Erstellt am ${data.generatedAt.toLocaleDateString('de-DE')}</p>
+  <p><strong>${data.property.name}</strong> | Erstellt am ${data.generatedAt.toLocaleDateString("de-DE")}</p>
   
-  ${sections.map(section => `
+  ${sections
+    .map(
+      (section) => `
     <div class="section">
       <h2>${section.title}</h2>
-      ${typeof section.content === 'object' && !Array.isArray(section.content) 
-        ? Object.entries(section.content).map(([key, value]) => `
+      ${
+        typeof section.content === "object" && !Array.isArray(section.content)
+          ? Object.entries(section.content)
+              .map(
+                ([key, value]) => `
           <div class="data-row">
             <span class="data-label">${key}</span>
             <span class="data-value">${value}</span>
           </div>
-        `).join('')
-        : `<p>${section.content}</p>`
+        `
+              )
+              .join("")
+          : `<p>${section.content}</p>`
       }
     </div>
-  `).join('')}
+  `
+    )
+    .join("")}
   
   <div class="disclaimer">
     <p><strong>Haftungsausschluss:</strong> Dieses Dokument dient nur zu Informationszwecken und ersetzt keine professionelle Finanzberatung. Alle Berechnungen basieren auf vereinfachten Annahmen und können von der tatsächlichen Entwicklung abweichen.</p>
@@ -240,7 +249,7 @@ export function generateHTMLReport(data: PDFReportData): string {
 </body>
 </html>
   `;
-  
+
   return html.trim();
 }
 
@@ -250,11 +259,11 @@ export function generateHTMLReport(data: PDFReportData): string {
 export function downloadReport(
   content: string,
   filename: string,
-  type: 'text/plain' | 'text/html' = 'text/plain'
+  type: "text/plain" | "text/html" = "text/plain"
 ): void {
   const blob = new Blob([content], { type: `${type};charset=utf-8` });
   const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
   link.download = filename;
   document.body.appendChild(link);
@@ -268,8 +277,8 @@ export function downloadReport(
  */
 export function exportHTMLReport(data: PDFReportData): void {
   const html = generateHTMLReport(data);
-  const filename = `immobilien-analyse-${data.property.name.toLowerCase().replace(/\s+/g, '-')}-${data.generatedAt.toISOString().split('T')[0]}.html`;
-  downloadReport(html, filename, 'text/html');
+  const filename = `immobilien-analyse-${data.property.name.toLowerCase().replace(/\s+/g, "-")}-${data.generatedAt.toISOString().split("T")[0]}.html`;
+  downloadReport(html, filename, "text/html");
 }
 
 /**
@@ -277,6 +286,6 @@ export function exportHTMLReport(data: PDFReportData): void {
  */
 export function exportTextReport(data: PDFReportData): void {
   const text = generatePlainTextReport(data);
-  const filename = `immobilien-analyse-${data.property.name.toLowerCase().replace(/\s+/g, '-')}-${data.generatedAt.toISOString().split('T')[0]}.txt`;
-  downloadReport(text, filename, 'text/plain');
+  const filename = `immobilien-analyse-${data.property.name.toLowerCase().replace(/\s+/g, "-")}-${data.generatedAt.toISOString().split("T")[0]}.txt`;
+  downloadReport(text, filename, "text/plain");
 }

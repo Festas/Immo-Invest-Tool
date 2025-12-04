@@ -1,8 +1,13 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  hover?: boolean;
+  animate?: boolean;
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, hover = true, animate = false, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
@@ -10,8 +15,12 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
         "border-slate-200/60 dark:border-slate-700",
         "shadow-lg shadow-slate-200/40 dark:shadow-black/40",
         "transition-all duration-300 ease-out",
-        "hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/50",
-        "hover:border-slate-300/60 dark:hover:border-slate-600",
+        hover && [
+          "hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/50",
+          "hover:border-slate-300/60 dark:hover:border-slate-600",
+          "hover:-translate-y-0.5",
+        ],
+        animate && "animate-fade-in",
         className
       )}
       {...props}

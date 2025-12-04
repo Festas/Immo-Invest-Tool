@@ -8,11 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { calculateRenovationROI } from "@/lib/calculations";
 import { formatCurrency } from "@/lib/utils";
-import {
-  RenovationInput,
-  RenovationResult,
-  RenovationTypeLabels,
-} from "@/types";
+import { RenovationInput, RenovationResult, RenovationTypeLabels } from "@/types";
 import {
   Wrench,
   Calculator,
@@ -23,12 +19,10 @@ import {
   Lightbulb,
 } from "lucide-react";
 
-const renovationOptions = Object.entries(RenovationTypeLabels).map(
-  ([key, data]) => ({
-    value: key,
-    label: data.label,
-  })
-);
+const renovationOptions = Object.entries(RenovationTypeLabels).map(([key, data]) => ({
+  value: key,
+  label: data.label,
+}));
 
 // Help texts for renovation calculator
 const helpTexts = {
@@ -114,8 +108,8 @@ export function RenovationCalculator() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Berechnen Sie die Rentabilität von Renovierungsmaßnahmen und ob sich
-            die Investition lohnt.
+            Berechnen Sie die Rentabilität von Renovierungsmaßnahmen und ob sich die Investition
+            lohnt.
           </p>
 
           <Select
@@ -132,9 +126,9 @@ export function RenovationCalculator() {
           />
 
           {selectedType && (
-            <div className="p-3 bg-blue-50 dark:bg-blue-950/50 rounded-lg border border-blue-100 dark:border-blue-900/50 text-sm">
+            <div className="rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm dark:border-blue-900/50 dark:bg-blue-950/50">
               <p className="font-medium text-blue-900 dark:text-blue-100">
-                <Lightbulb className="inline h-4 w-4 mr-1" />
+                <Lightbulb className="mr-1 inline h-4 w-4" />
                 Richtwerte für {selectedType.label}:
               </p>
               <div className="mt-2 grid grid-cols-2 gap-2 text-blue-700 dark:text-blue-300">
@@ -150,7 +144,7 @@ export function RenovationCalculator() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Input
               label="Geschätzte Kosten"
               type="number"
@@ -206,9 +200,7 @@ export function RenovationCalculator() {
                 max={100}
                 step={10}
                 value={input.financingPercent}
-                onChange={(value) =>
-                  setInput({ ...input, financingPercent: value })
-                }
+                onChange={(value) => setInput({ ...input, financingPercent: value })}
                 formatValue={(v) => `${v}%`}
                 helpText={helpTexts.financingPercent}
               />
@@ -235,7 +227,7 @@ export function RenovationCalculator() {
           )}
 
           <Button onClick={handleCalculate} className="w-full">
-            <Calculator className="h-4 w-4 mr-2" />
+            <Calculator className="mr-2 h-4 w-4" />
             ROI berechnen
           </Button>
         </CardContent>
@@ -250,28 +242,24 @@ export function RenovationCalculator() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  Gesamtkosten
-                </p>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 text-center dark:border-slate-700/50 dark:bg-slate-800/50">
+                <p className="text-xs text-slate-600 dark:text-slate-400">Gesamtkosten</p>
                 <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   {formatCurrency(result.totalCost)}
                 </p>
               </div>
-              <div className="text-center p-3 bg-green-50 dark:bg-green-950/50 rounded-lg border border-green-100 dark:border-green-900/50">
-                <p className="text-xs text-green-600 dark:text-green-400">
-                  Mehreinnahmen/Jahr
-                </p>
+              <div className="rounded-lg border border-green-100 bg-green-50 p-3 text-center dark:border-green-900/50 dark:bg-green-950/50">
+                <p className="text-xs text-green-600 dark:text-green-400">Mehreinnahmen/Jahr</p>
                 <p className="text-lg font-bold text-green-700 dark:text-green-300">
                   +{formatCurrency(result.annualRentIncrease)}
                 </p>
               </div>
               <div
-                className={`text-center p-3 rounded-lg border ${
+                className={`rounded-lg border p-3 text-center ${
                   result.paybackPeriodYears <= 10
-                    ? "bg-green-50 dark:bg-green-950/50 border-green-100 dark:border-green-900/50"
-                    : "bg-orange-50 dark:bg-orange-950/50 border-orange-100 dark:border-orange-900/50"
+                    ? "border-green-100 bg-green-50 dark:border-green-900/50 dark:bg-green-950/50"
+                    : "border-orange-100 bg-orange-50 dark:border-orange-900/50 dark:bg-orange-950/50"
                 }`}
               >
                 <p
@@ -290,12 +278,12 @@ export function RenovationCalculator() {
                 </p>
               </div>
               <div
-                className={`text-center p-3 rounded-lg border ${
+                className={`rounded-lg border p-3 text-center ${
                   result.roiPercent >= 8
-                    ? "bg-green-50 dark:bg-green-950/50 border-green-100 dark:border-green-900/50"
+                    ? "border-green-100 bg-green-50 dark:border-green-900/50 dark:bg-green-950/50"
                     : result.roiPercent >= 4
-                    ? "bg-yellow-50 dark:bg-yellow-950/50 border-yellow-100 dark:border-yellow-900/50"
-                    : "bg-red-50 dark:bg-red-950/50 border-red-100 dark:border-red-900/50"
+                      ? "border-yellow-100 bg-yellow-50 dark:border-yellow-900/50 dark:bg-yellow-950/50"
+                      : "border-red-100 bg-red-50 dark:border-red-900/50 dark:bg-red-950/50"
                 }`}
               >
                 <p
@@ -303,65 +291,61 @@ export function RenovationCalculator() {
                     result.roiPercent >= 8
                       ? "text-green-600 dark:text-green-400"
                       : result.roiPercent >= 4
-                      ? "text-yellow-600 dark:text-yellow-400"
-                      : "text-red-600 dark:text-red-400"
+                        ? "text-yellow-600 dark:text-yellow-400"
+                        : "text-red-600 dark:text-red-400"
                   }`}
                 >
                   Miet-ROI
                 </p>
-                <p className="text-lg font-bold">
-                  {result.roiPercent.toFixed(1)}% p.a.
-                </p>
+                <p className="text-lg font-bold">{result.roiPercent.toFixed(1)}% p.a.</p>
               </div>
             </div>
 
-            <div className="p-4 bg-purple-50 dark:bg-purple-950/50 rounded-lg border border-purple-100 dark:border-purple-900/50">
-              <p className="text-sm font-medium text-purple-900 dark:text-purple-100 mb-2">
+            <div className="rounded-lg border border-purple-100 bg-purple-50 p-4 dark:border-purple-900/50 dark:bg-purple-950/50">
+              <p className="mb-2 text-sm font-medium text-purple-900 dark:text-purple-100">
                 Wertsteigerungsrendite
               </p>
               <div className="flex items-center justify-between">
                 <span className="text-purple-700 dark:text-purple-300">
                   Wertsteigerung / Investition:
                 </span>
-                <span className="font-bold text-lg">
-                  {result.valueIncreaseRoi.toFixed(0)}%
-                </span>
+                <span className="text-lg font-bold">{result.valueIncreaseRoi.toFixed(0)}%</span>
               </div>
-              <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                Eine Wertsteigerungsrendite von über 100% bedeutet, dass die
-                Wertsteigerung die Kosten übersteigt.
+              <p className="mt-1 text-xs text-purple-600 dark:text-purple-400">
+                Eine Wertsteigerungsrendite von über 100% bedeutet, dass die Wertsteigerung die
+                Kosten übersteigt.
               </p>
             </div>
 
             <div
-              className={`p-4 rounded-lg border-l-4 flex items-start gap-3 ${
+              className={`flex items-start gap-3 rounded-lg border-l-4 p-4 ${
                 result.isRecommended
-                  ? "bg-green-50 dark:bg-green-950/50 border-green-500"
-                  : "bg-red-50 dark:bg-red-950/50 border-red-500"
+                  ? "border-green-500 bg-green-50 dark:bg-green-950/50"
+                  : "border-red-500 bg-red-50 dark:bg-red-950/50"
               }`}
             >
               {result.isRecommended ? (
-                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-600 dark:text-green-400" />
               ) : (
-                <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                <XCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400" />
               )}
               <div>
-                <p className="font-medium text-slate-900 dark:text-slate-100">{result.recommendation}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">
+                  {result.recommendation}
+                </p>
               </div>
             </div>
 
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
-              <div className="flex items-center gap-2 mb-2">
+            <div className="rounded-lg border border-slate-100 bg-slate-50 p-4 dark:border-slate-700/50 dark:bg-slate-800/50">
+              <div className="mb-2 flex items-center gap-2">
                 <Hammer className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                 <p className="font-medium text-slate-900 dark:text-slate-100">Zusammenfassung</p>
               </div>
-              <ul className="text-sm space-y-1 text-slate-600 dark:text-slate-400">
+              <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
                 <li>
-                  • Die Investition von{" "}
-                  <strong>{formatCurrency(result.totalCost)}</strong> in{" "}
+                  • Die Investition von <strong>{formatCurrency(result.totalCost)}</strong> in{" "}
                   {selectedType.label} generiert jährlich{" "}
-                  <strong>{formatCurrency(result.annualRentIncrease)}</strong>{" "}
-                  Mehreinnahmen.
+                  <strong>{formatCurrency(result.annualRentIncrease)}</strong> Mehreinnahmen.
                 </li>
                 <li>
                   • Die Amortisationszeit beträgt{" "}
@@ -378,8 +362,7 @@ export function RenovationCalculator() {
                 </li>
                 <li>
                   • Die erwartete Wertsteigerung entspricht{" "}
-                  <strong>{result.valueIncreaseRoi.toFixed(0)}%</strong> der
-                  Investition.
+                  <strong>{result.valueIncreaseRoi.toFixed(0)}%</strong> der Investition.
                 </li>
               </ul>
             </div>
