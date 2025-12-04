@@ -75,6 +75,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         env:
           IMAGE_SHA: ${{ needs.build-and-push.outputs.image_sha }}
+          COMMIT_SHA: ${{ github.sha }}
           REGISTRY: ghcr.io
           IMAGE_NAME: ${{ github.repository }}
           DOMAIN: ${{ secrets.DOMAIN }}
@@ -84,7 +85,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: IMAGE_SHA,REGISTRY,IMAGE_NAME,DOMAIN,GHCR_TOKEN,GHCR_ACTOR
+          envs: IMAGE_SHA,COMMIT_SHA,REGISTRY,IMAGE_NAME,DOMAIN,GHCR_TOKEN,GHCR_ACTOR
           script: |
             set -euo pipefail
 
@@ -102,11 +103,11 @@ jobs:
             docker pull "${REGISTRY}/${IMAGE_NAME}:${IMAGE_SHA}"
 
             echo "[4/5] Downloading production docker-compose file..."
-            curl -sSL "https://raw.githubusercontent.com/Festas/Immo-Invest-Tool/main/docker-compose.prod.yml" \
+            curl -sSL "https://raw.githubusercontent.com/Festas/Immo-Invest-Tool/${COMMIT_SHA}/docker-compose.prod.yml" \
               -o docker-compose.yml
 
             # Update the image tag to the specific SHA
-            sed -i "s|:latest|:${IMAGE_SHA}|g" docker-compose.yml
+            sed -i "s|ghcr.io/festas/immo-invest-tool:latest|ghcr.io/festas/immo-invest-tool:${IMAGE_SHA}|g" docker-compose.yml
 
             echo "[5/5] Deploying containers..."
             docker compose down --remove-orphans || true
