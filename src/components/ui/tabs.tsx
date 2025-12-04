@@ -28,9 +28,9 @@ const TabsList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
     <div
       ref={ref}
       className={cn(
-        "relative inline-flex h-12 items-center justify-center gap-1 rounded-lg p-1.5",
+        "relative inline-flex h-12 items-center justify-center gap-1 rounded-xl p-1.5",
         "bg-slate-100/90 backdrop-blur-sm dark:bg-slate-800/90",
-        "border border-slate-200/50 dark:border-slate-700/50",
+        "border border-indigo-100/50 dark:border-indigo-900/30",
         "shadow-inner shadow-slate-200/50 dark:shadow-black/20",
         className
       )}
@@ -60,11 +60,11 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
           "relative inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap",
           "ring-offset-white dark:ring-offset-slate-950",
           "transition-all duration-300 ease-out",
-          "focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:outline-none",
+          "focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:outline-none",
           "disabled:pointer-events-none disabled:opacity-50",
           isActive
-            ? "border border-slate-200/50 bg-white text-slate-900 shadow-md shadow-slate-200/50 dark:border-slate-700/50 dark:bg-slate-900 dark:text-slate-100 dark:shadow-black/30"
-            : "text-slate-600 hover:bg-white/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-slate-200",
+            ? "border border-indigo-200/50 bg-white text-indigo-700 shadow-md shadow-indigo-100/50 dark:border-indigo-700/50 dark:bg-slate-900 dark:text-indigo-300 dark:shadow-black/30"
+            : "text-slate-600 hover:bg-white/50 hover:text-indigo-600 dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-indigo-400",
           className
         )}
         {...props}
@@ -74,7 +74,7 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
         </span>
         {isActive && (
           <span
-            className="absolute bottom-0 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-slate-600 dark:bg-slate-400"
+            className="absolute bottom-0 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500"
             style={{
               animation: "tabIndicator 0.3s ease-out forwards",
             }}
@@ -101,7 +101,7 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
       <div
         ref={ref}
         className={cn(
-          "mt-4 ring-offset-white focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:outline-none",
+          "mt-4 ring-offset-white focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:outline-none",
           "animate-fade-in",
           className
         )}

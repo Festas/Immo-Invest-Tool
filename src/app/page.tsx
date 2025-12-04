@@ -47,17 +47,17 @@ export default function Home() {
       <div className="bg-pattern pointer-events-none fixed inset-0 z-0" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-slate-200/50 bg-white/80 backdrop-blur-xl transition-all duration-300 dark:border-slate-700/50 dark:bg-slate-900/80">
+      <header className="sticky top-0 z-50 border-b border-indigo-100/50 bg-white/80 backdrop-blur-xl transition-all duration-300 dark:border-indigo-900/30 dark:bg-slate-900/80">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="relative rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 p-3 shadow-lg transition-transform duration-300 hover:scale-105 dark:from-slate-600 dark:to-slate-700">
+                <div className="relative rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-3 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
                   <Calculator className="h-7 w-7 text-white" />
                 </div>
               </div>
               <div>
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                <h1 className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-2xl font-bold tracking-tight text-transparent dark:from-white dark:via-indigo-100 dark:to-white">
                   ImmoCalc Pro
                 </h1>
                 <p className="hidden items-center gap-1.5 text-sm text-slate-500 sm:flex dark:text-slate-400">
@@ -139,7 +139,7 @@ export default function Home() {
               {/* Input Form */}
               <div className="animate-fade-in">
                 <div className="mb-6 flex items-center gap-3">
-                  <div className="rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg transition-transform hover:scale-105 dark:from-slate-500 dark:to-slate-600">
+                  <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
                     <Calculator className="h-5 w-5 text-white" />
                   </div>
                   <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -152,7 +152,7 @@ export default function Home() {
               {/* Results */}
               <div className="animate-fade-in animate-delay-200">
                 <div className="mb-6 flex items-center gap-3">
-                  <div className="rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg transition-transform hover:scale-105 dark:from-slate-500 dark:to-slate-600">
+                  <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
                     <BarChart3 className="h-5 w-5 text-white" />
                   </div>
                   <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -215,7 +215,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 mt-auto border-t border-slate-200/50 bg-white/70 backdrop-blur-xl transition-all duration-300 dark:border-slate-700/50 dark:bg-slate-900/70">
+      <footer className="relative z-10 mt-auto border-t border-indigo-100/50 bg-gradient-to-b from-white/70 to-indigo-50/30 backdrop-blur-xl transition-all duration-300 dark:border-indigo-900/30 dark:from-slate-900/70 dark:to-indigo-950/20">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
           <div className="space-y-3 text-center">
             <p className="flex flex-wrap items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
@@ -227,7 +227,7 @@ export default function Home() {
                 Finanzberatung.
               </span>
             </p>
-            <div className="section-divider mx-auto w-48" />
+            <div className="mx-auto h-px w-48 bg-gradient-to-r from-transparent via-indigo-300 to-transparent dark:via-indigo-700" />
             <p className="text-sm text-slate-400 dark:text-slate-500">
               Entwickelt mit ❤️ | Next.js, TypeScript, Tailwind CSS | Deutsches Steuerrecht (Stand
               2024)

@@ -11,13 +11,13 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     <div
       ref={ref}
       className={cn(
-        "rounded-lg border bg-[var(--card)] backdrop-blur-sm",
+        "rounded-xl border bg-[var(--card)] backdrop-blur-sm",
         "border-[var(--card-border)]",
-        "shadow-lg shadow-slate-200/40 dark:shadow-black/40",
+        "shadow-lg shadow-indigo-100/20 dark:shadow-black/40",
         "transition-all duration-300 ease-out",
         hover && [
-          "hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/50",
-          "hover:border-slate-300/60 dark:hover:border-slate-600",
+          "hover:shadow-xl hover:shadow-indigo-100/30 dark:hover:shadow-black/50",
+          "hover:border-indigo-200/60 dark:hover:border-indigo-800/40",
           "hover:-translate-y-0.5",
         ],
         animate && "animate-fade-in",

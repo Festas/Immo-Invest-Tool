@@ -240,9 +240,9 @@ export function ResultsPanel() {
 
       {/* Yield Metrics */}
       <Card className="overflow-hidden" animate>
-        <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100/50 pb-3 dark:from-slate-800/50 dark:to-slate-800/30">
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-slate-50 pb-3 dark:from-indigo-950/30 dark:to-slate-800/30">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg dark:from-slate-500 dark:to-slate-600">
+            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
               <BarChart3 className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-slate-900 dark:text-white">Renditekennzahlen</span>
@@ -250,7 +250,7 @@ export function ResultsPanel() {
         </CardHeader>
         <CardContent className="pt-4">
           <div className="space-y-1">
-            <div className="group flex items-center justify-between rounded-lg px-3 py-3 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm dark:hover:bg-slate-800/50">
+            <div className="group flex items-center justify-between rounded-lg px-3 py-3 transition-all duration-200 hover:bg-indigo-50/50 hover:shadow-sm dark:hover:bg-indigo-950/30">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                   Bruttomietrendite
@@ -261,7 +261,7 @@ export function ResultsPanel() {
                 <AnimatedPercentage value={output.yields.grossRentalYield} />
               </span>
             </div>
-            <div className="group flex items-center justify-between rounded-lg px-3 py-3 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm dark:hover:bg-slate-800/50">
+            <div className="group flex items-center justify-between rounded-lg px-3 py-3 transition-all duration-200 hover:bg-indigo-50/50 hover:shadow-sm dark:hover:bg-indigo-950/30">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                   Nettomietrendite
@@ -272,7 +272,7 @@ export function ResultsPanel() {
                 <AnimatedPercentage value={output.yields.netRentalYield} />
               </span>
             </div>
-            <div className="group flex items-center justify-between rounded-lg px-3 py-3 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm dark:hover:bg-slate-800/50">
+            <div className="group flex items-center justify-between rounded-lg px-3 py-3 transition-all duration-200 hover:bg-indigo-50/50 hover:shadow-sm dark:hover:bg-indigo-950/30">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                   Eigenkapitalrendite
@@ -283,7 +283,7 @@ export function ResultsPanel() {
                 <AnimatedPercentage value={output.yields.returnOnEquity} />
               </span>
             </div>
-            <div className="group flex items-center justify-between rounded-lg px-3 py-3 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm dark:hover:bg-slate-800/50">
+            <div className="group flex items-center justify-between rounded-lg px-3 py-3 transition-all duration-200 hover:bg-indigo-50/50 hover:shadow-sm dark:hover:bg-indigo-950/30">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                   Cashflow-Rendite
@@ -300,9 +300,9 @@ export function ResultsPanel() {
 
       {/* Tax Overview */}
       <Card className="overflow-hidden" animate>
-        <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100/50 pb-3 dark:from-slate-800/50 dark:to-slate-800/30">
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-slate-50 pb-3 dark:from-indigo-950/30 dark:to-slate-800/30">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg dark:from-slate-500 dark:to-slate-600">
+            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
               <Sparkles className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-slate-900 dark:text-white">Steuerliche Auswirkung</span>
@@ -310,7 +310,7 @@ export function ResultsPanel() {
         </CardHeader>
         <CardContent className="pt-4">
           <div className="space-y-2 text-sm">
-            <div className="group flex items-center justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm dark:hover:bg-slate-800/50">
+            <div className="group flex items-center justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-indigo-50/50 hover:shadow-sm dark:hover:bg-indigo-950/30">
               <div className="flex items-center gap-2">
                 <span className="font-medium text-slate-600 dark:text-slate-400">
                   AfA (jährlich)
@@ -321,7 +321,7 @@ export function ResultsPanel() {
                 {formatCurrency(output.tax.afaAmount)}
               </span>
             </div>
-            <div className="group flex items-center justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm dark:hover:bg-slate-800/50">
+            <div className="group flex items-center justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-indigo-50/50 hover:shadow-sm dark:hover:bg-indigo-950/30">
               <div className="flex items-center gap-2">
                 <span className="font-medium text-slate-600 dark:text-slate-400">
                   Absetzbare Zinsen
@@ -332,7 +332,7 @@ export function ResultsPanel() {
                 {formatCurrency(output.tax.deductibleInterest)}
               </span>
             </div>
-            <div className="group flex items-center justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm dark:hover:bg-slate-800/50">
+            <div className="group flex items-center justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-indigo-50/50 hover:shadow-sm dark:hover:bg-indigo-950/30">
               <span className="font-medium text-slate-600 dark:text-slate-400">
                 Werbungskosten gesamt
               </span>
@@ -340,8 +340,8 @@ export function ResultsPanel() {
                 {formatCurrency(output.tax.totalDeductions)}
               </span>
             </div>
-            <div className="mt-3 border-t border-slate-200 pt-3 dark:border-slate-700">
-              <div className="flex items-center justify-between rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 px-3 py-2 dark:from-slate-800/50 dark:to-slate-800/30">
+            <div className="mt-3 border-t border-indigo-100 pt-3 dark:border-indigo-900/30">
+              <div className="flex items-center justify-between rounded-lg bg-gradient-to-r from-indigo-50/50 to-slate-50 px-3 py-2 dark:from-indigo-950/30 dark:to-slate-800/30">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-slate-700 dark:text-slate-300">
                     Einkünfte aus V&V
@@ -359,7 +359,7 @@ export function ResultsPanel() {
                 </span>
               </div>
             </div>
-            <div className="flex items-center justify-between rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 px-3 py-2 dark:from-slate-800/50 dark:to-slate-800/30">
+            <div className="flex items-center justify-between rounded-lg bg-gradient-to-r from-indigo-50/50 to-slate-50 px-3 py-2 dark:from-indigo-950/30 dark:to-slate-800/30">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-slate-700 dark:text-slate-300">
                   Steuereffekt (jährlich)
@@ -379,9 +379,9 @@ export function ResultsPanel() {
 
       {/* Side Costs Breakdown */}
       <Card className="overflow-hidden" animate>
-        <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100/50 pb-3 dark:from-slate-800/50 dark:to-slate-800/30">
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-slate-50 pb-3 dark:from-indigo-950/30 dark:to-slate-800/30">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg dark:from-slate-500 dark:to-slate-600">
+            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
               <Wallet className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-slate-900 dark:text-white">
@@ -391,7 +391,7 @@ export function ResultsPanel() {
         </CardHeader>
         <CardContent className="pt-4">
           <div className="space-y-2 text-sm">
-            <div className="group flex justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm dark:hover:bg-slate-800/50">
+            <div className="group flex justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-indigo-50/50 hover:shadow-sm dark:hover:bg-indigo-950/30">
               <span className="font-medium text-slate-600 dark:text-slate-400">
                 Grunderwerbsteuer
               </span>
@@ -399,7 +399,7 @@ export function ResultsPanel() {
                 {formatCurrency(output.investmentVolume.sideCosts.propertyTransferTax)}
               </span>
             </div>
-            <div className="group flex justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm dark:hover:bg-slate-800/50">
+            <div className="group flex justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-indigo-50/50 hover:shadow-sm dark:hover:bg-indigo-950/30">
               <span className="font-medium text-slate-600 dark:text-slate-400">
                 Notar & Grundbuch
               </span>
@@ -407,22 +407,22 @@ export function ResultsPanel() {
                 {formatCurrency(output.investmentVolume.sideCosts.notaryCost)}
               </span>
             </div>
-            <div className="group flex justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm dark:hover:bg-slate-800/50">
+            <div className="group flex justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-indigo-50/50 hover:shadow-sm dark:hover:bg-indigo-950/30">
               <span className="font-medium text-slate-600 dark:text-slate-400">Makler</span>
               <span className="font-semibold text-slate-900 tabular-nums dark:text-white">
                 {formatCurrency(output.investmentVolume.sideCosts.brokerCost)}
               </span>
             </div>
             {output.investmentVolume.sideCosts.renovationCosts > 0 && (
-              <div className="group flex justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm dark:hover:bg-slate-800/50">
+              <div className="group flex justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:bg-indigo-50/50 hover:shadow-sm dark:hover:bg-indigo-950/30">
                 <span className="font-medium text-slate-600 dark:text-slate-400">Renovierung</span>
                 <span className="font-semibold text-slate-900 tabular-nums dark:text-white">
                   {formatCurrency(output.investmentVolume.sideCosts.renovationCosts)}
                 </span>
               </div>
             )}
-            <div className="mt-3 border-t border-slate-200 pt-3 dark:border-slate-700">
-              <div className="flex justify-between rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 px-3 py-2 dark:from-slate-800/50 dark:to-slate-800/30">
+            <div className="mt-3 border-t border-indigo-100 pt-3 dark:border-indigo-900/30">
+              <div className="flex justify-between rounded-lg bg-gradient-to-r from-indigo-50/50 to-slate-50 px-3 py-2 dark:from-indigo-950/30 dark:to-slate-800/30">
                 <span className="font-bold text-slate-700 dark:text-slate-300">
                   Nebenkosten gesamt
                 </span>
@@ -430,7 +430,7 @@ export function ResultsPanel() {
                   <span className="font-bold text-slate-900 tabular-nums dark:text-white">
                     {formatCurrency(output.investmentVolume.sideCosts.totalSideCosts)}
                   </span>
-                  <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">
+                  <span className="ml-2 text-xs text-indigo-600 dark:text-indigo-400">
                     ({output.investmentVolume.sideCosts.totalSideCostsPercent.toFixed(2)}%)
                   </span>
                 </div>
