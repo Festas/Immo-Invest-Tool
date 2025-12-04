@@ -198,9 +198,9 @@ export function PropertyCalculatorForm() {
     <div className="space-y-5">
       {/* Purchase & Costs Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-slate-50 pb-4 dark:from-indigo-950/30 dark:to-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="rounded-lg bg-slate-600 p-2 shadow-md dark:bg-slate-500">
+            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
               <Building2 className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-slate-900 dark:text-white">
@@ -268,9 +268,9 @@ export function PropertyCalculatorForm() {
 
       {/* Financing Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-slate-50 pb-4 dark:from-indigo-950/30 dark:to-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="rounded-lg bg-slate-600 p-2 shadow-md dark:bg-slate-500">
+            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
               <Banknote className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-slate-900 dark:text-white">Finanzierung</span>
@@ -328,9 +328,9 @@ export function PropertyCalculatorForm() {
 
       {/* Rental Income Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-slate-50 pb-4 dark:from-indigo-950/30 dark:to-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="rounded-lg bg-slate-600 p-2 shadow-md dark:bg-slate-500">
+            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
               <Home className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-slate-900 dark:text-white">Mieteinnahmen</span>
@@ -388,9 +388,9 @@ export function PropertyCalculatorForm() {
 
       {/* Tax Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-slate-50 pb-4 dark:from-indigo-950/30 dark:to-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="rounded-lg bg-slate-600 p-2 shadow-md dark:bg-slate-500">
+            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
               <Receipt className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-slate-900 dark:text-white">Steuerliche Parameter</span>
