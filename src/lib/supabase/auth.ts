@@ -1,11 +1,11 @@
 /**
  * Supabase Authentication Helpers
- * 
+ *
  * Authentication functions for user management with Supabase.
  * Falls back to anonymous/localStorage mode when not configured.
  */
 
-import { getSupabaseClient, isSupabaseConfigured, type SupabaseUser } from './client';
+import { getSupabaseClient, isSupabaseConfigured, type SupabaseUser } from "./client";
 
 export interface User {
   id: string;
@@ -37,7 +37,7 @@ export interface SignInData {
 function toUser(supabaseUser: SupabaseUser): User {
   return {
     id: supabaseUser.id,
-    email: supabaseUser.email || '',
+    email: supabaseUser.email || "",
     name: supabaseUser.user_metadata?.name,
     avatarUrl: supabaseUser.user_metadata?.avatar_url,
     createdAt: new Date(supabaseUser.created_at || Date.now()),
@@ -47,15 +47,17 @@ function toUser(supabaseUser: SupabaseUser): User {
 /**
  * Sign up a new user
  */
-export async function signUp(data: SignUpData): Promise<{ user: User | null; error: Error | null }> {
+export async function signUp(
+  data: SignUpData
+): Promise<{ user: User | null; error: Error | null }> {
   if (!isSupabaseConfigured()) {
-    return { user: null, error: new Error('Authentication not configured') };
+    return { user: null, error: new Error("Authentication not configured") };
   }
 
   try {
     const supabase = await getSupabaseClient();
     if (!supabase) {
-      return { user: null, error: new Error('Supabase client not available') };
+      return { user: null, error: new Error("Supabase client not available") };
     }
 
     const { data: authData, error } = await supabase.auth.signUp({
@@ -84,15 +86,17 @@ export async function signUp(data: SignUpData): Promise<{ user: User | null; err
 /**
  * Sign in an existing user
  */
-export async function signIn(data: SignInData): Promise<{ user: User | null; error: Error | null }> {
+export async function signIn(
+  data: SignInData
+): Promise<{ user: User | null; error: Error | null }> {
   if (!isSupabaseConfigured()) {
-    return { user: null, error: new Error('Authentication not configured') };
+    return { user: null, error: new Error("Authentication not configured") };
   }
 
   try {
     const supabase = await getSupabaseClient();
     if (!supabase) {
-      return { user: null, error: new Error('Supabase client not available') };
+      return { user: null, error: new Error("Supabase client not available") };
     }
 
     const { data: authData, error } = await supabase.auth.signInWithPassword({
@@ -148,7 +152,9 @@ export async function getCurrentUser(): Promise<User | null> {
       return null;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     return user ? toUser(user) : null;
   } catch {
     return null;
@@ -160,13 +166,13 @@ export async function getCurrentUser(): Promise<User | null> {
  */
 export async function resetPassword(email: string): Promise<{ error: Error | null }> {
   if (!isSupabaseConfigured()) {
-    return { error: new Error('Authentication not configured') };
+    return { error: new Error("Authentication not configured") };
   }
 
   try {
     const supabase = await getSupabaseClient();
     if (!supabase) {
-      return { error: new Error('Supabase client not available') };
+      return { error: new Error("Supabase client not available") };
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email);

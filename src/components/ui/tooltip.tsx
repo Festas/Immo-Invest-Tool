@@ -40,7 +40,10 @@ export function Tooltip({ content, children, className }: TooltipProps) {
         aria-describedby={isVisible ? "tooltip" : undefined}
       >
         {children || (
-          <HelpCircle className="h-4 w-4 text-slate-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors duration-200" aria-hidden="true" />
+          <HelpCircle
+            className="h-4 w-4 text-slate-400 transition-colors duration-200 hover:text-indigo-500 dark:text-slate-500 dark:hover:text-indigo-400"
+            aria-hidden="true"
+          />
         )}
       </div>
       {isVisible && (
@@ -49,15 +52,15 @@ export function Tooltip({ content, children, className }: TooltipProps) {
           id="tooltip"
           role="tooltip"
           className={cn(
-            "absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2",
+            "absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2",
             "px-4 py-3 text-sm",
-            "bg-slate-900 dark:bg-slate-800 text-white",
+            "bg-slate-900 text-white dark:bg-slate-800",
             "rounded-xl shadow-xl shadow-black/20 dark:shadow-black/40",
-            "max-w-xs w-max border border-slate-700/50 dark:border-slate-600/50",
+            "w-max max-w-xs border border-slate-700/50 dark:border-slate-600/50",
             "animate-in fade-in-0 zoom-in-95 duration-200"
           )}
         >
-          <div className="whitespace-pre-wrap leading-relaxed">{content}</div>
+          <div className="leading-relaxed whitespace-pre-wrap">{content}</div>
           {/* Arrow */}
           <div
             className={cn(
@@ -79,7 +82,10 @@ interface HelpTooltipProps {
 export function HelpTooltip({ content, className }: HelpTooltipProps) {
   return (
     <Tooltip content={content} className={className}>
-      <HelpCircle className="h-4 w-4 text-slate-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors duration-200" aria-hidden="true" />
+      <HelpCircle
+        className="h-4 w-4 text-slate-400 transition-colors duration-200 hover:text-indigo-500 dark:text-slate-500 dark:hover:text-indigo-400"
+        aria-hidden="true"
+      />
     </Tooltip>
   );
 }

@@ -101,11 +101,11 @@ export function LocationAnalysis() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Bewerten Sie die Attraktivität eines Standorts für Ihre
-            Immobilieninvestition anhand verschiedener Faktoren.
+            Bewerten Sie die Attraktivität eines Standorts für Ihre Immobilieninvestition anhand
+            verschiedener Faktoren.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Select
               label="Stadt/Region"
               options={cityOptions}
@@ -162,8 +162,8 @@ export function LocationAnalysis() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
               <Train className="h-5 w-5 text-blue-500" />
               <Slider
                 label="ÖPNV-Anbindung"
@@ -171,14 +171,12 @@ export function LocationAnalysis() {
                 max={10}
                 step={1}
                 value={input.publicTransportScore}
-                onChange={(value) =>
-                  setInput({ ...input, publicTransportScore: value })
-                }
+                onChange={(value) => setInput({ ...input, publicTransportScore: value })}
                 formatValue={(v) => `${v}/10`}
               />
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
               <ShoppingBag className="h-5 w-5 text-orange-500" />
               <Slider
                 label="Einkaufsmöglichkeiten"
@@ -186,14 +184,12 @@ export function LocationAnalysis() {
                 max={10}
                 step={1}
                 value={input.shoppingScore}
-                onChange={(value) =>
-                  setInput({ ...input, shoppingScore: value })
-                }
+                onChange={(value) => setInput({ ...input, shoppingScore: value })}
                 formatValue={(v) => `${v}/10`}
               />
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
               <GraduationCap className="h-5 w-5 text-purple-500" />
               <Slider
                 label="Schulen & Bildung"
@@ -201,14 +197,12 @@ export function LocationAnalysis() {
                 max={10}
                 step={1}
                 value={input.schoolsScore}
-                onChange={(value) =>
-                  setInput({ ...input, schoolsScore: value })
-                }
+                onChange={(value) => setInput({ ...input, schoolsScore: value })}
                 formatValue={(v) => `${v}/10`}
               />
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
               <Home className="h-5 w-5 text-green-500" />
               <Slider
                 label="Allgemeine Infrastruktur"
@@ -216,16 +210,14 @@ export function LocationAnalysis() {
                 max={10}
                 step={1}
                 value={input.infrastructureScore}
-                onChange={(value) =>
-                  setInput({ ...input, infrastructureScore: value })
-                }
+                onChange={(value) => setInput({ ...input, infrastructureScore: value })}
                 formatValue={(v) => `${v}/10`}
               />
             </div>
           </div>
 
           <Button onClick={handleCalculate} className="w-full">
-            <Calculator className="h-4 w-4 mr-2" />
+            <Calculator className="mr-2 h-4 w-4" />
             Standort analysieren
           </Button>
         </CardContent>
@@ -238,7 +230,7 @@ export function LocationAnalysis() {
               <CardTitle className="flex items-center justify-between text-base">
                 <span>Analyseergebnis</span>
                 <span
-                  className={`text-3xl font-bold px-4 py-1 rounded-lg ${getQualityBadge(
+                  className={`rounded-lg px-4 py-1 text-3xl font-bold ${getQualityBadge(
                     result.locationQuality
                   )}`}
                 >
@@ -250,7 +242,7 @@ export function LocationAnalysis() {
               {/* Score Meter */}
               <div className="text-center">
                 <div className="relative inline-block">
-                  <svg className="w-48 h-24" viewBox="0 0 100 50">
+                  <svg className="h-24 w-48" viewBox="0 0 100 50">
                     <path
                       d="M 10 45 A 35 35 0 0 1 90 45"
                       fill="none"
@@ -278,25 +270,25 @@ export function LocationAnalysis() {
                     <span className={`text-4xl font-bold ${getScoreColor(result.overallScore)}`}>
                       {result.overallScore}
                     </span>
-                    <span className="text-lg text-slate-500 dark:text-slate-400 ml-1">/100</span>
+                    <span className="ml-1 text-lg text-slate-500 dark:text-slate-400">/100</span>
                   </div>
                 </div>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Standort-Score</p>
+                <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Standort-Score</p>
               </div>
 
               {/* Key Indicators */}
               <div className="grid grid-cols-3 gap-4">
                 <div
-                  className={`text-center p-4 rounded-lg ${
+                  className={`rounded-lg p-4 text-center ${
                     result.investmentRecommendation === "STARK_EMPFOHLEN" ||
                     result.investmentRecommendation === "EMPFOHLEN"
                       ? "bg-green-50 dark:bg-green-950/50"
                       : result.investmentRecommendation === "NEUTRAL"
-                      ? "bg-yellow-50 dark:bg-yellow-950/50"
-                      : "bg-red-50 dark:bg-red-950/50"
+                        ? "bg-yellow-50 dark:bg-yellow-950/50"
+                        : "bg-red-50 dark:bg-red-950/50"
                   }`}
                 >
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">
+                  <p className="mb-1 text-xs text-slate-600 dark:text-slate-400">
                     Investitionsempfehlung
                   </p>
                   <div className="flex items-center justify-center gap-1">
@@ -336,25 +328,23 @@ export function LocationAnalysis() {
                 </div>
 
                 <div
-                  className={`text-center p-4 rounded-lg ${
+                  className={`rounded-lg p-4 text-center ${
                     result.riskLevel === "NIEDRIG"
                       ? "bg-green-50 dark:bg-green-950/50"
                       : result.riskLevel === "MITTEL"
-                      ? "bg-yellow-50 dark:bg-yellow-950/50"
-                      : "bg-red-50 dark:bg-red-950/50"
+                        ? "bg-yellow-50 dark:bg-yellow-950/50"
+                        : "bg-red-50 dark:bg-red-950/50"
                   }`}
                 >
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">
-                    Risikostufe
-                  </p>
+                  <p className="mb-1 text-xs text-slate-600 dark:text-slate-400">Risikostufe</p>
                   <div className="flex items-center justify-center gap-1">
                     <Shield
                       className={`h-5 w-5 ${
                         result.riskLevel === "NIEDRIG"
                           ? "text-green-600"
                           : result.riskLevel === "MITTEL"
-                          ? "text-yellow-600"
-                          : "text-red-600"
+                            ? "text-yellow-600"
+                            : "text-red-600"
                       }`}
                     />
                     <span
@@ -362,32 +352,30 @@ export function LocationAnalysis() {
                         result.riskLevel === "NIEDRIG"
                           ? "text-green-700 dark:text-green-300"
                           : result.riskLevel === "MITTEL"
-                          ? "text-yellow-700 dark:text-yellow-300"
-                          : "text-red-700 dark:text-red-300"
+                            ? "text-yellow-700 dark:text-yellow-300"
+                            : "text-red-700 dark:text-red-300"
                       }`}
                     >
                       {result.riskLevel === "NIEDRIG"
                         ? "Niedrig"
                         : result.riskLevel === "MITTEL"
-                        ? "Mittel"
-                        : "Hoch"}
+                          ? "Mittel"
+                          : "Hoch"}
                     </span>
                   </div>
                 </div>
 
-                <div className="text-center p-4 rounded-lg bg-blue-50 dark:bg-blue-950/50">
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">
-                    Lagequalität
-                  </p>
+                <div className="rounded-lg bg-blue-50 p-4 text-center dark:bg-blue-950/50">
+                  <p className="mb-1 text-xs text-slate-600 dark:text-slate-400">Lagequalität</p>
                   <span
-                    className={`font-bold text-xl ${
+                    className={`text-xl font-bold ${
                       result.locationQuality === "A"
                         ? "text-green-600"
                         : result.locationQuality === "B"
-                        ? "text-blue-600"
-                        : result.locationQuality === "C"
-                        ? "text-yellow-600"
-                        : "text-red-600"
+                          ? "text-blue-600"
+                          : result.locationQuality === "C"
+                            ? "text-yellow-600"
+                            : "text-red-600"
                     }`}
                   >
                     {result.locationQuality}-Lage
@@ -398,10 +386,10 @@ export function LocationAnalysis() {
           </Card>
 
           {/* Strengths and Weaknesses */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Card className="border-green-200 dark:border-green-800">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2 text-green-700 dark:text-green-300">
+                <CardTitle className="flex items-center gap-2 text-base text-green-700 dark:text-green-300">
                   <TrendingUp className="h-5 w-5" />
                   Stärken
                 </CardTitle>
@@ -414,7 +402,7 @@ export function LocationAnalysis() {
                         key={i}
                         className="flex items-center gap-2 text-sm text-green-800 dark:text-green-200"
                       >
-                        <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+                        <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-green-600" />
                         {strength}
                       </li>
                     ))}
@@ -429,7 +417,7 @@ export function LocationAnalysis() {
 
             <Card className="border-red-200 dark:border-red-800">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2 text-red-700 dark:text-red-300">
+                <CardTitle className="flex items-center gap-2 text-base text-red-700 dark:text-red-300">
                   <TrendingDown className="h-5 w-5" />
                   Schwächen
                 </CardTitle>
@@ -442,7 +430,7 @@ export function LocationAnalysis() {
                         key={i}
                         className="flex items-center gap-2 text-sm text-red-800 dark:text-red-200"
                       >
-                        <XCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
+                        <XCircle className="h-4 w-4 flex-shrink-0 text-red-600" />
                         {weakness}
                       </li>
                     ))}
@@ -459,9 +447,11 @@ export function LocationAnalysis() {
           {/* Explanation */}
           <Card>
             <CardContent className="py-4">
-              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
-                <h4 className="font-medium mb-2 text-slate-900 dark:text-slate-100">Erläuterung der Lagequalität</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+              <div className="rounded-lg border border-slate-100 bg-slate-50 p-4 dark:border-slate-700/50 dark:bg-slate-800/50">
+                <h4 className="mb-2 font-medium text-slate-900 dark:text-slate-100">
+                  Erläuterung der Lagequalität
+                </h4>
+                <div className="grid grid-cols-2 gap-3 text-sm md:grid-cols-4">
                   <div>
                     <span className="font-bold text-green-600 dark:text-green-400">A-Lage:</span>
                     <p className="text-slate-600 dark:text-slate-400">

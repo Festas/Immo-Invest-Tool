@@ -1,6 +1,6 @@
 /**
  * Mortgage Rates API
- * 
+ *
  * Integration layer for fetching current mortgage rates.
  * Uses mock data by default with structure for real API integration.
  */
@@ -16,7 +16,7 @@ export interface MortgageRate {
 export interface MortgageRatesResponse {
   rates: MortgageRate[];
   averageRate: number;
-  trend: 'STEIGEND' | 'STABIL' | 'FALLEND';
+  trend: "STEIGEND" | "STABIL" | "FALLEND";
   lastUpdated: Date;
   source: string;
 }
@@ -28,10 +28,34 @@ export interface RateTrend {
 
 // Mock data representing typical German mortgage rates
 const MOCK_RATES: MortgageRate[] = [
-  { fixedPeriod: 5, interestRate: 3.2, effectiveRate: 3.35, provider: 'Durchschnitt', lastUpdated: new Date() },
-  { fixedPeriod: 10, interestRate: 3.5, effectiveRate: 3.65, provider: 'Durchschnitt', lastUpdated: new Date() },
-  { fixedPeriod: 15, interestRate: 3.7, effectiveRate: 3.85, provider: 'Durchschnitt', lastUpdated: new Date() },
-  { fixedPeriod: 20, interestRate: 3.9, effectiveRate: 4.05, provider: 'Durchschnitt', lastUpdated: new Date() },
+  {
+    fixedPeriod: 5,
+    interestRate: 3.2,
+    effectiveRate: 3.35,
+    provider: "Durchschnitt",
+    lastUpdated: new Date(),
+  },
+  {
+    fixedPeriod: 10,
+    interestRate: 3.5,
+    effectiveRate: 3.65,
+    provider: "Durchschnitt",
+    lastUpdated: new Date(),
+  },
+  {
+    fixedPeriod: 15,
+    interestRate: 3.7,
+    effectiveRate: 3.85,
+    provider: "Durchschnitt",
+    lastUpdated: new Date(),
+  },
+  {
+    fixedPeriod: 20,
+    interestRate: 3.9,
+    effectiveRate: 4.05,
+    provider: "Durchschnitt",
+    lastUpdated: new Date(),
+  },
 ];
 
 // Mock historical rate trends (last 12 months)
@@ -39,7 +63,7 @@ const generateMockTrends = (): RateTrend[] => {
   const trends: RateTrend[] = [];
   const now = new Date();
   let rate = 3.8;
-  
+
   for (let i = 11; i >= 0; i--) {
     const date = new Date(now);
     date.setMonth(date.getMonth() - i);
@@ -51,7 +75,7 @@ const generateMockTrends = (): RateTrend[] => {
       rate: Math.round(rate * 100) / 100,
     });
   }
-  
+
   return trends;
 };
 
@@ -61,20 +85,20 @@ const generateMockTrends = (): RateTrend[] => {
  */
 export async function fetchMortgageRates(): Promise<MortgageRatesResponse> {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
   // Calculate average rate
   const avgRate = MOCK_RATES.reduce((sum, r) => sum + r.interestRate, 0) / MOCK_RATES.length;
-  
+
   return {
-    rates: MOCK_RATES.map(rate => ({
+    rates: MOCK_RATES.map((rate) => ({
       ...rate,
       lastUpdated: new Date(),
     })),
     averageRate: Math.round(avgRate * 100) / 100,
-    trend: 'STABIL',
+    trend: "STABIL",
     lastUpdated: new Date(),
-    source: 'Mock Data',
+    source: "Mock Data",
   };
 }
 
@@ -83,8 +107,8 @@ export async function fetchMortgageRates(): Promise<MortgageRatesResponse> {
  */
 export async function fetchRateTrends(): Promise<RateTrend[]> {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
   return generateMockTrends();
 }
 
@@ -93,7 +117,7 @@ export async function fetchRateTrends(): Promise<RateTrend[]> {
  */
 export async function getRateForPeriod(fixedPeriod: number): Promise<MortgageRate | null> {
   const response = await fetchMortgageRates();
-  return response.rates.find(r => r.fixedPeriod === fixedPeriod) || null;
+  return response.rates.find((r) => r.fixedPeriod === fixedPeriod) || null;
 }
 
 /**
@@ -122,11 +146,11 @@ export function estimateLoanAffordability(
 } {
   const availableIncome = monthlyNetIncome - existingObligations;
   const maxMonthlyPayment = (availableIncome * maxDebtRatio) / 100;
-  
+
   // Assume 3.5% interest + 2% repayment = 5.5% annual
   const annuityRate = 0.055;
   const estimatedLoanAmount = (maxMonthlyPayment * 12) / annuityRate;
-  
+
   return {
     maxMonthlyPayment: Math.round(maxMonthlyPayment),
     estimatedLoanAmount: Math.round(estimatedLoanAmount / 1000) * 1000,

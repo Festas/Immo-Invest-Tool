@@ -42,7 +42,7 @@ export function ScenarioComparison() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2 mb-4">
+          <div className="mb-4 flex gap-2">
             <Input
               placeholder="Szenario Name..."
               value={newScenarioName}
@@ -50,13 +50,13 @@ export function ScenarioComparison() {
               className="flex-1"
             />
             <Button onClick={handleAddScenario} disabled={scenarios.length >= 3}>
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="mr-1 h-4 w-4" />
               Hinzufügen
             </Button>
           </div>
 
           {scenarios.length === 0 ? (
-            <p className="text-center text-slate-500 dark:text-slate-400 py-8">
+            <p className="py-8 text-center text-slate-500 dark:text-slate-400">
               Füge bis zu 3 Szenarien hinzu, um verschiedene Finanzierungsoptionen zu vergleichen.
             </p>
           ) : (
@@ -64,15 +64,22 @@ export function ScenarioComparison() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-700">
-                    <th className="text-left py-3 px-2 font-medium text-slate-900 dark:text-slate-100">Kennzahl</th>
-                    <th className="text-right py-3 px-2 font-medium text-blue-600 dark:text-blue-400">Aktuell</th>
+                    <th className="px-2 py-3 text-left font-medium text-slate-900 dark:text-slate-100">
+                      Kennzahl
+                    </th>
+                    <th className="px-2 py-3 text-right font-medium text-blue-600 dark:text-blue-400">
+                      Aktuell
+                    </th>
                     {scenarios.map((scenario) => (
-                      <th key={scenario.id} className="text-right py-3 px-2 font-medium text-slate-900 dark:text-slate-100">
+                      <th
+                        key={scenario.id}
+                        className="px-2 py-3 text-right font-medium text-slate-900 dark:text-slate-100"
+                      >
                         <div className="flex items-center justify-end gap-1">
                           {scenario.name}
                           <button
                             onClick={() => removeScenario(scenario.id)}
-                            className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 ml-1"
+                            className="ml-1 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                           >
                             <Trash2 className="h-3 w-3" />
                           </button>
@@ -84,12 +91,12 @@ export function ScenarioComparison() {
                 <tbody>
                   {/* Eigenkapital Row */}
                   <tr className="border-b border-slate-100 dark:border-slate-800">
-                    <td className="py-2 px-2 text-slate-600 dark:text-slate-400">Eigenkapital</td>
-                    <td className="py-2 px-2 text-right font-medium text-blue-600 dark:text-blue-400">
+                    <td className="px-2 py-2 text-slate-600 dark:text-slate-400">Eigenkapital</td>
+                    <td className="px-2 py-2 text-right font-medium text-blue-600 dark:text-blue-400">
                       {formatCurrency(currentInput.equity)}
                     </td>
                     {scenarios.map((scenario) => (
-                      <td key={scenario.id} className="py-2 px-2 text-right">
+                      <td key={scenario.id} className="px-2 py-2 text-right">
                         <input
                           type="number"
                           value={scenario.input.equity}
@@ -98,7 +105,7 @@ export function ScenarioComparison() {
                               equity: parseFloat(e.target.value) || 0,
                             })
                           }
-                          className="w-24 text-right p-1 border rounded text-sm bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                          className="w-24 rounded border border-slate-200 bg-white p-1 text-right text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                           step={1000}
                         />
                       </td>
@@ -107,12 +114,12 @@ export function ScenarioComparison() {
 
                   {/* Zinssatz Row */}
                   <tr className="border-b border-slate-100 dark:border-slate-800">
-                    <td className="py-2 px-2 text-slate-600 dark:text-slate-400">Zinssatz</td>
-                    <td className="py-2 px-2 text-right font-medium text-blue-600 dark:text-blue-400">
+                    <td className="px-2 py-2 text-slate-600 dark:text-slate-400">Zinssatz</td>
+                    <td className="px-2 py-2 text-right font-medium text-blue-600 dark:text-blue-400">
                       {currentInput.interestRate.toFixed(2)}%
                     </td>
                     {scenarios.map((scenario) => (
-                      <td key={scenario.id} className="py-2 px-2 text-right">
+                      <td key={scenario.id} className="px-2 py-2 text-right">
                         <input
                           type="number"
                           value={scenario.input.interestRate}
@@ -121,7 +128,7 @@ export function ScenarioComparison() {
                               interestRate: parseFloat(e.target.value) || 0,
                             })
                           }
-                          className="w-20 text-right p-1 border rounded text-sm bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                          className="w-20 rounded border border-slate-200 bg-white p-1 text-right text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                           step={0.1}
                           min={0}
                           max={15}
@@ -132,12 +139,12 @@ export function ScenarioComparison() {
 
                   {/* Tilgung Row */}
                   <tr className="border-b border-slate-100 dark:border-slate-800">
-                    <td className="py-2 px-2 text-slate-600 dark:text-slate-400">Tilgung</td>
-                    <td className="py-2 px-2 text-right font-medium text-blue-600 dark:text-blue-400">
+                    <td className="px-2 py-2 text-slate-600 dark:text-slate-400">Tilgung</td>
+                    <td className="px-2 py-2 text-right font-medium text-blue-600 dark:text-blue-400">
                       {currentInput.repaymentRate.toFixed(2)}%
                     </td>
                     {scenarios.map((scenario) => (
-                      <td key={scenario.id} className="py-2 px-2 text-right">
+                      <td key={scenario.id} className="px-2 py-2 text-right">
                         <input
                           type="number"
                           value={scenario.input.repaymentRate}
@@ -146,7 +153,7 @@ export function ScenarioComparison() {
                               repaymentRate: parseFloat(e.target.value) || 0,
                             })
                           }
-                          className="w-20 text-right p-1 border rounded text-sm bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                          className="w-20 rounded border border-slate-200 bg-white p-1 text-right text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                           step={0.1}
                           min={0.5}
                           max={10}
@@ -157,21 +164,27 @@ export function ScenarioComparison() {
 
                   {/* Results Section */}
                   <tr className="bg-slate-50 dark:bg-slate-800/50">
-                    <td colSpan={scenarios.length + 2} className="py-2 px-2 font-medium text-slate-900 dark:text-slate-100">
+                    <td
+                      colSpan={scenarios.length + 2}
+                      className="px-2 py-2 font-medium text-slate-900 dark:text-slate-100"
+                    >
                       Ergebnisse
                     </td>
                   </tr>
 
                   {/* Monthly Payment */}
                   <tr className="border-b border-slate-100 dark:border-slate-800">
-                    <td className="py-2 px-2 text-slate-600 dark:text-slate-400">Rate/Monat</td>
-                    <td className="py-2 px-2 text-right font-medium text-blue-600 dark:text-blue-400">
+                    <td className="px-2 py-2 text-slate-600 dark:text-slate-400">Rate/Monat</td>
+                    <td className="px-2 py-2 text-right font-medium text-blue-600 dark:text-blue-400">
                       {formatCurrency(currentOutput.financing.monthlyPayment)}
                     </td>
                     {scenarios.map((scenario) => {
                       const output = scenario.output || calculatePropertyKPIs(scenario.input);
                       return (
-                        <td key={scenario.id} className="py-2 px-2 text-right text-slate-900 dark:text-slate-100">
+                        <td
+                          key={scenario.id}
+                          className="px-2 py-2 text-right text-slate-900 dark:text-slate-100"
+                        >
                           {formatCurrency(output.financing.monthlyPayment)}
                         </td>
                       );
@@ -180,9 +193,9 @@ export function ScenarioComparison() {
 
                   {/* Monthly Cashflow */}
                   <tr className="border-b border-slate-100 dark:border-slate-800">
-                    <td className="py-2 px-2 text-slate-600 dark:text-slate-400">Cashflow/Monat</td>
+                    <td className="px-2 py-2 text-slate-600 dark:text-slate-400">Cashflow/Monat</td>
                     <td
-                      className={`py-2 px-2 text-right font-medium ${
+                      className={`px-2 py-2 text-right font-medium ${
                         currentOutput.cashflow.monthlyCashflowAfterTax >= 0
                           ? "text-green-600 dark:text-green-400"
                           : "text-red-600 dark:text-red-400"
@@ -195,7 +208,7 @@ export function ScenarioComparison() {
                       return (
                         <td
                           key={scenario.id}
-                          className={`py-2 px-2 text-right font-medium ${
+                          className={`px-2 py-2 text-right font-medium ${
                             output.cashflow.monthlyCashflowAfterTax >= 0
                               ? "text-green-600 dark:text-green-400"
                               : "text-red-600 dark:text-red-400"
@@ -209,14 +222,17 @@ export function ScenarioComparison() {
 
                   {/* ROI */}
                   <tr className="border-b border-slate-100 dark:border-slate-800">
-                    <td className="py-2 px-2 text-slate-600 dark:text-slate-400">EK-Rendite</td>
-                    <td className="py-2 px-2 text-right font-medium text-blue-600 dark:text-blue-400">
+                    <td className="px-2 py-2 text-slate-600 dark:text-slate-400">EK-Rendite</td>
+                    <td className="px-2 py-2 text-right font-medium text-blue-600 dark:text-blue-400">
                       {currentOutput.yields.returnOnEquity.toFixed(2)}%
                     </td>
                     {scenarios.map((scenario) => {
                       const output = scenario.output || calculatePropertyKPIs(scenario.input);
                       return (
-                        <td key={scenario.id} className="py-2 px-2 text-right font-medium text-slate-900 dark:text-slate-100">
+                        <td
+                          key={scenario.id}
+                          className="px-2 py-2 text-right font-medium text-slate-900 dark:text-slate-100"
+                        >
                           {output.yields.returnOnEquity.toFixed(2)}%
                         </td>
                       );
@@ -225,14 +241,17 @@ export function ScenarioComparison() {
 
                   {/* Total Loan */}
                   <tr>
-                    <td className="py-2 px-2 text-slate-600 dark:text-slate-400">Darlehen</td>
-                    <td className="py-2 px-2 text-right font-medium text-blue-600 dark:text-blue-400">
+                    <td className="px-2 py-2 text-slate-600 dark:text-slate-400">Darlehen</td>
+                    <td className="px-2 py-2 text-right font-medium text-blue-600 dark:text-blue-400">
                       {formatCurrency(currentOutput.financing.loanAmount)}
                     </td>
                     {scenarios.map((scenario) => {
                       const output = scenario.output || calculatePropertyKPIs(scenario.input);
                       return (
-                        <td key={scenario.id} className="py-2 px-2 text-right text-slate-900 dark:text-slate-100">
+                        <td
+                          key={scenario.id}
+                          className="px-2 py-2 text-right text-slate-900 dark:text-slate-100"
+                        >
                           {formatCurrency(output.financing.loanAmount)}
                         </td>
                       );

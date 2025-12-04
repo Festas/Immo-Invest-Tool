@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       auto_fix:
-        description: 'Attempt automatic fixes (reload/restart Caddy)'
+        description: "Attempt automatic fixes (reload/restart Caddy)"
         required: false
-        default: 'false'
+        default: "false"
         type: boolean
 
 permissions: {}

@@ -15,12 +15,14 @@ Das **All-in-One Immobilien Investment Tool** - eine moderne Webanwendung zur Im
 Die App führt folgende Berechnungen dynamisch und in Echtzeit durch:
 
 #### Eingabedaten (Input)
+
 - **Kaufpreis & Nebenkosten**: Kaufpreis, Makler (%), Notar (%), Grunderwerbsteuer (%), Renovierungskosten
 - **Finanzierung**: Eigenkapital, Darlehenssumme, Zinssatz (Sollzins), Tilgungssatz (%), Zinsbindung (Jahre)
 - **Bewirtschaftung**: Kaltmiete (IST/SOLL), nicht umlagefähige Nebenkosten, Instandhaltungsrücklage
 - **Steuer**: Persönlicher Steuersatz, Gebäudeanteil, AfA (linear/degressiv)
 
 #### Ausgabedaten (Output/Berechnung)
+
 - **Investitionsvolumen**: Gesamtkosten inkl. Kaufnebenkosten
 - **Renditekennzahlen**: Bruttomietrendite (%), Nettomietrendite (%), Eigenkapitalrendite (ROI)
 - **Cashflow**: Monatlicher Cashflow vor Steuern und nach Steuern
@@ -41,36 +43,42 @@ Die App führt folgende Berechnungen dynamisch und in Echtzeit durch:
 Diese neuen Funktionen heben ImmoCalc Pro von der Konkurrenz ab:
 
 #### 📍 Mietpreisspiegel / Marktmieten-Vergleich
+
 - Vergleich der aktuellen Miete mit lokalen Marktmieten
 - Unterstützung für alle deutschen Großstädte
 - Berücksichtigung von Baujahr, Zustand, Ausstattung, Etage
 - Berechnung des Mieterhöhungspotenzials in € und %
 
 #### 🎯 Break-Even Analyse
+
 - Berechnung der Amortisationszeit durch Cashflow
 - Berechnung inkl. Wertsteigerung
 - Renditeprognose für 5, 10 und 15 Jahre
 - Visualisierung der langfristigen Vermögensentwicklung
 
 #### 🔧 Renovierungs-ROI Rechner
+
 - ROI-Berechnung für verschiedene Renovierungsmaßnahmen
 - Richtwerte für typische Kosten und Mietsteigerungen
 - Amortisationsberechnung
 - Empfehlungen basierend auf Kosten-Nutzen-Analyse
 
 #### 🚪 Exit-Strategie / Verkaufsrechner
+
 - Berechnung des Nettogewinns beim Verkauf
 - Berücksichtigung der Spekulationssteuer (< 10 Jahre)
 - Annualisierte Renditeberechnung
 - Empfehlungen für optimalen Verkaufszeitpunkt
 
 #### 📍 Standortanalyse
+
 - Bewertung von Standorten nach verschiedenen Kriterien
 - A/B/C/D-Lage Klassifizierung
 - Stärken-/Schwächen-Analyse
 - Investitionsempfehlung und Risikobewertung
 
 #### ✅ Due Diligence Checkliste
+
 - Umfassende Checkliste für die Immobilienprüfung
 - 29 Prüfpunkte in 5 Kategorien
 - Pflicht- und optionale Punkte markiert
@@ -78,12 +86,14 @@ Diese neuen Funktionen heben ImmoCalc Pro von der Konkurrenz ab:
 - Lokale Speicherung des Fortschritts
 
 #### 🤖 KI-gestützte Analyse (NEU)
+
 - Deal-Scoring mit Kategorieauswertung (Cashflow, Rendite, Finanzierung, Standort, Potenzial)
 - Automatische Risikoerkennung und Empfehlungen
 - Investment-Berater Chatbot für Fragen zur Immobilie
 - Stärken-/Schwächen-Analyse
 
 #### 📊 Erweiterte Analysen (NEU)
+
 - Monte-Carlo-Simulation für probabilistische Renditeprognosen
 - Infrastruktur-Scoring für Standorte
 - API-Struktur für Hypothekenzinsen und Marktdaten
@@ -172,12 +182,12 @@ Kopieren Sie `.env.example` nach `.env.local` und füllen Sie die Werte aus:
 cp .env.example .env.local
 ```
 
-| Variable | Beschreibung | Erforderlich |
-|----------|--------------|--------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Projekt-URL | Nein (für Cloud-Sync) |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Anon Key | Nein (für Cloud-Sync) |
-| `OPENAI_API_KEY` | OpenAI API Key | Nein (für KI) |
-| `NEXT_PUBLIC_GOOGLE_MAPS_KEY` | Google Maps API Key | Nein (für Karten) |
+| Variable                        | Beschreibung         | Erforderlich          |
+| ------------------------------- | -------------------- | --------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase Projekt-URL | Nein (für Cloud-Sync) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Anon Key    | Nein (für Cloud-Sync) |
+| `OPENAI_API_KEY`                | OpenAI API Key       | Nein (für KI)         |
+| `NEXT_PUBLIC_GOOGLE_MAPS_KEY`   | Google Maps API Key  | Nein (für Karten)     |
 
 > **Hinweis**: Alle Features funktionieren offline ohne externe APIs (Graceful Degradation).
 
@@ -200,12 +210,12 @@ console.log(output.cashflow.monthlyCashflowAfterTax); // Monatlicher Cashflow
 ### Neue Berechnungsfunktionen
 
 ```typescript
-import { 
-  calculateRentIndex, 
-  calculateBreakEven, 
-  calculateRenovationROI, 
-  calculateExitStrategy, 
-  calculateLocationAnalysis 
+import {
+  calculateRentIndex,
+  calculateBreakEven,
+  calculateRenovationROI,
+  calculateExitStrategy,
+  calculateLocationAnalysis,
 } from "@/lib/calculations";
 
 // Mietpreisspiegel
@@ -263,16 +273,19 @@ console.log(result.probabilityOfLoss); // Verlustwahrscheinlichkeit
 ```
 
 ### Annuitätenberechnung
+
 ```
 Annuität = Darlehensbetrag × (Zinssatz + Tilgung) / 100
 ```
 
 ### Cashflow
+
 ```
 Cashflow = Netto-Mieteinnahmen - Darlehensrate + Steuervorteil
 ```
 
 ### Eigenkapitalrendite
+
 ```
 EK-Rendite = Cashflow nach Steuern / Eigenkapital × 100
 ```
@@ -316,12 +329,14 @@ npm run lint
 Die App bietet zehn Hauptansichten in zwei Navigationsebenen:
 
 ### Primäre Funktionen:
+
 1. **Rechner** - Eingabeformular und Live-Ergebnisse
 2. **Charts** - Tilgungsverlauf und Cashflow-Visualisierung
 3. **Vergleich** - Bis zu 3 Szenarien nebeneinander
 4. **Dashboard** - Portfolio-Übersicht und gespeicherte Immobilien
 
 ### Erweiterte Funktionen:
+
 5. **Mietspiegel** - Marktmieten-Vergleich
 6. **Break-Even** - Amortisationsberechnung
 7. **Renovierung** - ROI für Renovierungsmaßnahmen
@@ -333,11 +348,11 @@ Die App bietet zehn Hauptansichten in zwei Navigationsebenen:
 
 Die App ist vorbereitet für folgende API-Integrationen:
 
-| API | Datei | Status |
-|-----|-------|--------|
+| API              | Datei                           | Status     |
+| ---------------- | ------------------------------- | ---------- |
 | Hypothekenzinsen | `src/lib/api/mortgage-rates.ts` | Mock-Daten |
-| Marktdaten | `src/lib/api/market-data.ts` | Mock-Daten |
-| Mietpreisspiegel | `src/lib/api/rent-index.ts` | Mock-Daten |
+| Marktdaten       | `src/lib/api/market-data.ts`    | Mock-Daten |
+| Mietpreisspiegel | `src/lib/api/rent-index.ts`     | Mock-Daten |
 
 > Bei fehlender API-Konfiguration werden automatisch Mock-Daten verwendet.
 
@@ -345,7 +360,7 @@ Die App ist vorbereitet für folgende API-Integrationen:
 
 Die App berücksichtigt das deutsche Steuerrecht (Stand 2024):
 
-- **AfA nach § 7 EStG**: 
+- **AfA nach § 7 EStG**:
   - 2,5% für Altbauten vor 1925
   - 2% für Gebäude ab 1925
   - 3% für Neubauten ab 2023 (mit Voraussetzungen)
@@ -360,12 +375,14 @@ Die App berücksichtigt das deutsche Steuerrecht (Stand 2024):
 ## 🌐 Internationalisierung
 
 Die App unterstützt Deutsch und Englisch. Übersetzungsdateien befinden sich in:
+
 - `src/locales/de.json` - Deutsche Übersetzungen
 - `src/locales/en.json` - Englische Übersetzungen
 
 ## 📱 PWA-Unterstützung
 
 ImmoCalc Pro kann als Progressive Web App installiert werden:
+
 - Offline-Unterstützung via Service Worker
 - Installierbar auf Desktop und Mobile
 - App-Icon und Splash Screen

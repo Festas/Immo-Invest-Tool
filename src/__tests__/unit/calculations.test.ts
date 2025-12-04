@@ -3,7 +3,7 @@
  * Tests all functions in src/lib/calculations.ts
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 import {
   calculateSideCosts,
   calculateInvestmentVolume,
@@ -21,7 +21,7 @@ import {
   calculateRenovationROI,
   calculateExitStrategy,
   calculateLocationAnalysis,
-} from '@/lib/calculations';
+} from "@/lib/calculations";
 import type {
   PropertyInput,
   RentIndexInput,
@@ -29,7 +29,7 @@ import type {
   RenovationInput,
   ExitStrategyInput,
   LocationAnalysisInput,
-} from '@/types';
+} from "@/types";
 
 // Helper to create a standard property input
 function createStandardInput(): PropertyInput {
@@ -39,8 +39,8 @@ function createStandardInput(): PropertyInput {
 // ===========================================
 // calculateSideCosts Tests
 // ===========================================
-describe('calculateSideCosts', () => {
-  it('should calculate all side costs correctly', () => {
+describe("calculateSideCosts", () => {
+  it("should calculate all side costs correctly", () => {
     const input = createStandardInput();
     input.purchasePrice = 300000;
     input.brokerPercent = 3.57;
@@ -58,7 +58,7 @@ describe('calculateSideCosts', () => {
     expect(result.totalSideCostsPercent).toBeCloseTo(12.4, 1);
   });
 
-  it('should handle zero purchase price', () => {
+  it("should handle zero purchase price", () => {
     const input = createStandardInput();
     input.purchasePrice = 0;
 
@@ -71,7 +71,7 @@ describe('calculateSideCosts', () => {
     expect(result.totalSideCostsPercent).toBe(0);
   });
 
-  it('should handle zero side cost percentages', () => {
+  it("should handle zero side cost percentages", () => {
     const input = createStandardInput();
     input.purchasePrice = 300000;
     input.brokerPercent = 0;
@@ -85,7 +85,7 @@ describe('calculateSideCosts', () => {
     expect(result.totalSideCostsPercent).toBe(0);
   });
 
-  it('should handle maximum Grunderwerbsteuer (Brandenburg 6.5%)', () => {
+  it("should handle maximum Grunderwerbsteuer (Brandenburg 6.5%)", () => {
     const input = createStandardInput();
     input.purchasePrice = 500000;
     input.propertyTransferTaxPercent = 6.5;
@@ -102,8 +102,8 @@ describe('calculateSideCosts', () => {
 // ===========================================
 // calculateInvestmentVolume Tests
 // ===========================================
-describe('calculateInvestmentVolume', () => {
-  it('should calculate total investment correctly', () => {
+describe("calculateInvestmentVolume", () => {
+  it("should calculate total investment correctly", () => {
     const input = createStandardInput();
     input.purchasePrice = 300000;
     input.brokerPercent = 3.57;
@@ -118,7 +118,7 @@ describe('calculateInvestmentVolume', () => {
     expect(result.totalInvestment).toBeCloseTo(327210, 0);
   });
 
-  it('should include renovation costs in total investment', () => {
+  it("should include renovation costs in total investment", () => {
     const input = createStandardInput();
     input.purchasePrice = 200000;
     input.brokerPercent = 0;
@@ -135,8 +135,8 @@ describe('calculateInvestmentVolume', () => {
 // ===========================================
 // calculateFinancing Tests
 // ===========================================
-describe('calculateFinancing', () => {
-  it('should calculate annuity loan correctly', () => {
+describe("calculateFinancing", () => {
+  it("should calculate annuity loan correctly", () => {
     const result = calculateFinancing(267210, 3.5, 2.0, 15);
 
     // Annuity = 267210 * (3.5 + 2.0) / 100 = 14696.55
@@ -147,7 +147,7 @@ describe('calculateFinancing', () => {
     expect(result.totalCost).toBe(result.loanAmount + result.totalInterest);
   });
 
-  it('should return zeros for zero loan amount', () => {
+  it("should return zeros for zero loan amount", () => {
     const result = calculateFinancing(0, 3.5, 2.0, 15);
 
     expect(result.loanAmount).toBe(0);
@@ -157,7 +157,7 @@ describe('calculateFinancing', () => {
     expect(result.totalInterest).toBe(0);
   });
 
-  it('should handle 100% financing', () => {
+  it("should handle 100% financing", () => {
     const result = calculateFinancing(500000, 4.0, 1.0, 10);
 
     // Annuity = 500000 * (4.0 + 1.0) / 100 = 25000
@@ -165,67 +165,67 @@ describe('calculateFinancing', () => {
     expect(result.monthlyPayment).toBeCloseTo(2083.33, 0);
   });
 
-  it('should handle high repayment rate', () => {
+  it("should handle high repayment rate", () => {
     const result = calculateFinancing(100000, 3.0, 10.0, 8);
 
     // Annuity = 100000 * (3.0 + 10.0) / 100 = 13000
     expect(result.annualPayment).toBeCloseTo(13000, 0);
   });
 
-  it('should calculate interest correctly over loan period', () => {
+  it("should calculate interest correctly over loan period", () => {
     const result = calculateFinancing(100000, 4.0, 2.0, 10);
 
     // First year interest should be close to 4000
     // Total interest should decrease each year as principal is paid
     expect(result.totalInterest).toBeGreaterThan(0);
-    expect(result.totalInterest).toBeLessThan(100000 * 4 * 10 / 100);
+    expect(result.totalInterest).toBeLessThan((100000 * 4 * 10) / 100);
   });
 });
 
 // ===========================================
 // calculateAfA Tests
 // ===========================================
-describe('calculateAfA', () => {
-  it('should calculate AfA for Altbau vor 1925 (2.5%)', () => {
-    const result = calculateAfA(300000, 75, 'ALTBAU_VOR_1925');
+describe("calculateAfA", () => {
+  it("should calculate AfA for Altbau vor 1925 (2.5%)", () => {
+    const result = calculateAfA(300000, 75, "ALTBAU_VOR_1925");
 
     // Building value: 300000 * 75% = 225000
     // AfA: 225000 * 2.5% = 5625
     expect(result).toBeCloseTo(5625, 0);
   });
 
-  it('should calculate AfA for Altbau ab 1925 (2.0%)', () => {
-    const result = calculateAfA(300000, 75, 'ALTBAU_AB_1925');
+  it("should calculate AfA for Altbau ab 1925 (2.0%)", () => {
+    const result = calculateAfA(300000, 75, "ALTBAU_AB_1925");
 
     // Building value: 300000 * 75% = 225000
     // AfA: 225000 * 2.0% = 4500
     expect(result).toBeCloseTo(4500, 0);
   });
 
-  it('should calculate AfA for Neubau ab 2023 (3.0%)', () => {
-    const result = calculateAfA(500000, 80, 'NEUBAU_AB_2023');
+  it("should calculate AfA for Neubau ab 2023 (3.0%)", () => {
+    const result = calculateAfA(500000, 80, "NEUBAU_AB_2023");
 
     // Building value: 500000 * 80% = 400000
     // AfA: 400000 * 3.0% = 12000
     expect(result).toBeCloseTo(12000, 0);
   });
 
-  it('should calculate AfA for Denkmalschutz (9.0%)', () => {
-    const result = calculateAfA(400000, 70, 'DENKMALSCHUTZ');
+  it("should calculate AfA for Denkmalschutz (9.0%)", () => {
+    const result = calculateAfA(400000, 70, "DENKMALSCHUTZ");
 
     // Building value: 400000 * 70% = 280000
     // AfA: 280000 * 9.0% = 25200
     expect(result).toBeCloseTo(25200, 0);
   });
 
-  it('should handle zero building share', () => {
-    const result = calculateAfA(300000, 0, 'ALTBAU_AB_1925');
+  it("should handle zero building share", () => {
+    const result = calculateAfA(300000, 0, "ALTBAU_AB_1925");
 
     expect(result).toBe(0);
   });
 
-  it('should handle 100% building share', () => {
-    const result = calculateAfA(200000, 100, 'ALTBAU_AB_1925');
+  it("should handle 100% building share", () => {
+    const result = calculateAfA(200000, 100, "ALTBAU_AB_1925");
 
     // AfA: 200000 * 2.0% = 4000
     expect(result).toBeCloseTo(4000, 0);
@@ -235,12 +235,12 @@ describe('calculateAfA', () => {
 // ===========================================
 // calculateTax Tests
 // ===========================================
-describe('calculateTax', () => {
-  it('should calculate tax effects correctly', () => {
+describe("calculateTax", () => {
+  it("should calculate tax effects correctly", () => {
     const input = createStandardInput();
     input.purchasePrice = 300000;
     input.buildingSharePercent = 75;
-    input.afaType = 'ALTBAU_AB_1925';
+    input.afaType = "ALTBAU_AB_1925";
     input.coldRentActual = 1000;
     input.nonRecoverableCosts = 100;
     input.maintenanceReserve = 50;
@@ -252,14 +252,16 @@ describe('calculateTax', () => {
     expect(result.afaAmount).toBeCloseTo(4500, 0);
     expect(result.deductibleInterest).toBe(8000);
     expect(result.deductibleCosts).toBe((100 + 50) * 12);
-    expect(result.totalDeductions).toBe(result.afaAmount + result.deductibleInterest + result.deductibleCosts);
+    expect(result.totalDeductions).toBe(
+      result.afaAmount + result.deductibleInterest + result.deductibleCosts
+    );
   });
 
-  it('should calculate negative rental income (tax benefit)', () => {
+  it("should calculate negative rental income (tax benefit)", () => {
     const input = createStandardInput();
     input.purchasePrice = 400000;
     input.buildingSharePercent = 80;
-    input.afaType = 'ALTBAU_AB_1925';
+    input.afaType = "ALTBAU_AB_1925";
     input.coldRentActual = 500;
     input.nonRecoverableCosts = 200;
     input.maintenanceReserve = 100;
@@ -274,7 +276,7 @@ describe('calculateTax', () => {
     }
   });
 
-  it('should handle zero tax rate', () => {
+  it("should handle zero tax rate", () => {
     const input = createStandardInput();
     input.personalTaxRate = 0;
 
@@ -288,8 +290,8 @@ describe('calculateTax', () => {
 // ===========================================
 // calculateCashflow Tests
 // ===========================================
-describe('calculateCashflow', () => {
-  it('should calculate cashflow before and after tax', () => {
+describe("calculateCashflow", () => {
+  it("should calculate cashflow before and after tax", () => {
     const input = createStandardInput();
     input.coldRentActual = 1500;
     input.vacancyRiskPercent = 3;
@@ -317,13 +319,16 @@ describe('calculateCashflow', () => {
     const result = calculateCashflow(input, financing, tax);
 
     expect(result.grossRentalIncome).toBe(1500 * 12);
-    expect(result.vacancyDeduction).toBeCloseTo((1500 * 12) * 0.03, 0);
-    expect(result.netRentalIncome).toBeCloseTo(result.grossRentalIncome - result.vacancyDeduction, 0);
+    expect(result.vacancyDeduction).toBeCloseTo(1500 * 12 * 0.03, 0);
+    expect(result.netRentalIncome).toBeCloseTo(
+      result.grossRentalIncome - result.vacancyDeduction,
+      0
+    );
     expect(result.operatingCosts).toBe((100 + 75) * 12);
     expect(result.annualDebtService).toBe(12000);
   });
 
-  it('should calculate negative cashflow', () => {
+  it("should calculate negative cashflow", () => {
     const input = createStandardInput();
     input.coldRentActual = 500;
     input.vacancyRiskPercent = 5;
@@ -353,7 +358,7 @@ describe('calculateCashflow', () => {
     expect(result.cashflowBeforeTax).toBeLessThan(0);
   });
 
-  it('should handle zero vacancy risk', () => {
+  it("should handle zero vacancy risk", () => {
     const input = createStandardInput();
     input.vacancyRiskPercent = 0;
     input.coldRentActual = 1000;
@@ -386,8 +391,8 @@ describe('calculateCashflow', () => {
 // ===========================================
 // calculateYields Tests
 // ===========================================
-describe('calculateYields', () => {
-  it('should calculate all yield metrics correctly', () => {
+describe("calculateYields", () => {
+  it("should calculate all yield metrics correctly", () => {
     const input = createStandardInput();
     input.equity = 60000;
 
@@ -427,7 +432,7 @@ describe('calculateYields', () => {
     expect(result.returnOnEquity).toBeCloseTo(-6.66, 1);
   });
 
-  it('should handle zero equity (100% financing)', () => {
+  it("should handle zero equity (100% financing)", () => {
     const input = createStandardInput();
     input.equity = 0;
 
@@ -463,7 +468,7 @@ describe('calculateYields', () => {
     expect(result.grossRentalYield).toBeCloseTo(5, 0);
   });
 
-  it('should handle zero purchase price', () => {
+  it("should handle zero purchase price", () => {
     const input = createStandardInput();
     input.equity = 50000;
 
@@ -504,8 +509,8 @@ describe('calculateYields', () => {
 // ===========================================
 // generateAmortizationSchedule Tests
 // ===========================================
-describe('generateAmortizationSchedule', () => {
-  it('should generate correct schedule for 15 years', () => {
+describe("generateAmortizationSchedule", () => {
+  it("should generate correct schedule for 15 years", () => {
     const schedule = generateAmortizationSchedule(200000, 3.5, 2.0, 15);
 
     expect(schedule.length).toBe(15);
@@ -515,12 +520,12 @@ describe('generateAmortizationSchedule', () => {
     expect(schedule[14].endingBalance).toBeLessThan(200000);
   });
 
-  it('should calculate cumulative values correctly', () => {
+  it("should calculate cumulative values correctly", () => {
     const schedule = generateAmortizationSchedule(100000, 4.0, 2.0, 10);
 
     for (let i = 0; i < schedule.length; i++) {
       const year = schedule[i];
-      
+
       // Cumulative principal should equal starting balance minus ending balance
       if (i === 0) {
         expect(year.cumulativePrincipal).toBeCloseTo(year.principalPayment, 0);
@@ -531,13 +536,13 @@ describe('generateAmortizationSchedule', () => {
     }
   });
 
-  it('should return empty array for zero loan amount', () => {
+  it("should return empty array for zero loan amount", () => {
     const schedule = generateAmortizationSchedule(0, 3.5, 2.0, 15);
 
     expect(schedule).toHaveLength(0);
   });
 
-  it('should handle high repayment that pays off loan early', () => {
+  it("should handle high repayment that pays off loan early", () => {
     const schedule = generateAmortizationSchedule(100000, 2.0, 20.0, 10);
 
     // With 20% repayment + 2% interest = 22% annual payment
@@ -547,7 +552,7 @@ describe('generateAmortizationSchedule', () => {
     expect(schedule.length).toBeLessThan(10);
   });
 
-  it('should have decreasing interest and increasing principal over time', () => {
+  it("should have decreasing interest and increasing principal over time", () => {
     const schedule = generateAmortizationSchedule(200000, 4.0, 2.0, 20);
 
     for (let i = 1; i < schedule.length; i++) {
@@ -562,27 +567,27 @@ describe('generateAmortizationSchedule', () => {
 // ===========================================
 // calculateCumulativeCashflow Tests
 // ===========================================
-describe('calculateCumulativeCashflow', () => {
-  it('should calculate cumulative cashflow with appreciation', () => {
+describe("calculateCumulativeCashflow", () => {
+  it("should calculate cumulative cashflow with appreciation", () => {
     const schedule = generateAmortizationSchedule(200000, 3.5, 2.0, 10);
     const result = calculateCumulativeCashflow(300000, schedule, 3000, 2.0);
 
     expect(result.length).toBe(10);
     expect(result[0].cumulativeCashflow).toBe(3000);
     expect(result[9].cumulativeCashflow).toBe(30000);
-    
+
     // Property value should appreciate
     expect(result[0].propertyValue).toBeGreaterThan(300000);
     expect(result[9].propertyValue).toBeGreaterThan(result[0].propertyValue);
   });
 
-  it('should return empty array for empty schedule', () => {
+  it("should return empty array for empty schedule", () => {
     const result = calculateCumulativeCashflow(300000, [], 3000, 2.0);
 
     expect(result).toHaveLength(0);
   });
 
-  it('should calculate net worth correctly', () => {
+  it("should calculate net worth correctly", () => {
     const schedule = generateAmortizationSchedule(150000, 3.0, 2.0, 5);
     const result = calculateCumulativeCashflow(200000, schedule, 2000, 1.5);
 
@@ -592,7 +597,7 @@ describe('calculateCumulativeCashflow', () => {
     }
   });
 
-  it('should handle negative cashflow', () => {
+  it("should handle negative cashflow", () => {
     const schedule = generateAmortizationSchedule(200000, 4.0, 2.0, 5);
     const result = calculateCumulativeCashflow(250000, schedule, -2000, 1.0);
 
@@ -604,8 +609,8 @@ describe('calculateCumulativeCashflow', () => {
 // ===========================================
 // calculatePropertyKPIs Tests (Integration)
 // ===========================================
-describe('calculatePropertyKPIs', () => {
-  it('should calculate all KPIs for a standard property', () => {
+describe("calculatePropertyKPIs", () => {
+  it("should calculate all KPIs for a standard property", () => {
     const input = createStandardInput();
     const output = calculatePropertyKPIs(input);
 
@@ -621,7 +626,7 @@ describe('calculatePropertyKPIs', () => {
     expect(output.amortizationSchedule.length).toBe(input.fixedInterestPeriod);
   });
 
-  it('should handle edge case with zero values', () => {
+  it("should handle edge case with zero values", () => {
     const input = createStandardInput();
     input.purchasePrice = 0;
     input.equity = 0;
@@ -634,7 +639,7 @@ describe('calculatePropertyKPIs', () => {
     expect(output.amortizationSchedule.length).toBe(0);
   });
 
-  it('should calculate correctly for 100% financing', () => {
+  it("should calculate correctly for 100% financing", () => {
     const input = createStandardInput();
     input.purchasePrice = 300000;
     input.equity = 0;
@@ -649,15 +654,15 @@ describe('calculatePropertyKPIs', () => {
 // ===========================================
 // calculateRentIndex Tests
 // ===========================================
-describe('calculateRentIndex', () => {
-  it('should calculate rent potential for Munich', () => {
+describe("calculateRentIndex", () => {
+  it("should calculate rent potential for Munich", () => {
     const input: RentIndexInput = {
-      city: 'MUENCHEN',
+      city: "MUENCHEN",
       livingArea: 75,
       currentRent: 1000,
       yearBuilt: 1970,
-      condition: 'GUT',
-      equipment: 'STANDARD',
+      condition: "GUT",
+      equipment: "STANDARD",
       hasBalcony: true,
       hasElevator: false,
       floor: 2,
@@ -671,14 +676,14 @@ describe('calculateRentIndex', () => {
     expect(result.recommendation).toBeDefined();
   });
 
-  it('should apply new build premium', () => {
+  it("should apply new build premium", () => {
     const input: RentIndexInput = {
-      city: 'BERLIN',
+      city: "BERLIN",
       livingArea: 80,
       currentRent: 1200,
       yearBuilt: new Date().getFullYear() - 2,
-      condition: 'SEHR_GUT',
-      equipment: 'GEHOBEN',
+      condition: "SEHR_GUT",
+      equipment: "GEHOBEN",
       hasBalcony: true,
       hasElevator: true,
       floor: 5,
@@ -690,14 +695,14 @@ describe('calculateRentIndex', () => {
     expect(result.marketRentPerSqm).toBeGreaterThan(14); // Base Berlin rate is 14
   });
 
-  it('should apply discount for old buildings', () => {
+  it("should apply discount for old buildings", () => {
     const oldBuildingInput: RentIndexInput = {
-      city: 'BERLIN',
+      city: "BERLIN",
       livingArea: 80,
       currentRent: 800,
       yearBuilt: 1920,
-      condition: 'MITTEL',
-      equipment: 'EINFACH',
+      condition: "MITTEL",
+      equipment: "EINFACH",
       hasBalcony: false,
       hasElevator: false,
       floor: 4,
@@ -709,14 +714,14 @@ describe('calculateRentIndex', () => {
     expect(result.marketRentPerSqm).toBeLessThan(14);
   });
 
-  it('should handle unknown city with fallback', () => {
+  it("should handle unknown city with fallback", () => {
     const input: RentIndexInput = {
-      city: 'UNKNOWN_CITY',
+      city: "UNKNOWN_CITY",
       livingArea: 60,
       currentRent: 450,
       yearBuilt: 1990,
-      condition: 'GUT',
-      equipment: 'STANDARD',
+      condition: "GUT",
+      equipment: "STANDARD",
       hasBalcony: false,
       hasElevator: false,
       floor: 1,
@@ -730,14 +735,14 @@ describe('calculateRentIndex', () => {
     expect(result.marketRentRange.max).toBe(11);
   });
 
-  it('should handle zero living area', () => {
+  it("should handle zero living area", () => {
     const input: RentIndexInput = {
-      city: 'HAMBURG',
+      city: "HAMBURG",
       livingArea: 0,
       currentRent: 1000,
       yearBuilt: 1980,
-      condition: 'GUT',
-      equipment: 'STANDARD',
+      condition: "GUT",
+      equipment: "STANDARD",
       hasBalcony: false,
       hasElevator: false,
       floor: 2,
@@ -753,8 +758,8 @@ describe('calculateRentIndex', () => {
 // ===========================================
 // calculateBreakEven Tests
 // ===========================================
-describe('calculateBreakEven', () => {
-  it('should calculate break-even for positive cashflow', () => {
+describe("calculateBreakEven", () => {
+  it("should calculate break-even for positive cashflow", () => {
     const input: BreakEvenInput = {
       totalInvestment: 100000,
       annualCashflow: 5000,
@@ -770,7 +775,7 @@ describe('calculateBreakEven', () => {
     expect(result.totalReturnAt10Years).toBeGreaterThan(result.totalReturnAt5Years);
   });
 
-  it('should handle negative cashflow', () => {
+  it("should handle negative cashflow", () => {
     const input: BreakEvenInput = {
       totalInvestment: 300000,
       annualCashflow: -4000,
@@ -785,7 +790,7 @@ describe('calculateBreakEven', () => {
     expect(result.breakEvenYearsTotal).toBeGreaterThan(0);
   });
 
-  it('should calculate ROI at different time points', () => {
+  it("should calculate ROI at different time points", () => {
     const input: BreakEvenInput = {
       totalInvestment: 200000,
       annualCashflow: 8000,
@@ -800,7 +805,7 @@ describe('calculateBreakEven', () => {
     expect(result.roiAt15Years).toBeGreaterThan(result.roiAt10Years);
   });
 
-  it('should handle zero annual cashflow', () => {
+  it("should handle zero annual cashflow", () => {
     const input: BreakEvenInput = {
       totalInvestment: 150000,
       annualCashflow: 0,
@@ -817,10 +822,10 @@ describe('calculateBreakEven', () => {
 // ===========================================
 // calculateRenovationROI Tests
 // ===========================================
-describe('calculateRenovationROI', () => {
-  it('should calculate ROI for bathroom renovation', () => {
+describe("calculateRenovationROI", () => {
+  it("should calculate ROI for bathroom renovation", () => {
     const input: RenovationInput = {
-      renovationType: 'BAEDER',
+      renovationType: "BAEDER",
       estimatedCost: 15000,
       expectedRentIncrease: 100,
       expectedValueIncrease: 12000,
@@ -838,9 +843,9 @@ describe('calculateRenovationROI', () => {
     expect(result.recommendation).toBeDefined();
   });
 
-  it('should consider financing costs in ROI', () => {
+  it("should consider financing costs in ROI", () => {
     const input: RenovationInput = {
-      renovationType: 'HEIZUNG',
+      renovationType: "HEIZUNG",
       estimatedCost: 20000,
       expectedRentIncrease: 80,
       expectedValueIncrease: 15000,
@@ -856,9 +861,9 @@ describe('calculateRenovationROI', () => {
     expect(result.paybackPeriodYears).toBeGreaterThan(20);
   });
 
-  it('should recommend highly profitable renovations', () => {
+  it("should recommend highly profitable renovations", () => {
     const input: RenovationInput = {
-      renovationType: 'KUECHE',
+      renovationType: "KUECHE",
       estimatedCost: 5000,
       expectedRentIncrease: 100,
       expectedValueIncrease: 8000,
@@ -869,12 +874,12 @@ describe('calculateRenovationROI', () => {
     const result = calculateRenovationROI(input);
 
     expect(result.isRecommended).toBe(true);
-    expect(result.recommendation).toContain('🟢');
+    expect(result.recommendation).toContain("🟢");
   });
 
-  it('should not recommend unprofitable renovations', () => {
+  it("should not recommend unprofitable renovations", () => {
     const input: RenovationInput = {
-      renovationType: 'DACH',
+      renovationType: "DACH",
       estimatedCost: 50000,
       expectedRentIncrease: 30,
       expectedValueIncrease: 15000,
@@ -887,9 +892,9 @@ describe('calculateRenovationROI', () => {
     expect(result.isRecommended).toBe(false);
   });
 
-  it('should handle zero cost', () => {
+  it("should handle zero cost", () => {
     const input: RenovationInput = {
-      renovationType: 'SONSTIGE',
+      renovationType: "SONSTIGE",
       estimatedCost: 0,
       expectedRentIncrease: 50,
       expectedValueIncrease: 5000,
@@ -909,8 +914,8 @@ describe('calculateRenovationROI', () => {
 // ===========================================
 // calculateExitStrategy Tests
 // ===========================================
-describe('calculateExitStrategy', () => {
-  it('should calculate exit returns without speculation tax', () => {
+describe("calculateExitStrategy", () => {
+  it("should calculate exit returns without speculation tax", () => {
     const input: ExitStrategyInput = {
       purchasePrice: 300000,
       currentValue: 400000,
@@ -931,7 +936,7 @@ describe('calculateExitStrategy', () => {
     expect(result.annualizedReturn).toBeGreaterThan(0);
   });
 
-  it('should apply speculation tax for holdings under 10 years', () => {
+  it("should apply speculation tax for holdings under 10 years", () => {
     const input: ExitStrategyInput = {
       purchasePrice: 250000,
       currentValue: 320000,
@@ -945,10 +950,10 @@ describe('calculateExitStrategy', () => {
     const result = calculateExitStrategy(input);
 
     expect(result.speculationTax).toBeCloseTo(24500, 0); // (320000-250000) * 35%
-    expect(result.recommendation).toContain('Spekulationssteuer');
+    expect(result.recommendation).toContain("Spekulationssteuer");
   });
 
-  it('should handle loss scenario', () => {
+  it("should handle loss scenario", () => {
     const input: ExitStrategyInput = {
       purchasePrice: 300000,
       currentValue: 280000,
@@ -966,7 +971,7 @@ describe('calculateExitStrategy', () => {
     expect(result.totalReturn).toBeLessThan(0);
   });
 
-  it('should include cumulative cashflow in total return', () => {
+  it("should include cumulative cashflow in total return", () => {
     const input: ExitStrategyInput = {
       purchasePrice: 200000,
       currentValue: 200000, // No appreciation
@@ -985,7 +990,7 @@ describe('calculateExitStrategy', () => {
     expect(result.totalReturn).toBeGreaterThan(result.netProfit);
   });
 
-  it('should calculate annualized return correctly', () => {
+  it("should calculate annualized return correctly", () => {
     const input: ExitStrategyInput = {
       purchasePrice: 100000,
       currentValue: 150000,
@@ -1006,63 +1011,63 @@ describe('calculateExitStrategy', () => {
 // ===========================================
 // calculateLocationAnalysis Tests
 // ===========================================
-describe('calculateLocationAnalysis', () => {
-  it('should calculate high score for A-location', () => {
+describe("calculateLocationAnalysis", () => {
+  it("should calculate high score for A-location", () => {
     const input: LocationAnalysisInput = {
-      city: 'München',
-      district: 'Schwabing',
-      populationTrend: 'WACHSEND',
-      employmentRate: 'HOCH',
+      city: "München",
+      district: "Schwabing",
+      populationTrend: "WACHSEND",
+      employmentRate: "HOCH",
       infrastructureScore: 9,
       publicTransportScore: 9,
       shoppingScore: 8,
       schoolsScore: 8,
-      crimeRate: 'NIEDRIG',
-      rentalDemand: 'SEHR_HOCH',
+      crimeRate: "NIEDRIG",
+      rentalDemand: "SEHR_HOCH",
     };
 
     const result = calculateLocationAnalysis(input);
 
     expect(result.overallScore).toBeGreaterThanOrEqual(80);
-    expect(result.locationQuality).toBe('A');
-    expect(result.investmentRecommendation).toBe('STARK_EMPFOHLEN');
-    expect(result.riskLevel).toBe('NIEDRIG');
+    expect(result.locationQuality).toBe("A");
+    expect(result.investmentRecommendation).toBe("STARK_EMPFOHLEN");
+    expect(result.riskLevel).toBe("NIEDRIG");
     expect(result.strengths.length).toBeGreaterThan(0);
   });
 
-  it('should calculate low score for D-location', () => {
+  it("should calculate low score for D-location", () => {
     const input: LocationAnalysisInput = {
-      city: 'Kleinstaddt',
-      populationTrend: 'SCHRUMPFEND',
-      employmentRate: 'NIEDRIG',
+      city: "Kleinstaddt",
+      populationTrend: "SCHRUMPFEND",
+      employmentRate: "NIEDRIG",
       infrastructureScore: 3,
       publicTransportScore: 2,
       shoppingScore: 3,
       schoolsScore: 4,
-      crimeRate: 'HOCH',
-      rentalDemand: 'NIEDRIG',
+      crimeRate: "HOCH",
+      rentalDemand: "NIEDRIG",
     };
 
     const result = calculateLocationAnalysis(input);
 
     expect(result.overallScore).toBeLessThan(40);
-    expect(result.locationQuality).toBe('D');
-    expect(result.investmentRecommendation).toBe('NICHT_EMPFOHLEN');
-    expect(result.riskLevel).toBe('HOCH');
+    expect(result.locationQuality).toBe("D");
+    expect(result.investmentRecommendation).toBe("NICHT_EMPFOHLEN");
+    expect(result.riskLevel).toBe("HOCH");
     expect(result.weaknesses.length).toBeGreaterThan(0);
   });
 
-  it('should calculate B-location for average city', () => {
+  it("should calculate B-location for average city", () => {
     const input: LocationAnalysisInput = {
-      city: 'Mittelstadt',
-      populationTrend: 'STABIL',
-      employmentRate: 'MITTEL',
+      city: "Mittelstadt",
+      populationTrend: "STABIL",
+      employmentRate: "MITTEL",
       infrastructureScore: 6,
       publicTransportScore: 6,
       shoppingScore: 6,
       schoolsScore: 6,
-      crimeRate: 'MITTEL',
-      rentalDemand: 'MITTEL',
+      crimeRate: "MITTEL",
+      rentalDemand: "MITTEL",
     };
 
     const result = calculateLocationAnalysis(input);
@@ -1070,58 +1075,58 @@ describe('calculateLocationAnalysis', () => {
     expect(result.overallScore).toBeGreaterThanOrEqual(40);
     expect(result.overallScore).toBeLessThanOrEqual(100);
     // Accept any valid location quality and recommendation based on actual scoring
-    expect(['A', 'B', 'C']).toContain(result.locationQuality);
-    expect(['STARK_EMPFOHLEN', 'EMPFOHLEN', 'NEUTRAL']).toContain(result.investmentRecommendation);
+    expect(["A", "B", "C"]).toContain(result.locationQuality);
+    expect(["STARK_EMPFOHLEN", "EMPFOHLEN", "NEUTRAL"]).toContain(result.investmentRecommendation);
   });
 
-  it('should identify good public transport as strength', () => {
+  it("should identify good public transport as strength", () => {
     const input: LocationAnalysisInput = {
-      city: 'Frankfurt',
-      populationTrend: 'STABIL',
-      employmentRate: 'MITTEL',
+      city: "Frankfurt",
+      populationTrend: "STABIL",
+      employmentRate: "MITTEL",
       infrastructureScore: 5,
       publicTransportScore: 9,
       shoppingScore: 5,
       schoolsScore: 5,
-      crimeRate: 'MITTEL',
-      rentalDemand: 'HOCH',
+      crimeRate: "MITTEL",
+      rentalDemand: "HOCH",
     };
 
     const result = calculateLocationAnalysis(input);
 
-    expect(result.strengths).toContain('Sehr gute ÖPNV-Anbindung');
+    expect(result.strengths).toContain("Sehr gute ÖPNV-Anbindung");
   });
 
-  it('should identify poor transport as weakness', () => {
+  it("should identify poor transport as weakness", () => {
     const input: LocationAnalysisInput = {
-      city: 'Dorf',
-      populationTrend: 'SCHRUMPFEND',
-      employmentRate: 'NIEDRIG',
+      city: "Dorf",
+      populationTrend: "SCHRUMPFEND",
+      employmentRate: "NIEDRIG",
       infrastructureScore: 4,
       publicTransportScore: 2,
       shoppingScore: 4,
       schoolsScore: 4,
-      crimeRate: 'NIEDRIG',
-      rentalDemand: 'NIEDRIG',
+      crimeRate: "NIEDRIG",
+      rentalDemand: "NIEDRIG",
     };
 
     const result = calculateLocationAnalysis(input);
 
-    expect(result.weaknesses).toContain('Schlechte ÖPNV-Anbindung');
+    expect(result.weaknesses).toContain("Schlechte ÖPNV-Anbindung");
   });
 
-  it('should bound score between 0 and 100', () => {
+  it("should bound score between 0 and 100", () => {
     // Test extreme positive case
     const positiveInput: LocationAnalysisInput = {
-      city: 'PerfectCity',
-      populationTrend: 'WACHSEND',
-      employmentRate: 'HOCH',
+      city: "PerfectCity",
+      populationTrend: "WACHSEND",
+      employmentRate: "HOCH",
       infrastructureScore: 10,
       publicTransportScore: 10,
       shoppingScore: 10,
       schoolsScore: 10,
-      crimeRate: 'NIEDRIG',
-      rentalDemand: 'SEHR_HOCH',
+      crimeRate: "NIEDRIG",
+      rentalDemand: "SEHR_HOCH",
     };
 
     const positiveResult = calculateLocationAnalysis(positiveInput);
@@ -1130,15 +1135,15 @@ describe('calculateLocationAnalysis', () => {
 
     // Test extreme negative case
     const negativeInput: LocationAnalysisInput = {
-      city: 'BadCity',
-      populationTrend: 'SCHRUMPFEND',
-      employmentRate: 'NIEDRIG',
+      city: "BadCity",
+      populationTrend: "SCHRUMPFEND",
+      employmentRate: "NIEDRIG",
       infrastructureScore: 1,
       publicTransportScore: 1,
       shoppingScore: 1,
       schoolsScore: 1,
-      crimeRate: 'HOCH',
-      rentalDemand: 'NIEDRIG',
+      crimeRate: "HOCH",
+      rentalDemand: "NIEDRIG",
     };
 
     const negativeResult = calculateLocationAnalysis(negativeInput);
@@ -1150,9 +1155,9 @@ describe('calculateLocationAnalysis', () => {
 // ===========================================
 // Edge Case Tests
 // ===========================================
-describe('Edge Cases', () => {
-  describe('Zero values handling', () => {
-    it('should handle all zero property input', () => {
+describe("Edge Cases", () => {
+  describe("Zero values handling", () => {
+    it("should handle all zero property input", () => {
       const input: PropertyInput = {
         purchasePrice: 0,
         brokerPercent: 0,
@@ -1171,7 +1176,7 @@ describe('Edge Cases', () => {
         vacancyRiskPercent: 0,
         personalTaxRate: 0,
         buildingSharePercent: 0,
-        afaType: 'ALTBAU_AB_1925',
+        afaType: "ALTBAU_AB_1925",
       };
 
       const output = calculatePropertyKPIs(input);
@@ -1182,8 +1187,8 @@ describe('Edge Cases', () => {
     });
   });
 
-  describe('Negative cashflow scenarios', () => {
-    it('should correctly calculate deeply negative cashflow', () => {
+  describe("Negative cashflow scenarios", () => {
+    it("should correctly calculate deeply negative cashflow", () => {
       const input = createStandardInput();
       input.purchasePrice = 500000;
       input.equity = 50000;
@@ -1198,8 +1203,8 @@ describe('Edge Cases', () => {
     });
   });
 
-  describe('100% financing scenarios', () => {
-    it('should handle 100% financing correctly', () => {
+  describe("100% financing scenarios", () => {
+    it("should handle 100% financing correctly", () => {
       const input = createStandardInput();
       input.purchasePrice = 200000;
       input.equity = 0;
@@ -1212,8 +1217,8 @@ describe('Edge Cases', () => {
     });
   });
 
-  describe('Very high equity scenarios', () => {
-    it('should handle 100% equity (no financing)', () => {
+  describe("Very high equity scenarios", () => {
+    it("should handle 100% equity (no financing)", () => {
       const input = createStandardInput();
       input.purchasePrice = 200000;
       input.brokerPercent = 0;
@@ -1234,8 +1239,8 @@ describe('Edge Cases', () => {
 // ===========================================
 // getDefaultPropertyInput Tests
 // ===========================================
-describe('getDefaultPropertyInput', () => {
-  it('should return valid default values', () => {
+describe("getDefaultPropertyInput", () => {
+  it("should return valid default values", () => {
     const defaults = getDefaultPropertyInput();
 
     expect(defaults.purchasePrice).toBe(300000);
@@ -1244,10 +1249,10 @@ describe('getDefaultPropertyInput', () => {
     expect(defaults.repaymentRate).toBe(2.0);
     expect(defaults.fixedInterestPeriod).toBe(15);
     expect(defaults.personalTaxRate).toBe(35.0);
-    expect(defaults.afaType).toBe('ALTBAU_AB_1925');
+    expect(defaults.afaType).toBe("ALTBAU_AB_1925");
   });
 
-  it('should return Bayern property transfer tax rate', () => {
+  it("should return Bayern property transfer tax rate", () => {
     const defaults = getDefaultPropertyInput();
 
     expect(defaults.propertyTransferTaxPercent).toBe(3.5);

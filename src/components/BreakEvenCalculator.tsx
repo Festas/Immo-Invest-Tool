@@ -60,12 +60,12 @@ export function BreakEvenCalculator() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Berechnen Sie, wann sich Ihre Immobilieninvestition amortisiert hat.
-            Diese Berechnung basiert auf Ihren aktuellen Eingaben im Rechner.
+            Berechnen Sie, wann sich Ihre Immobilieninvestition amortisiert hat. Diese Berechnung
+            basiert auf Ihren aktuellen Eingaben im Rechner.
           </p>
 
-          <div className="p-4 bg-blue-50 dark:bg-blue-950/50 rounded-lg border border-blue-100 dark:border-blue-900/50">
-            <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+          <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 dark:border-blue-900/50 dark:bg-blue-950/50">
+            <p className="mb-2 text-sm font-medium text-blue-900 dark:text-blue-100">
               Ausgangswerte (aus aktuellem Rechner):
             </p>
             <div className="grid grid-cols-2 gap-2 text-sm">
@@ -77,7 +77,9 @@ export function BreakEvenCalculator() {
               </div>
               <div>
                 <span className="text-blue-600 dark:text-blue-400">Jährlicher Cashflow:</span>
-                <p className={`font-semibold ${output.cashflow.cashflowAfterTax >= 0 ? "text-green-600" : "text-red-600"}`}>
+                <p
+                  className={`font-semibold ${output.cashflow.cashflowAfterTax >= 0 ? "text-green-600" : "text-red-600"}`}
+                >
                   {formatCurrency(output.cashflow.cashflowAfterTax)}
                 </p>
               </div>
@@ -107,7 +109,7 @@ export function BreakEvenCalculator() {
           />
 
           <Button onClick={handleCalculate} className="w-full">
-            <Calculator className="h-4 w-4 mr-2" />
+            <Calculator className="mr-2 h-4 w-4" />
             Break-Even berechnen
           </Button>
         </CardContent>
@@ -123,30 +125,26 @@ export function BreakEvenCalculator() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-orange-50 dark:bg-orange-950 rounded-lg text-center">
-                  <p className="text-sm text-orange-600 dark:text-orange-400">
-                    Nur durch Cashflow
-                  </p>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="rounded-lg bg-orange-50 p-4 text-center dark:bg-orange-950">
+                  <p className="text-sm text-orange-600 dark:text-orange-400">Nur durch Cashflow</p>
                   <p className="text-3xl font-bold text-orange-900 dark:text-orange-100">
                     {result.breakEvenYearsCashflow < 100
                       ? `${result.breakEvenYearsCashflow} Jahre`
                       : "Nie (neg. Cashflow)"}
                   </p>
-                  <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                  <p className="mt-1 text-xs text-orange-600 dark:text-orange-400">
                     Zeit bis kumulierter Cashflow = Investment
                   </p>
                 </div>
-                <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg text-center">
-                  <p className="text-sm text-green-600 dark:text-green-400">
-                    Inkl. Wertsteigerung
-                  </p>
+                <div className="rounded-lg bg-green-50 p-4 text-center dark:bg-green-950">
+                  <p className="text-sm text-green-600 dark:text-green-400">Inkl. Wertsteigerung</p>
                   <p className="text-3xl font-bold text-green-900 dark:text-green-100">
                     {result.breakEvenYearsTotal < 100
                       ? `${result.breakEvenYearsTotal} Jahre`
                       : "Nie"}
                   </p>
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                  <p className="mt-1 text-xs text-green-600 dark:text-green-400">
                     Zeit bis Gesamtrendite = Investment
                   </p>
                 </div>
@@ -166,46 +164,72 @@ export function BreakEvenCalculator() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-slate-700">
-                      <th className="text-left py-3 px-2 text-slate-900 dark:text-slate-100">Zeitraum</th>
-                      <th className="text-right py-3 px-2 text-slate-900 dark:text-slate-100">Gesamtrendite</th>
-                      <th className="text-right py-3 px-2 text-slate-900 dark:text-slate-100">ROI</th>
-                      <th className="text-right py-3 px-2 text-slate-900 dark:text-slate-100">ROI p.a.</th>
+                      <th className="px-2 py-3 text-left text-slate-900 dark:text-slate-100">
+                        Zeitraum
+                      </th>
+                      <th className="px-2 py-3 text-right text-slate-900 dark:text-slate-100">
+                        Gesamtrendite
+                      </th>
+                      <th className="px-2 py-3 text-right text-slate-900 dark:text-slate-100">
+                        ROI
+                      </th>
+                      <th className="px-2 py-3 text-right text-slate-900 dark:text-slate-100">
+                        ROI p.a.
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-slate-100 dark:border-slate-800">
-                      <td className="py-3 px-2 text-slate-700 dark:text-slate-300">Nach 5 Jahren</td>
-                      <td className="py-3 px-2 text-right font-medium text-slate-900 dark:text-slate-100">
+                      <td className="px-2 py-3 text-slate-700 dark:text-slate-300">
+                        Nach 5 Jahren
+                      </td>
+                      <td className="px-2 py-3 text-right font-medium text-slate-900 dark:text-slate-100">
                         {formatCurrency(result.totalReturnAt5Years)}
                       </td>
-                      <td className={`py-3 px-2 text-right font-medium ${result.roiAt5Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                      <td
+                        className={`px-2 py-3 text-right font-medium ${result.roiAt5Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+                      >
                         {result.roiAt5Years.toFixed(1)}%
                       </td>
-                      <td className={`py-3 px-2 text-right ${result.roiAt5Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                      <td
+                        className={`px-2 py-3 text-right ${result.roiAt5Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+                      >
                         {(result.roiAt5Years / 5).toFixed(2)}%
                       </td>
                     </tr>
                     <tr className="border-b border-slate-100 dark:border-slate-800">
-                      <td className="py-3 px-2 text-slate-700 dark:text-slate-300">Nach 10 Jahren</td>
-                      <td className="py-3 px-2 text-right font-medium text-slate-900 dark:text-slate-100">
+                      <td className="px-2 py-3 text-slate-700 dark:text-slate-300">
+                        Nach 10 Jahren
+                      </td>
+                      <td className="px-2 py-3 text-right font-medium text-slate-900 dark:text-slate-100">
                         {formatCurrency(result.totalReturnAt10Years)}
                       </td>
-                      <td className={`py-3 px-2 text-right font-medium ${result.roiAt10Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                      <td
+                        className={`px-2 py-3 text-right font-medium ${result.roiAt10Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+                      >
                         {result.roiAt10Years.toFixed(1)}%
                       </td>
-                      <td className={`py-3 px-2 text-right ${result.roiAt10Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                      <td
+                        className={`px-2 py-3 text-right ${result.roiAt10Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+                      >
                         {(result.roiAt10Years / 10).toFixed(2)}%
                       </td>
                     </tr>
                     <tr>
-                      <td className="py-3 px-2 text-slate-700 dark:text-slate-300">Nach 15 Jahren</td>
-                      <td className="py-3 px-2 text-right font-medium text-slate-900 dark:text-slate-100">
+                      <td className="px-2 py-3 text-slate-700 dark:text-slate-300">
+                        Nach 15 Jahren
+                      </td>
+                      <td className="px-2 py-3 text-right font-medium text-slate-900 dark:text-slate-100">
                         {formatCurrency(result.totalReturnAt15Years)}
                       </td>
-                      <td className={`py-3 px-2 text-right font-medium ${result.roiAt15Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                      <td
+                        className={`px-2 py-3 text-right font-medium ${result.roiAt15Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+                      >
                         {result.roiAt15Years.toFixed(1)}%
                       </td>
-                      <td className={`py-3 px-2 text-right ${result.roiAt15Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                      <td
+                        className={`px-2 py-3 text-right ${result.roiAt15Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+                      >
                         {(result.roiAt15Years / 15).toFixed(2)}%
                       </td>
                     </tr>
@@ -213,19 +237,30 @@ export function BreakEvenCalculator() {
                 </table>
               </div>
 
-              <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
-                <div className="flex items-center gap-2 mb-2">
+              <div className="mt-4 rounded-lg border border-slate-100 bg-slate-50 p-4 dark:border-slate-700/50 dark:bg-slate-800/50">
+                <div className="mb-2 flex items-center gap-2">
                   <PiggyBank className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                  <p className="font-medium text-slate-900 dark:text-slate-100">Vermögensaufbau nach 15 Jahren</p>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">
+                    Vermögensaufbau nach 15 Jahren
+                  </p>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Bei einer jährlichen Wertsteigerung von {appreciationRate.toFixed(1)}% und 
+                  Bei einer jährlichen Wertsteigerung von {appreciationRate.toFixed(1)}% und
                   Berücksichtigung des Cashflows beträgt Ihre Gesamtrendite{" "}
-                  <strong className={result.roiAt15Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
+                  <strong
+                    className={
+                      result.roiAt15Years >= 0
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-red-600 dark:text-red-400"
+                    }
+                  >
                     {formatCurrency(result.totalReturnAt15Years)}
-                  </strong>.
-                  Das entspricht einer durchschnittlichen jährlichen Rendite von{" "}
-                  <strong className="text-slate-900 dark:text-slate-100">{(result.roiAt15Years / 15).toFixed(2)}%</strong>.
+                  </strong>
+                  . Das entspricht einer durchschnittlichen jährlichen Rendite von{" "}
+                  <strong className="text-slate-900 dark:text-slate-100">
+                    {(result.roiAt15Years / 15).toFixed(2)}%
+                  </strong>
+                  .
                 </p>
               </div>
             </CardContent>
