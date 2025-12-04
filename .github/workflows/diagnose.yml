@@ -1,0 +1,186 @@
+name: Diagnose SSL/Deployment Issues
+
+on:
+  workflow_dispatch:
+    inputs:
+      auto_fix:
+        description: 'Attempt automatic fixes (reload/restart Caddy)'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions: {}
+
+jobs:
+  diagnose:
+    name: Run Diagnostics
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run diagnostic checks via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "=============================================="
+            echo "🔍 IMMOCALC DIAGNOSTICS - $(date)"
+            echo "=============================================="
+            echo ""
+
+            echo "=============================================="
+            echo "📦 1. CONTAINER STATUS"
+            echo "=============================================="
+            echo "Checking immocalc and caddy containers..."
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "immocalc|caddy|NAMES" || echo "⚠️  No matching containers found"
+            echo ""
+
+            echo "=============================================="
+            echo "🌐 2. NETWORK CONFIGURATION"
+            echo "=============================================="
+            echo "Inspecting caddy-network..."
+            if docker network inspect caddy-network > /dev/null 2>&1; then
+              echo "✅ caddy-network exists"
+              echo ""
+              echo "Connected containers:"
+              docker network inspect caddy-network --format '{{range .Containers}}  - {{.Name}}{{"\n"}}{{end}}'
+              echo ""
+              echo "Full network details:"
+              docker network inspect caddy-network --format '{{json .}}' | head -c 2000
+            else
+              echo "❌ caddy-network does not exist!"
+            fi
+            echo ""
+
+            echo "=============================================="
+            echo "🔌 3. INTERNAL CONNECTIVITY TEST"
+            echo "=============================================="
+            echo "Testing if Caddy can reach immocalc:3000..."
+            if docker exec caddy_server wget -qO- http://immocalc:3000 --timeout=5 2>/dev/null; then
+              echo ""
+              echo "✅ Internal connectivity OK - Caddy can reach immocalc:3000"
+            else
+              echo "❌ Internal connectivity FAILED - Caddy cannot reach immocalc:3000"
+              echo ""
+              echo "Trying alternative test with curl..."
+              docker exec caddy_server curl -s --connect-timeout 5 http://immocalc:3000 2>&1 | head -20 || echo "curl also failed"
+            fi
+            echo ""
+
+            echo "=============================================="
+            echo "📄 4. CADDY CONFIGURATION"
+            echo "=============================================="
+            echo "Current Caddyfile contents:"
+            docker exec caddy_server cat /etc/caddy/Caddyfile 2>&1 || echo "❌ Could not read Caddyfile"
+            echo ""
+
+            echo "=============================================="
+            echo "✅ 5. CADDY CONFIG VALIDATION"
+            echo "=============================================="
+            echo "Validating Caddy configuration..."
+            docker exec caddy_server caddy validate --config /etc/caddy/Caddyfile 2>&1 || echo "❌ Caddy config validation failed"
+            echo ""
+
+            echo "=============================================="
+            echo "📝 6. CADDY LOGS (TLS/SSL ERRORS)"
+            echo "=============================================="
+            echo "Checking Caddy logs for immocalc, errors, TLS, and certificate issues..."
+            docker logs caddy_server 2>&1 | grep -iE "immocalc|error|tls|certificate|acme|ssl" | tail -50 || echo "No matching log entries found"
+            echo ""
+
+            echo "=============================================="
+            echo "🌍 7. IMMOCALC APP RESPONSE TEST"
+            echo "=============================================="
+            echo "Testing if immocalc app responds internally..."
+            docker exec immocalc curl -s --connect-timeout 5 http://localhost:3000 2>&1 | head -20 || echo "❌ App did not respond (curl may not be available in container)"
+            echo ""
+            echo "Alternative test with wget..."
+            docker exec immocalc wget -qO- http://localhost:3000 --timeout=5 2>&1 | head -20 || echo "wget also failed or not available"
+            echo ""
+
+            echo "=============================================="
+            echo "🏥 8. CONTAINER HEALTH STATUS"
+            echo "=============================================="
+            echo "Checking container health..."
+            docker inspect immocalc --format '{{.State.Health.Status}}' 2>/dev/null || echo "No health check configured or container not found"
+            echo ""
+
+            echo "=============================================="
+            echo "📊 9. DNS RESOLUTION CHECK"
+            echo "=============================================="
+            echo "Checking DNS for immocalc.festas-builds.com..."
+            if command -v dig > /dev/null 2>&1; then
+              dig +short immocalc.festas-builds.com || echo "DNS lookup failed"
+            elif command -v nslookup > /dev/null 2>&1; then
+              nslookup immocalc.festas-builds.com | tail -5 || echo "DNS lookup failed"
+            elif command -v host > /dev/null 2>&1; then
+              host immocalc.festas-builds.com || echo "DNS lookup failed"
+            else
+              echo "No DNS lookup tools available on server"
+            fi
+            echo ""
+
+            echo "=============================================="
+            echo "🔐 10. SSL CERTIFICATE STATUS"
+            echo "=============================================="
+            echo "Checking Caddy's certificate storage..."
+            docker exec caddy_server ls -la /data/caddy/certificates/ 2>&1 | head -20 || echo "Could not list certificate directory"
+            echo ""
+            docker exec caddy_server find /data/caddy/certificates -name "*immocalc*" 2>&1 || echo "No immocalc certificates found"
+            echo ""
+
+            echo "=============================================="
+            echo "📋 DIAGNOSTICS COMPLETE"
+            echo "=============================================="
+
+      - name: Attempt automatic fixes
+        if: ${{ inputs.auto_fix }}
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "=============================================="
+            echo "🔧 AUTOMATIC FIX ATTEMPTS"
+            echo "=============================================="
+            echo ""
+
+            echo "Step 1: Attempting to reload Caddy configuration..."
+            if docker exec caddy_server caddy reload --config /etc/caddy/Caddyfile 2>&1; then
+              echo "✅ Caddy configuration reloaded successfully"
+            else
+              echo "❌ Caddy reload failed, attempting restart..."
+              echo ""
+              echo "Step 2: Restarting Caddy container..."
+              if docker restart caddy_server 2>&1; then
+                echo "✅ Caddy container restarted successfully"
+                echo ""
+                echo "Waiting for Caddy to initialize..."
+                sleep 10
+                echo ""
+                echo "Checking Caddy status after restart..."
+                docker ps --filter "name=caddy_server" --format "table {{.Names}}\t{{.Status}}"
+              else
+                echo "❌ Failed to restart Caddy container"
+              fi
+            fi
+            echo ""
+
+            echo "=============================================="
+            echo "🔄 POST-FIX VERIFICATION"
+            echo "=============================================="
+            echo ""
+            echo "Testing internal connectivity after fix..."
+            if docker exec caddy_server wget -qO- http://immocalc:3000 --timeout=5 2>/dev/null; then
+              echo ""
+              echo "✅ Internal connectivity OK"
+            else
+              echo "❌ Internal connectivity still failing"
+            fi
+            echo ""
+
+            echo "=============================================="
+            echo "🔧 AUTOMATIC FIX COMPLETE"
+            echo "=============================================="
