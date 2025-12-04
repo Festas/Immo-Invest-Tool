@@ -1,0 +1,16 @@
+# ImmoCalc - Caddy Configuration
+# NOTE: This file is kept for reference only.
+# The Caddy reverse proxy is now managed centrally by the Link-in-Bio repository.
+# The configuration below should be added to the Link-in-Bio Caddyfile.
+
+immocalc.festas-builds.com {
+    # Enable gzip and zstd compression
+    encode gzip zstd
+
+    # Cache static Next.js assets with immutable cache headers
+    @static path /_next/static/*
+    header @static Cache-Control "public, max-age=31536000, immutable"
+
+    # Reverse proxy to the Next.js application
+    reverse_proxy immocalc:3000
+}
