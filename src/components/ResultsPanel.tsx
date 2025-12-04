@@ -97,6 +97,9 @@ Mieteinnahmen - Werbungskosten (AfA, Zinsen, Betriebskosten)
 ✅ Positiv = Zu versteuernder Gewinn`,
 };
 
+/** Maximum expected ROE percentage for progress bar visualization */
+const MAX_ROE_FOR_PROGRESS = 20;
+
 export function ResultsPanel() {
   const { currentInput } = useImmoCalcStore();
   const output = calculatePropertyKPIs(currentInput);
@@ -225,8 +228,8 @@ export function ResultsPanel() {
             {/* Progress bar for yield */}
             <div className="mt-3">
               <ProgressIndicator
-                value={Math.min(output.yields.returnOnEquity, 20)}
-                max={20}
+                value={Math.min(output.yields.returnOnEquity, MAX_ROE_FOR_PROGRESS)}
+                max={MAX_ROE_FOR_PROGRESS}
                 showLabel={false}
                 size="sm"
               />

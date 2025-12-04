@@ -24,7 +24,7 @@ function TrendIndicator({
   format,
 }: TrendIndicatorProps) {
   const change = value - previousValue;
-  const percentChange = previousValue !== 0 ? (change / Math.abs(previousValue)) * 100 : 0;
+  const percentChange = previousValue !== 0 ? (change / previousValue) * 100 : 0;
 
   const direction: TrendDirection = change > 0 ? "up" : change < 0 ? "down" : "neutral";
 
