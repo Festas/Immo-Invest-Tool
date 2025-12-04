@@ -106,7 +106,7 @@ export function ResultsPanel() {
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-2 gap-4">
         {/* Total Investment */}
-        <Card className="relative overflow-hidden border-slate-200/50 !bg-transparent bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
+        <Card className="relative overflow-hidden border-slate-200/50 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
           <CardContent className="relative p-5">
             <div className="mb-2 flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <div className="rounded-lg bg-slate-500/10 p-1.5">
@@ -127,7 +127,7 @@ export function ResultsPanel() {
         </Card>
 
         {/* Monthly Payment */}
-        <Card className="relative overflow-hidden border-slate-200/50 !bg-transparent bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
+        <Card className="relative overflow-hidden border-slate-200/50 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
           <CardContent className="relative p-5">
             <div className="mb-2 flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <div className="rounded-lg bg-slate-500/10 p-1.5">
@@ -147,7 +147,7 @@ export function ResultsPanel() {
 
         {/* Monthly Cashflow */}
         <Card
-          className={`relative overflow-hidden !bg-transparent ${
+          className={`relative overflow-hidden ${
             isPositiveCashflow
               ? "border-green-200/50 bg-green-50 dark:border-green-700 dark:bg-green-900/30"
               : "border-red-200/50 bg-red-50 dark:border-red-700 dark:bg-red-900/30"
@@ -195,7 +195,7 @@ export function ResultsPanel() {
         </Card>
 
         {/* ROI */}
-        <Card className="relative overflow-hidden border-slate-200/50 !bg-transparent bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
+        <Card className="relative overflow-hidden border-slate-200/50 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
           <CardContent className="relative p-5">
             <div className="mb-2 flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <div className="rounded-lg bg-slate-500/10 p-1.5">

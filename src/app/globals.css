@@ -422,11 +422,6 @@ textarea {
   box-shadow: var(--glass-shadow);
 }
 
-/* Gradient text utility - now uses subtle gray tones */
-.gradient-text {
-  color: var(--foreground);
-}
-
 /* Shimmer loading effect */
 .shimmer {
   background: linear-gradient(
