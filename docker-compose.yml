@@ -1,37 +1,41 @@
+# ImmoCalc - Docker Compose für Produktion
+# Verwendet externes caddy-network (verwaltet vom Link-in-Bio Repository)
+# Der Caddy Reverse Proxy läuft zentral im Link-in-Bio Repository
+
 services:
-  app:
+  # ImmoCalc Next.js Application
+  web:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+    container_name: immocalc
+    restart: unless-stopped
+    expose:
+      - "3000"
     environment:
       - NODE_ENV=production
-      - NEXT_TELEMETRY_DISABLED=1
-    restart: unless-stopped
+      # Supabase Configuration (optional - for cloud sync)
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      # AI Integration (optional)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Maps Integration (optional)
+      - NEXT_PUBLIC_GOOGLE_MAPS_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_KEY}
     healthcheck:
       test:
         [
-          "CMD-SHELL",
-          'node -e "require(''http'').get(''http://localhost:3000'', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on(''error'', () => process.exit(1))"',
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3000', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))",
         ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    networks:
+      - caddy-network
 
-  # Development service
-  dev:
-    image: node:20-alpine
-    working_dir: /app
-    volumes:
-      - .:/app
-      - /app/node_modules
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - WATCHPACK_POLLING=true
-    command: sh -c "npm install && npm run dev"
-    profiles:
-      - dev
+networks:
+  caddy-network:
+    external: true
