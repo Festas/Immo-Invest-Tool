@@ -44,8 +44,8 @@ NEXT_PUBLIC_GOOGLE_MAPS_KEY=your-google-maps-key
 ### 1. Clone the Repository
 
 ```bash
-mkdir -p ~/apps
-cd ~/apps
+mkdir -p /home/deploy
+cd /home/deploy
 git clone https://github.com/Festas/Immo-Invest-Tool.git immocalc
 cd immocalc
 ```
@@ -123,7 +123,7 @@ The GitHub Actions workflow (`.github/workflows/deploy.yml`) automatically deplo
 To deploy manually on the server:
 
 ```bash
-cd ~/apps/immocalc
+cd /home/deploy/immocalc
 git pull origin main
 docker compose down
 docker compose build --no-cache
