@@ -30,8 +30,8 @@ interface ChartTooltipProps {
 function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm p-4 rounded-xl shadow-xl border border-slate-200/50 dark:border-slate-700/50">
-        <p className="font-semibold mb-2 text-slate-900 dark:text-white">{label}</p>
+      <div className="rounded-xl border border-slate-200/50 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-800/95">
+        <p className="mb-2 font-semibold text-slate-900 dark:text-white">{label}</p>
         {payload.map((entry, index) => (
           <p key={index} style={{ color: entry.color }} className="text-sm font-medium">
             {entry.name}: {formatCurrency(entry.value)}
@@ -58,7 +58,10 @@ export function AmortizationChart() {
 
   // Select key years for chart (every CHART_YEAR_INTERVAL years)
   const chartData = output.amortizationSchedule
-    .filter((year, index) => index % CHART_YEAR_INTERVAL === 0 || index === output.amortizationSchedule.length - 1)
+    .filter(
+      (year, index) =>
+        index % CHART_YEAR_INTERVAL === 0 || index === output.amortizationSchedule.length - 1
+    )
     .map((year) => ({
       year: `Jahr ${year.year}`,
       Restschuld: Math.round(year.endingBalance),
@@ -68,23 +71,18 @@ export function AmortizationChart() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/50 dark:to-purple-900/50">
+      <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
         <CardTitle className="flex items-center gap-3 text-base">
-          <div className="p-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/20">
+          <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
             <BarChart3 className="h-4 w-4 text-white" />
           </div>
-          <span className="bg-gradient-to-r from-indigo-700 to-purple-700 dark:from-indigo-300 dark:to-purple-300 bg-clip-text text-transparent font-bold">
-            Tilgungsverlauf
-          </span>
+          <span className="font-bold text-slate-900 dark:text-white">Tilgungsverlauf</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         <div className="h-[300px] md:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
+            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <defs>
                 <linearGradient id="restschuldGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#f87171" />
@@ -109,10 +107,7 @@ export function AmortizationChart() {
                 axisLine={false}
               />
               <Tooltip content={<ChartTooltip />} />
-              <Legend 
-                wrapperStyle={{ paddingTop: '20px' }}
-                iconType="circle"
-              />
+              <Legend wrapperStyle={{ paddingTop: "20px" }} iconType="circle" />
               <Bar
                 dataKey="Restschuld"
                 name="Restschuld"
@@ -129,19 +124,23 @@ export function AmortizationChart() {
           </ResponsiveContainer>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-          <div className="text-center p-4 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900 dark:to-rose-900 rounded-xl border border-red-100 dark:border-red-800">
-            <p className="text-red-600 dark:text-red-400 font-medium mb-1">Restschuld nach {currentInput.fixedInterestPeriod} Jahren</p>
-            <p className="font-bold text-xl text-red-700 dark:text-red-300">
+          <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-center dark:border-red-800 dark:bg-red-900/30">
+            <p className="mb-1 font-medium text-red-600 dark:text-red-400">
+              Restschuld nach {currentInput.fixedInterestPeriod} Jahren
+            </p>
+            <p className="text-xl font-bold text-red-700 dark:text-red-300">
               {formatCurrency(
-                output.amortizationSchedule[output.amortizationSchedule.length - 1]?.endingBalance || 0
+                output.amortizationSchedule[output.amortizationSchedule.length - 1]
+                  ?.endingBalance || 0
               )}
             </p>
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900 dark:to-teal-900 rounded-xl border border-emerald-100 dark:border-emerald-800">
-            <p className="text-emerald-600 dark:text-emerald-400 font-medium mb-1">Gesamt getilgt</p>
-            <p className="font-bold text-xl text-emerald-700 dark:text-emerald-300">
+          <div className="rounded-xl border border-green-100 bg-green-50 p-4 text-center dark:border-green-800 dark:bg-green-900/30">
+            <p className="mb-1 font-medium text-green-600 dark:text-green-400">Gesamt getilgt</p>
+            <p className="text-xl font-bold text-green-700 dark:text-green-300">
               {formatCurrency(
-                output.amortizationSchedule[output.amortizationSchedule.length - 1]?.cumulativePrincipal || 0
+                output.amortizationSchedule[output.amortizationSchedule.length - 1]
+                  ?.cumulativePrincipal || 0
               )}
             </p>
           </div>
@@ -171,12 +170,12 @@ export function CumulativeCashflowChart() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="pb-4 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-900/50 dark:to-teal-900/50">
+      <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
         <CardTitle className="flex items-center gap-3 text-base">
-          <div className="p-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/20">
+          <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
             <TrendingUp className="h-4 w-4 text-white" />
           </div>
-          <span className="bg-gradient-to-r from-emerald-700 to-teal-700 dark:from-emerald-300 dark:to-teal-300 bg-clip-text text-transparent font-bold">
+          <span className="font-bold text-slate-900 dark:text-white">
             Kumulierter Cashflow & Vermögensentwicklung
           </span>
         </CardTitle>
@@ -184,10 +183,7 @@ export function CumulativeCashflowChart() {
       <CardContent className="pt-6">
         <div className="h-[300px] md:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
+            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <defs>
                 <linearGradient id="cashflowLineGradient" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor="#6366f1" />
@@ -212,10 +208,7 @@ export function CumulativeCashflowChart() {
                 axisLine={false}
               />
               <Tooltip content={<ChartTooltip />} />
-              <Legend 
-                wrapperStyle={{ paddingTop: '20px' }}
-                iconType="circle"
-              />
+              <Legend wrapperStyle={{ paddingTop: "20px" }} iconType="circle" />
               <ReferenceLine y={0} stroke={referenceLineColor} strokeDasharray="3 3" />
               <Line
                 type="monotone"
@@ -246,21 +239,22 @@ export function CumulativeCashflowChart() {
           </ResponsiveContainer>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-          <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900 dark:to-purple-900 rounded-xl border border-indigo-100 dark:border-indigo-800">
-            <p className="text-indigo-600 dark:text-indigo-400 font-medium mb-1">
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 text-center dark:border-slate-700 dark:bg-slate-800/50">
+            <p className="mb-1 font-medium text-slate-600 dark:text-slate-400">
               Cashflow nach {currentInput.fixedInterestPeriod} Jahren
             </p>
-            <p className="font-bold text-xl text-indigo-700 dark:text-indigo-300">
+            <p className="text-xl font-bold text-slate-700 dark:text-slate-300">
               {formatCurrency(
-                output.cumulativeCashflow[output.cumulativeCashflow.length - 1]?.cumulativeCashflow || 0
+                output.cumulativeCashflow[output.cumulativeCashflow.length - 1]
+                  ?.cumulativeCashflow || 0
               )}
             </p>
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900 dark:to-teal-900 rounded-xl border border-emerald-100 dark:border-emerald-800">
-            <p className="text-emerald-600 dark:text-emerald-400 font-medium mb-1">
+          <div className="rounded-xl border border-green-100 bg-green-50 p-4 text-center dark:border-green-800 dark:bg-green-900/30">
+            <p className="mb-1 font-medium text-green-600 dark:text-green-400">
               Nettovermögen nach {currentInput.fixedInterestPeriod} Jahren
             </p>
-            <p className="font-bold text-xl text-emerald-700 dark:text-emerald-300">
+            <p className="text-xl font-bold text-green-700 dark:text-green-300">
               {formatCurrency(
                 output.cumulativeCashflow[output.cumulativeCashflow.length - 1]?.netWorth || 0
               )}

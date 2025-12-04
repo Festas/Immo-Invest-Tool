@@ -64,9 +64,9 @@ export function DueDiligenceChecklist() {
     }));
   });
 
-  const [expandedCategories, setExpandedCategories] = useState<
-    Set<ChecklistItem["category"]>
-  >(new Set(["DOKUMENTE", "BESICHTIGUNG"]));
+  const [expandedCategories, setExpandedCategories] = useState<Set<ChecklistItem["category"]>>(
+    new Set(["DOKUMENTE", "BESICHTIGUNG"])
+  );
 
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
 
@@ -84,16 +84,12 @@ export function DueDiligenceChecklist() {
 
   const toggleItem = (id: string) => {
     setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, isCompleted: !item.isCompleted } : item
-      )
+      prev.map((item) => (item.id === id ? { ...item, isCompleted: !item.isCompleted } : item))
     );
   };
 
   const updateNotes = (id: string, notes: string) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, notes } : item))
-    );
+    setItems((prev) => prev.map((item) => (item.id === id ? { ...item, notes } : item)));
   };
 
   const saveToLocalStorage = () => {
@@ -134,8 +130,7 @@ export function DueDiligenceChecklist() {
   const totalProgress = {
     completed: items.filter((item) => item.isCompleted).length,
     total: items.length,
-    requiredCompleted: items.filter((item) => item.isRequired && item.isCompleted)
-      .length,
+    requiredCompleted: items.filter((item) => item.isRequired && item.isCompleted).length,
     requiredTotal: items.filter((item) => item.isRequired).length,
   };
 
@@ -152,11 +147,11 @@ export function DueDiligenceChecklist() {
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={saveToLocalStorage}>
-                <Save className="h-4 w-4 mr-1" />
+                <Save className="mr-1 h-4 w-4" />
                 Speichern
               </Button>
               <Button variant="ghost" size="sm" onClick={resetChecklist}>
-                <Trash2 className="h-4 w-4 mr-1" />
+                <Trash2 className="mr-1 h-4 w-4" />
                 Zurücksetzen
               </Button>
             </div>
@@ -164,32 +159,33 @@ export function DueDiligenceChecklist() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Eine umfassende Checkliste für die Prüfung einer Immobilie vor dem Kauf.
-            Arbeiten Sie alle Punkte ab, um Risiken zu minimieren.
+            Eine umfassende Checkliste für die Prüfung einer Immobilie vor dem Kauf. Arbeiten Sie
+            alle Punkte ab, um Risiken zu minimieren.
           </p>
 
           {/* Progress Overview */}
-          <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
-            <div className="flex justify-between items-center mb-2">
-              <span className="font-medium text-slate-900 dark:text-slate-100">Gesamtfortschritt</span>
+          <div className="rounded-lg border border-slate-100 bg-slate-50 p-4 dark:border-slate-700/50 dark:bg-slate-800/50">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="font-medium text-slate-900 dark:text-slate-100">
+                Gesamtfortschritt
+              </span>
               <span className="text-sm text-slate-700 dark:text-slate-300">
                 {totalProgress.completed} / {totalProgress.total} erledigt (
                 {progressPercent.toFixed(0)}%)
               </span>
             </div>
-            <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+            <div className="h-3 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
               <div
-                className="h-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-300"
+                className="h-full bg-green-500 transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
             <div className="mt-2 flex justify-between text-xs text-slate-500 dark:text-slate-400">
               <span>
-                Pflichtpunkte: {totalProgress.requiredCompleted} /{" "}
-                {totalProgress.requiredTotal}
+                Pflichtpunkte: {totalProgress.requiredCompleted} / {totalProgress.requiredTotal}
               </span>
               {totalProgress.requiredCompleted < totalProgress.requiredTotal && (
-                <span className="text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
+                <span className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
                   <AlertTriangle className="h-3 w-3" />
                   Noch offene Pflichtpunkte
                 </span>
@@ -208,30 +204,30 @@ export function DueDiligenceChecklist() {
         return (
           <Card key={category}>
             <CardHeader
-              className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+              className="cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
               onClick={() => toggleCategory(category)}
             >
               <CardTitle className="flex items-center justify-between text-base">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${categoryColors[category]}`}>
+                  <div className={`rounded-lg p-2 ${categoryColors[category]}`}>
                     {categoryIcons[category]}
                   </div>
                   <div>
-                    <span className="text-slate-900 dark:text-slate-100">{categoryLabels[category]}</span>
+                    <span className="text-slate-900 dark:text-slate-100">
+                      {categoryLabels[category]}
+                    </span>
                     <p className="text-sm font-normal text-slate-500 dark:text-slate-400">
                       {progress.completed} / {progress.total} erledigt
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-24 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                  <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
                     <div
                       className="h-full bg-green-500 transition-all duration-300"
                       style={{
                         width: `${
-                          progress.total > 0
-                            ? (progress.completed / progress.total) * 100
-                            : 0
+                          progress.total > 0 ? (progress.completed / progress.total) * 100 : 0
                         }%`,
                       }}
                     />
@@ -250,10 +246,10 @@ export function DueDiligenceChecklist() {
                   {categoryItems.map((item) => (
                     <div
                       key={item.id}
-                      className={`p-3 rounded-lg border transition-all ${
+                      className={`rounded-lg border p-3 transition-all ${
                         item.isCompleted
-                          ? "bg-green-50 border-green-200 dark:bg-green-950/50 dark:border-green-800/50"
-                          : "bg-white border-slate-200 dark:bg-slate-900/50 dark:border-slate-700"
+                          ? "border-green-200 bg-green-50 dark:border-green-800/50 dark:bg-green-950/50"
+                          : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900/50"
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -272,31 +268,29 @@ export function DueDiligenceChecklist() {
                             <p
                               className={`font-medium ${
                                 item.isCompleted
-                                  ? "line-through text-slate-500 dark:text-slate-400"
+                                  ? "text-slate-500 line-through dark:text-slate-400"
                                   : "text-slate-900 dark:text-slate-100"
                               }`}
                             >
                               {item.title}
                             </p>
                             {item.isRequired && (
-                              <span className="text-xs bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400 px-1.5 py-0.5 rounded">
+                              <span className="rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-600 dark:bg-red-900/50 dark:text-red-400">
                                 Pflicht
                               </span>
                             )}
                           </div>
-                          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                             {item.description}
                           </p>
                           {editingNotes === item.id ? (
                             <div className="mt-2">
                               <textarea
-                                className="w-full p-2 text-sm border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                                className="w-full resize-none rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                                 rows={2}
                                 placeholder="Notizen hinzufügen..."
                                 value={item.notes || ""}
-                                onChange={(e) =>
-                                  updateNotes(item.id, e.target.value)
-                                }
+                                onChange={(e) => updateNotes(item.id, e.target.value)}
                                 onBlur={() => setEditingNotes(null)}
                                 autoFocus
                               />
@@ -306,9 +300,7 @@ export function DueDiligenceChecklist() {
                               onClick={() => setEditingNotes(item.id)}
                               className="mt-2 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                             >
-                              {item.notes
-                                ? `📝 ${item.notes}`
-                                : "📝 Notiz hinzufügen"}
+                              {item.notes ? `📝 ${item.notes}` : "📝 Notiz hinzufügen"}
                             </button>
                           )}
                         </div>
@@ -324,15 +316,13 @@ export function DueDiligenceChecklist() {
 
       {/* Summary */}
       {totalProgress.completed === totalProgress.total && (
-        <Card className="bg-gradient-to-r from-green-500 to-green-600">
+        <Card className="bg-green-600 dark:bg-green-700">
           <CardContent className="py-6 text-center text-white">
-            <CheckCircle2 className="h-12 w-12 mx-auto mb-3" />
-            <h3 className="text-xl font-bold mb-2">
-              🎉 Due Diligence abgeschlossen!
-            </h3>
+            <CheckCircle2 className="mx-auto mb-3 h-12 w-12" />
+            <h3 className="mb-2 text-xl font-bold">🎉 Due Diligence abgeschlossen!</h3>
             <p className="text-green-100">
-              Sie haben alle Prüfpunkte erfolgreich abgearbeitet. Sie sind gut
-              vorbereitet für den Immobilienkauf.
+              Sie haben alle Prüfpunkte erfolgreich abgearbeitet. Sie sind gut vorbereitet für den
+              Immobilienkauf.
             </p>
           </CardContent>
         </Card>
