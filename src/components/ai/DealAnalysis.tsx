@@ -28,26 +28,26 @@ export function DealAnalysis({ input, output }: DealAnalysisProps) {
   const getRatingColor = () => {
     switch (analysis.score.rating) {
       case "EXCELLENT":
-        return "text-green-600 bg-green-100";
+        return "text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/50";
       case "GOOD":
-        return "text-blue-600 bg-blue-100";
+        return "text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/50";
       case "FAIR":
-        return "text-yellow-600 bg-yellow-100";
+        return "text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/50";
       case "POOR":
-        return "text-red-600 bg-red-100";
+        return "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/50";
     }
   };
 
   const getRecommendationColor = () => {
     switch (analysis.score.recommendation) {
       case "STRONG_BUY":
-        return "text-green-700 bg-green-50 border-green-200";
+        return "text-green-700 bg-green-50 border-green-200 dark:text-green-300 dark:bg-green-950/50 dark:border-green-800";
       case "BUY":
-        return "text-blue-700 bg-blue-50 border-blue-200";
+        return "text-blue-700 bg-blue-50 border-blue-200 dark:text-blue-300 dark:bg-blue-950/50 dark:border-blue-800";
       case "HOLD":
-        return "text-yellow-700 bg-yellow-50 border-yellow-200";
+        return "text-yellow-700 bg-yellow-50 border-yellow-200 dark:text-yellow-300 dark:bg-yellow-950/50 dark:border-yellow-800";
       case "AVOID":
-        return "text-red-700 bg-red-50 border-red-200";
+        return "text-red-700 bg-red-50 border-red-200 dark:text-red-300 dark:bg-red-950/50 dark:border-red-800";
     }
   };
 
@@ -140,16 +140,16 @@ export function DealAnalysis({ input, output }: DealAnalysisProps) {
               location: "Standort",
               potential: "Potenzial",
             }).map(([key, label]) => (
-              <div key={key} className="bg-muted/50 rounded-lg p-3 text-center">
-                <p className="text-muted-foreground mb-1 text-xs">{label}</p>
+              <div key={key} className="rounded-lg bg-[var(--surface-2)] p-3 text-center">
+                <p className="mb-1 text-xs text-[var(--muted-foreground)]">{label}</p>
                 <p
                   className={`text-lg font-semibold ${
                     analysis.score.categories[key as keyof typeof analysis.score.categories] >= 70
-                      ? "text-green-600"
+                      ? "text-green-600 dark:text-green-400"
                       : analysis.score.categories[key as keyof typeof analysis.score.categories] >=
                           50
-                        ? "text-blue-600"
-                        : "text-yellow-600"
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-yellow-600 dark:text-yellow-400"
                   }`}
                 >
                   {analysis.score.categories[key as keyof typeof analysis.score.categories]}
@@ -176,10 +176,10 @@ export function DealAnalysis({ input, output }: DealAnalysisProps) {
                   key={index}
                   className={`rounded-lg border p-3 ${
                     risk.type === "CRITICAL"
-                      ? "border-red-200 bg-red-50"
+                      ? "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/50"
                       : risk.type === "WARNING"
-                        ? "border-yellow-200 bg-yellow-50"
-                        : "border-blue-200 bg-blue-50"
+                        ? "border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/50"
+                        : "border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/50"
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -191,10 +191,14 @@ export function DealAnalysis({ input, output }: DealAnalysisProps) {
                     )}
                     {risk.type === "INFO" && <Lightbulb className="mt-0.5 h-5 w-5 text-blue-500" />}
                     <div>
-                      <p className="font-medium">{risk.title}</p>
-                      <p className="text-muted-foreground mt-1 text-sm">{risk.description}</p>
+                      <p className="font-medium text-[var(--foreground)]">{risk.title}</p>
+                      <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+                        {risk.description}
+                      </p>
                       {risk.mitigation && (
-                        <p className="mt-2 text-sm text-green-600">💡 {risk.mitigation}</p>
+                        <p className="mt-2 text-sm text-green-600 dark:text-green-400">
+                          💡 {risk.mitigation}
+                        </p>
                       )}
                     </div>
                   </div>

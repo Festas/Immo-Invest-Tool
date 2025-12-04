@@ -50,7 +50,7 @@ export function BreakEvenCalculator() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -58,7 +58,7 @@ export function BreakEvenCalculator() {
             Break-Even Analyse
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <p className="text-sm text-slate-600 dark:text-slate-400">
             Berechnen Sie, wann sich Ihre Immobilieninvestition amortisiert hat. Diese Berechnung
             basiert auf Ihren aktuellen Eingaben im Rechner.

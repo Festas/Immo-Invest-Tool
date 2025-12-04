@@ -52,7 +52,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="relative rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 p-3 shadow-lg transition-transform duration-300 hover:scale-105 dark:from-slate-600 dark:to-slate-700">
+                <div className="relative rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 p-3 shadow-lg transition-transform duration-300 hover:scale-105 dark:from-slate-600 dark:to-slate-700">
                   <Calculator className="h-7 w-7 text-white" />
                 </div>
               </div>
@@ -135,11 +135,11 @@ export default function Home() {
 
           {/* Calculator Tab */}
           <TabsContent value="calculator">
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
               {/* Input Form */}
               <div className="animate-fade-in">
                 <div className="mb-6 flex items-center gap-3">
-                  <div className="rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg transition-transform hover:scale-105 dark:from-slate-500 dark:to-slate-600">
+                  <div className="rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg transition-transform hover:scale-105 dark:from-slate-500 dark:to-slate-600">
                     <Calculator className="h-5 w-5 text-white" />
                   </div>
                   <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -152,7 +152,7 @@ export default function Home() {
               {/* Results */}
               <div className="animate-fade-in animate-delay-200">
                 <div className="mb-6 flex items-center gap-3">
-                  <div className="rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg transition-transform hover:scale-105 dark:from-slate-500 dark:to-slate-600">
+                  <div className="rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 p-2 shadow-lg transition-transform hover:scale-105 dark:from-slate-500 dark:to-slate-600">
                     <BarChart3 className="h-5 w-5 text-white" />
                   </div>
                   <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -166,7 +166,7 @@ export default function Home() {
 
           {/* Charts Tab */}
           <TabsContent value="charts">
-            <div className="space-y-8">
+            <div className="space-y-6">
               <AmortizationChart />
               <CumulativeCashflowChart />
             </div>

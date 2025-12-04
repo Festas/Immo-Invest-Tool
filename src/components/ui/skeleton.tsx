@@ -10,9 +10,9 @@ function Skeleton({ className, variant = "text", ...props }: SkeletonProps) {
     text: "h-4 w-full rounded",
     title: "h-6 w-3/4 rounded",
     avatar: "h-10 w-10 rounded-full",
-    card: "h-32 w-full rounded-xl",
-    button: "h-10 w-24 rounded-xl",
-    chart: "h-64 w-full rounded-xl",
+    card: "h-32 w-full rounded-lg",
+    button: "h-10 w-24 rounded-lg",
+    chart: "h-64 w-full rounded-lg",
   };
 
   return (
@@ -39,7 +39,7 @@ function SkeletonCard({ className, hasHeader = true, lines = 3, ...props }: Skel
   return (
     <div
       className={cn(
-        "rounded-2xl border border-slate-200/60 bg-white p-6 dark:border-slate-700 dark:bg-slate-900",
+        "rounded-lg border border-[var(--card-border)] bg-[var(--card)] p-6",
         className
       )}
       {...props}
@@ -74,13 +74,13 @@ function SkeletonChart({ className, type = "bar", ...props }: SkeletonChartProps
   return (
     <div
       className={cn(
-        "rounded-2xl border border-slate-200/60 bg-white p-6 dark:border-slate-700 dark:bg-slate-900",
+        "rounded-lg border border-[var(--card-border)] bg-[var(--card)] p-6",
         className
       )}
       {...props}
     >
       <div className="mb-4 flex items-center gap-3">
-        <Skeleton variant="avatar" className="h-10 w-10 rounded-xl" />
+        <Skeleton variant="avatar" className="h-10 w-10 rounded-lg" />
         <Skeleton variant="title" className="w-1/4" />
       </div>
       <div className="relative h-64">
@@ -106,7 +106,7 @@ function SkeletonMetric({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   return (
     <div
       className={cn(
-        "rounded-2xl border border-slate-200/60 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-800/50",
+        "rounded-lg border border-[var(--card-border)] bg-[var(--surface-2)] p-5",
         className
       )}
       {...props}

@@ -55,7 +55,7 @@ export function Tooltip({ content, children, className }: TooltipProps) {
             "absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2",
             "px-4 py-3 text-sm",
             "bg-slate-900 text-white dark:bg-slate-800",
-            "rounded-xl shadow-xl shadow-black/20 dark:shadow-black/40",
+            "rounded-lg shadow-xl shadow-black/20 dark:shadow-black/40",
             "w-max max-w-xs border border-slate-700/50 dark:border-slate-600/50",
             "animate-in fade-in-0 zoom-in-95 duration-200"
           )}

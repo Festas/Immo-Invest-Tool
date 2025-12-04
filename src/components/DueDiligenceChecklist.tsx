@@ -137,7 +137,7 @@ export function DueDiligenceChecklist() {
   const progressPercent = (totalProgress.completed / totalProgress.total) * 100;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
@@ -157,7 +157,7 @@ export function DueDiligenceChecklist() {
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <p className="text-sm text-slate-600 dark:text-slate-400">
             Eine umfassende Checkliste für die Prüfung einer Immobilie vor dem Kauf. Arbeiten Sie
             alle Punkte ab, um Risiken zu minimieren.

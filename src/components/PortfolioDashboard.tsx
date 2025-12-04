@@ -42,7 +42,7 @@ export function PortfolioDashboard() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Portfolio Summary */}
       <Card className="bg-slate-700 dark:bg-slate-800">
         <CardHeader className="pb-2">

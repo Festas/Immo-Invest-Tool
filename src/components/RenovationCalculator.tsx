@@ -98,7 +98,7 @@ export function RenovationCalculator() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -106,7 +106,7 @@ export function RenovationCalculator() {
             Renovierungs-ROI Rechner
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <p className="text-sm text-slate-600 dark:text-slate-400">
             Berechnen Sie die Rentabilität von Renovierungsmaßnahmen und ob sich die Investition
             lohnt.
@@ -144,7 +144,7 @@ export function RenovationCalculator() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <Input
               label="Geschätzte Kosten"
               type="number"
@@ -241,8 +241,8 @@ export function RenovationCalculator() {
               Analyseergebnis
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
               <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 text-center dark:border-slate-700/50 dark:bg-slate-800/50">
                 <p className="text-xs text-slate-600 dark:text-slate-400">Gesamtkosten</p>
                 <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
