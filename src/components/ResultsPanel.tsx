@@ -106,40 +106,40 @@ export function ResultsPanel() {
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-2 gap-4">
         {/* Total Investment */}
-        <Card className="!bg-transparent bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-100 dark:from-indigo-900 dark:via-purple-900 dark:to-indigo-800 border-indigo-200/50 dark:border-indigo-700 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-400/20 to-purple-400/20 rounded-full -translate-y-8 translate-x-8" />
-          <CardContent className="p-5 relative">
-            <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 mb-2">
-              <div className="p-1.5 rounded-lg bg-indigo-500/10">
+        <Card className="relative overflow-hidden border-slate-200/50 !bg-transparent bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
+          <CardContent className="relative p-5">
+            <div className="mb-2 flex items-center gap-2 text-slate-600 dark:text-slate-400">
+              <div className="rounded-lg bg-slate-500/10 p-1.5">
                 <Wallet className="h-4 w-4" />
               </div>
-              <span className="text-xs font-semibold uppercase tracking-wide">Gesamtinvestition</span>
+              <span className="text-xs font-semibold tracking-wide uppercase">
+                Gesamtinvestition
+              </span>
               <HelpTooltip content={resultHelpTexts.totalInvestment} />
             </div>
-            <p className="text-2xl font-bold text-indigo-900 dark:text-indigo-100">
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {formatCurrency(output.investmentVolume.totalInvestment)}
             </p>
-            <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-2 font-medium">
+            <p className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
               EK: {formatCurrency(currentInput.equity)}
             </p>
           </CardContent>
         </Card>
 
         {/* Monthly Payment */}
-        <Card className="!bg-transparent bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 border-slate-200/50 dark:border-slate-600 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-slate-400/10 to-gray-400/10 rounded-full -translate-y-8 translate-x-8" />
-          <CardContent className="p-5 relative">
-            <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 mb-2">
-              <div className="p-1.5 rounded-lg bg-slate-500/10">
+        <Card className="relative overflow-hidden border-slate-200/50 !bg-transparent bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
+          <CardContent className="relative p-5">
+            <div className="mb-2 flex items-center gap-2 text-slate-600 dark:text-slate-400">
+              <div className="rounded-lg bg-slate-500/10 p-1.5">
                 <Calculator className="h-4 w-4" />
               </div>
-              <span className="text-xs font-semibold uppercase tracking-wide">Rate/Monat</span>
+              <span className="text-xs font-semibold tracking-wide uppercase">Rate/Monat</span>
               <HelpTooltip content={resultHelpTexts.monthlyRate} />
             </div>
             <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {formatCurrency(output.financing.monthlyPayment)}
             </p>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium">
+            <p className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
               Darlehen: {formatCurrency(output.financing.loanAmount)}
             </p>
           </CardContent>
@@ -147,46 +147,45 @@ export function ResultsPanel() {
 
         {/* Monthly Cashflow */}
         <Card
-          className={`!bg-transparent overflow-hidden relative ${
+          className={`relative overflow-hidden !bg-transparent ${
             isPositiveCashflow
-              ? "bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100 dark:from-emerald-900 dark:via-teal-900 dark:to-emerald-800 border-emerald-200/50 dark:border-emerald-700"
-              : "bg-gradient-to-br from-red-50 via-rose-50 to-red-100 dark:from-red-900 dark:via-rose-900 dark:to-red-800 border-red-200/50 dark:border-red-700"
+              ? "border-green-200/50 bg-green-50 dark:border-green-700 dark:bg-green-900/30"
+              : "border-red-200/50 bg-red-50 dark:border-red-700 dark:bg-red-900/30"
           }`}
         >
-          <div className={`absolute top-0 right-0 w-24 h-24 rounded-full -translate-y-8 translate-x-8 ${
-            isPositiveCashflow ? "bg-gradient-to-br from-emerald-400/20 to-teal-400/20" : "bg-gradient-to-br from-red-400/20 to-rose-400/20"
-          }`} />
-          <CardContent className="p-5 relative">
+          <CardContent className="relative p-5">
             <div
-              className={`flex items-center gap-2 mb-2 ${
+              className={`mb-2 flex items-center gap-2 ${
                 isPositiveCashflow
-                  ? "text-emerald-600 dark:text-emerald-400"
+                  ? "text-green-600 dark:text-green-400"
                   : "text-red-600 dark:text-red-400"
               }`}
             >
-              <div className={`p-1.5 rounded-lg ${isPositiveCashflow ? "bg-emerald-500/10" : "bg-red-500/10"}`}>
+              <div
+                className={`rounded-lg p-1.5 ${isPositiveCashflow ? "bg-green-500/10" : "bg-red-500/10"}`}
+              >
                 {isPositiveCashflow ? (
                   <TrendingUp className="h-4 w-4" />
                 ) : (
                   <TrendingDown className="h-4 w-4" />
                 )}
               </div>
-              <span className="text-xs font-semibold uppercase tracking-wide">Cashflow/Monat</span>
+              <span className="text-xs font-semibold tracking-wide uppercase">Cashflow/Monat</span>
               <HelpTooltip content={resultHelpTexts.cashflow} />
             </div>
             <p
               className={`text-2xl font-bold ${
                 isPositiveCashflow
-                  ? "text-emerald-900 dark:text-emerald-100"
+                  ? "text-green-900 dark:text-green-100"
                   : "text-red-900 dark:text-red-100"
               }`}
             >
               {formatCurrency(output.cashflow.monthlyCashflowAfterTax)}
             </p>
             <p
-              className={`text-xs mt-2 font-medium ${
+              className={`mt-2 text-xs font-medium ${
                 isPositiveCashflow
-                  ? "text-emerald-600 dark:text-emerald-400"
+                  ? "text-green-600 dark:text-green-400"
                   : "text-red-600 dark:text-red-400"
               }`}
             >
@@ -196,20 +195,19 @@ export function ResultsPanel() {
         </Card>
 
         {/* ROI */}
-        <Card className="!bg-transparent bg-gradient-to-br from-violet-50 via-fuchsia-50 to-violet-100 dark:from-violet-900 dark:via-fuchsia-900 dark:to-violet-800 border-violet-200/50 dark:border-violet-700 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-violet-400/20 to-fuchsia-400/20 rounded-full -translate-y-8 translate-x-8" />
-          <CardContent className="p-5 relative">
-            <div className="flex items-center gap-2 text-violet-600 dark:text-violet-400 mb-2">
-              <div className="p-1.5 rounded-lg bg-violet-500/10">
+        <Card className="relative overflow-hidden border-slate-200/50 !bg-transparent bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
+          <CardContent className="relative p-5">
+            <div className="mb-2 flex items-center gap-2 text-slate-600 dark:text-slate-400">
+              <div className="rounded-lg bg-slate-500/10 p-1.5">
                 <PiggyBank className="h-4 w-4" />
               </div>
-              <span className="text-xs font-semibold uppercase tracking-wide">EK-Rendite</span>
+              <span className="text-xs font-semibold tracking-wide uppercase">EK-Rendite</span>
               <HelpTooltip content={resultHelpTexts.roiEquity} />
             </div>
-            <p className="text-2xl font-bold text-violet-900 dark:text-violet-100">
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {output.yields.returnOnEquity.toFixed(2)}%
             </p>
-            <p className="text-xs text-violet-600 dark:text-violet-400 mt-2 font-medium">
+            <p className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
               p.a. nach Steuern
             </p>
           </CardContent>
@@ -218,45 +216,59 @@ export function ResultsPanel() {
 
       {/* Yield Metrics */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-3 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/50 dark:to-purple-900/50">
+        <CardHeader className="bg-slate-50 pb-3 dark:bg-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/20">
+            <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
               <BarChart3 className="h-4 w-4 text-white" />
             </div>
-            <span className="bg-gradient-to-r from-indigo-700 to-purple-700 dark:from-indigo-300 dark:to-purple-300 bg-clip-text text-transparent font-bold">
-              Renditekennzahlen
-            </span>
+            <span className="font-bold text-slate-900 dark:text-white">Renditekennzahlen</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
           <div className="space-y-1">
-            <div className="flex justify-between items-center py-3 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+            <div className="flex items-center justify-between rounded-xl px-3 py-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Bruttomietrendite</span>
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  Bruttomietrendite
+                </span>
                 <HelpTooltip content={resultHelpTexts.grossYield} />
               </div>
-              <span className="font-bold text-slate-900 dark:text-white">{output.yields.grossRentalYield.toFixed(2)}%</span>
+              <span className="font-bold text-slate-900 dark:text-white">
+                {output.yields.grossRentalYield.toFixed(2)}%
+              </span>
             </div>
-            <div className="flex justify-between items-center py-3 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+            <div className="flex items-center justify-between rounded-xl px-3 py-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Nettomietrendite</span>
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  Nettomietrendite
+                </span>
                 <HelpTooltip content={resultHelpTexts.netYield} />
               </div>
-              <span className="font-bold text-slate-900 dark:text-white">{output.yields.netRentalYield.toFixed(2)}%</span>
+              <span className="font-bold text-slate-900 dark:text-white">
+                {output.yields.netRentalYield.toFixed(2)}%
+              </span>
             </div>
-            <div className="flex justify-between items-center py-3 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+            <div className="flex items-center justify-between rounded-xl px-3 py-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Eigenkapitalrendite</span>
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  Eigenkapitalrendite
+                </span>
                 <HelpTooltip content={resultHelpTexts.roiEquity} />
               </div>
-              <span className="font-bold text-slate-900 dark:text-white">{output.yields.returnOnEquity.toFixed(2)}%</span>
+              <span className="font-bold text-slate-900 dark:text-white">
+                {output.yields.returnOnEquity.toFixed(2)}%
+              </span>
             </div>
-            <div className="flex justify-between items-center py-3 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+            <div className="flex items-center justify-between rounded-xl px-3 py-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Cashflow-Rendite</span>
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  Cashflow-Rendite
+                </span>
                 <HelpTooltip content={resultHelpTexts.cashflowYield} />
               </div>
-              <span className="font-bold text-slate-900 dark:text-white">{output.yields.cashflowYield.toFixed(2)}%</span>
+              <span className="font-bold text-slate-900 dark:text-white">
+                {output.yields.cashflowYield.toFixed(2)}%
+              </span>
             </div>
           </div>
         </CardContent>
@@ -264,57 +276,75 @@ export function ResultsPanel() {
 
       {/* Tax Overview */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-3 bg-gradient-to-r from-violet-50/50 to-fuchsia-50/50 dark:from-violet-900/50 dark:to-fuchsia-900/50">
+        <CardHeader className="bg-slate-50 pb-3 dark:bg-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/20">
+            <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
               <Sparkles className="h-4 w-4 text-white" />
             </div>
-            <span className="bg-gradient-to-r from-violet-700 to-fuchsia-700 dark:from-violet-300 dark:to-fuchsia-300 bg-clip-text text-transparent font-bold">
-              Steuerliche Auswirkung
-            </span>
+            <span className="font-bold text-slate-900 dark:text-white">Steuerliche Auswirkung</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between items-center py-2 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+            <div className="flex items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">AfA (jährlich)</span>
+                <span className="font-medium text-slate-600 dark:text-slate-400">
+                  AfA (jährlich)
+                </span>
                 <HelpTooltip content={resultHelpTexts.afaAmount} />
               </div>
-              <span className="font-semibold text-slate-900 dark:text-white">{formatCurrency(output.tax.afaAmount)}</span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {formatCurrency(output.tax.afaAmount)}
+              </span>
             </div>
-            <div className="flex justify-between items-center py-2 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+            <div className="flex items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">Absetzbare Zinsen</span>
+                <span className="font-medium text-slate-600 dark:text-slate-400">
+                  Absetzbare Zinsen
+                </span>
                 <HelpTooltip content={resultHelpTexts.deductibleInterest} />
               </div>
-              <span className="font-semibold text-slate-900 dark:text-white">{formatCurrency(output.tax.deductibleInterest)}</span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {formatCurrency(output.tax.deductibleInterest)}
+              </span>
             </div>
-            <div className="flex justify-between items-center py-2 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-              <span className="text-slate-600 dark:text-slate-400 font-medium">Werbungskosten gesamt</span>
-              <span className="font-semibold text-slate-900 dark:text-white">{formatCurrency(output.tax.totalDeductions)}</span>
+            <div className="flex items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
+              <span className="font-medium text-slate-600 dark:text-slate-400">
+                Werbungskosten gesamt
+              </span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {formatCurrency(output.tax.totalDeductions)}
+              </span>
             </div>
-            <div className="border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">
-              <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+            <div className="mt-3 border-t border-slate-200 pt-3 dark:border-slate-700">
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2 dark:bg-slate-800/50">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">Einkünfte aus V&V</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">
+                    Einkünfte aus V&V
+                  </span>
                   <HelpTooltip content={resultHelpTexts.rentalIncome} />
                 </div>
                 <span
                   className={`font-bold ${
-                    output.tax.rentalIncomeAfterDeductions < 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
+                    output.tax.rentalIncomeAfterDeductions < 0
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
                   }`}
                 >
                   {formatCurrency(output.tax.rentalIncomeAfterDeductions)}
                 </span>
               </div>
             </div>
-            <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900 dark:to-purple-900">
+            <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2 dark:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-slate-700 dark:text-slate-300">Steuereffekt (jährlich)</span>
+                <span className="font-semibold text-slate-700 dark:text-slate-300">
+                  Steuereffekt (jährlich)
+                </span>
                 <HelpTooltip content={resultHelpTexts.taxEffect} />
               </div>
-              <span className={`font-bold ${output.tax.taxEffect > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+              <span
+                className={`font-bold ${output.tax.taxEffect > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+              >
                 {output.tax.taxEffect > 0 ? "+" : ""}
                 {formatCurrency(output.tax.taxEffect)}
               </span>
@@ -325,42 +355,60 @@ export function ResultsPanel() {
 
       {/* Side Costs Breakdown */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-900/50 dark:to-orange-900/50">
+        <CardHeader className="bg-slate-50 pb-3 dark:bg-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg shadow-amber-500/20">
+            <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
               <Wallet className="h-4 w-4 text-white" />
             </div>
-            <span className="bg-gradient-to-r from-amber-700 to-orange-700 dark:from-amber-300 dark:to-orange-300 bg-clip-text text-transparent font-bold">
+            <span className="font-bold text-slate-900 dark:text-white">
               Nebenkostenaufschlüsselung
             </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between py-2 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-              <span className="text-slate-600 dark:text-slate-400 font-medium">Grunderwerbsteuer</span>
-              <span className="font-semibold text-slate-900 dark:text-white">{formatCurrency(output.investmentVolume.sideCosts.propertyTransferTax)}</span>
+            <div className="flex justify-between rounded-xl px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
+              <span className="font-medium text-slate-600 dark:text-slate-400">
+                Grunderwerbsteuer
+              </span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {formatCurrency(output.investmentVolume.sideCosts.propertyTransferTax)}
+              </span>
             </div>
-            <div className="flex justify-between py-2 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-              <span className="text-slate-600 dark:text-slate-400 font-medium">Notar & Grundbuch</span>
-              <span className="font-semibold text-slate-900 dark:text-white">{formatCurrency(output.investmentVolume.sideCosts.notaryCost)}</span>
+            <div className="flex justify-between rounded-xl px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
+              <span className="font-medium text-slate-600 dark:text-slate-400">
+                Notar & Grundbuch
+              </span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {formatCurrency(output.investmentVolume.sideCosts.notaryCost)}
+              </span>
             </div>
-            <div className="flex justify-between py-2 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-              <span className="text-slate-600 dark:text-slate-400 font-medium">Makler</span>
-              <span className="font-semibold text-slate-900 dark:text-white">{formatCurrency(output.investmentVolume.sideCosts.brokerCost)}</span>
+            <div className="flex justify-between rounded-xl px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
+              <span className="font-medium text-slate-600 dark:text-slate-400">Makler</span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {formatCurrency(output.investmentVolume.sideCosts.brokerCost)}
+              </span>
             </div>
             {output.investmentVolume.sideCosts.renovationCosts > 0 && (
-              <div className="flex justify-between py-2 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">Renovierung</span>
-                <span className="font-semibold text-slate-900 dark:text-white">{formatCurrency(output.investmentVolume.sideCosts.renovationCosts)}</span>
+              <div className="flex justify-between rounded-xl px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <span className="font-medium text-slate-600 dark:text-slate-400">Renovierung</span>
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {formatCurrency(output.investmentVolume.sideCosts.renovationCosts)}
+                </span>
               </div>
             )}
-            <div className="border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">
-              <div className="flex justify-between py-2 px-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900 dark:to-orange-900">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Nebenkosten gesamt</span>
+            <div className="mt-3 border-t border-slate-200 pt-3 dark:border-slate-700">
+              <div className="flex justify-between rounded-xl bg-slate-50 px-3 py-2 dark:bg-slate-800/50">
+                <span className="font-bold text-slate-700 dark:text-slate-300">
+                  Nebenkosten gesamt
+                </span>
                 <div className="text-right">
-                  <span className="font-bold text-slate-900 dark:text-white">{formatCurrency(output.investmentVolume.sideCosts.totalSideCosts)}</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 ml-2">({output.investmentVolume.sideCosts.totalSideCostsPercent.toFixed(2)}%)</span>
+                  <span className="font-bold text-slate-900 dark:text-white">
+                    {formatCurrency(output.investmentVolume.sideCosts.totalSideCosts)}
+                  </span>
+                  <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">
+                    ({output.investmentVolume.sideCosts.totalSideCostsPercent.toFixed(2)}%)
+                  </span>
                 </div>
               </div>
             </div>

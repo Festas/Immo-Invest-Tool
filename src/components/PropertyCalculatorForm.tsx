@@ -186,21 +186,24 @@ export function PropertyCalculatorForm() {
 
   // Memoize the bundesland lookup to avoid recalculating on every render
   const selectedBundesland = React.useMemo(() => {
-    return Object.keys(BundeslandData).find(
-      (key) => BundeslandData[key as Bundesland].taxRate === currentInput.propertyTransferTaxPercent
-    ) || "BAYERN";
+    return (
+      Object.keys(BundeslandData).find(
+        (key) =>
+          BundeslandData[key as Bundesland].taxRate === currentInput.propertyTransferTaxPercent
+      ) || "BAYERN"
+    );
   }, [currentInput.propertyTransferTaxPercent]);
 
   return (
     <div className="space-y-5">
       {/* Purchase & Costs Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/50 dark:to-purple-900/50">
+        <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/20">
+            <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
               <Building2 className="h-4 w-4 text-white" />
             </div>
-            <span className="bg-gradient-to-r from-indigo-700 to-purple-700 dark:from-indigo-300 dark:to-purple-300 bg-clip-text text-transparent font-bold">
+            <span className="font-bold text-slate-900 dark:text-white">
               Kaufpreis & Nebenkosten
             </span>
           </CardTitle>
@@ -265,14 +268,12 @@ export function PropertyCalculatorForm() {
 
       {/* Financing Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-4 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-900/50 dark:to-teal-900/50">
+        <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/20">
+            <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
               <Banknote className="h-4 w-4 text-white" />
             </div>
-            <span className="bg-gradient-to-r from-emerald-700 to-teal-700 dark:from-emerald-300 dark:to-teal-300 bg-clip-text text-transparent font-bold">
-              Finanzierung
-            </span>
+            <span className="font-bold text-slate-900 dark:text-white">Finanzierung</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5 pt-5">
@@ -327,14 +328,12 @@ export function PropertyCalculatorForm() {
 
       {/* Rental Income Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-4 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-900/50 dark:to-orange-900/50">
+        <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg shadow-amber-500/20">
+            <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
               <Home className="h-4 w-4 text-white" />
             </div>
-            <span className="bg-gradient-to-r from-amber-700 to-orange-700 dark:from-amber-300 dark:to-orange-300 bg-clip-text text-transparent font-bold">
-              Mieteinnahmen
-            </span>
+            <span className="font-bold text-slate-900 dark:text-white">Mieteinnahmen</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5 pt-5">
@@ -354,7 +353,9 @@ export function PropertyCalculatorForm() {
               label="Nicht umlegbare NK"
               type="number"
               value={currentInput.nonRecoverableCosts}
-              onChange={(e) => updateInput({ nonRecoverableCosts: parseFloat(e.target.value) || 0 })}
+              onChange={(e) =>
+                updateInput({ nonRecoverableCosts: parseFloat(e.target.value) || 0 })
+              }
               suffix="€"
               min={0}
               step={10}
@@ -387,14 +388,12 @@ export function PropertyCalculatorForm() {
 
       {/* Tax Section */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-4 bg-gradient-to-r from-violet-50/50 to-fuchsia-50/50 dark:from-violet-900/50 dark:to-fuchsia-900/50">
+        <CardHeader className="bg-slate-50 pb-4 dark:bg-slate-800/50">
           <CardTitle className="flex items-center gap-3 text-base">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/20">
+            <div className="rounded-xl bg-slate-600 p-2 shadow-md dark:bg-slate-500">
               <Receipt className="h-4 w-4 text-white" />
             </div>
-            <span className="bg-gradient-to-r from-violet-700 to-fuchsia-700 dark:from-violet-300 dark:to-fuchsia-300 bg-clip-text text-transparent font-bold">
-              Steuerliche Parameter
-            </span>
+            <span className="font-bold text-slate-900 dark:text-white">Steuerliche Parameter</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5 pt-5">

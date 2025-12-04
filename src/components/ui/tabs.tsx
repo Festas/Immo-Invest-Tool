@@ -29,7 +29,7 @@ const TabsList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
       ref={ref}
       className={cn(
         "inline-flex h-12 items-center justify-center gap-1 rounded-2xl p-1.5",
-        "bg-slate-100/90 dark:bg-slate-800/90 backdrop-blur-sm",
+        "bg-slate-100/90 backdrop-blur-sm dark:bg-slate-800/90",
         "border border-slate-200/50 dark:border-slate-700/50",
         "shadow-inner shadow-slate-200/50 dark:shadow-black/20",
         className
@@ -57,14 +57,14 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
         type="button"
         onClick={() => context.onChange(value)}
         className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium",
+          "inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium whitespace-nowrap",
           "ring-offset-white dark:ring-offset-slate-950",
           "transition-all duration-200 ease-out",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+          "focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:outline-none",
           "disabled:pointer-events-none disabled:opacity-50",
           isActive
-            ? "bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 shadow-md shadow-slate-200/50 dark:shadow-black/30 border border-slate-200/50 dark:border-slate-700/50"
-            : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white/50 dark:hover:bg-slate-700/50",
+            ? "border border-slate-200/50 bg-white text-slate-900 shadow-md shadow-slate-200/50 dark:border-slate-700/50 dark:bg-slate-900 dark:text-slate-100 dark:shadow-black/30"
+            : "text-slate-600 hover:bg-white/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-slate-200",
           className
         )}
         {...props}
@@ -89,7 +89,7 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
       <div
         ref={ref}
         className={cn(
-          "mt-4 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 animate-fade-in",
+          "animate-fade-in mt-4 ring-offset-white focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:outline-none",
           className
         )}
         {...props}

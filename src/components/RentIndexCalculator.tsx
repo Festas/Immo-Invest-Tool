@@ -118,11 +118,11 @@ export function RentIndexCalculator() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Vergleichen Sie Ihre aktuelle Miete mit dem lokalen Mietpreisspiegel und
-            ermitteln Sie Ihr Mieterhöhungspotenzial.
+            Vergleichen Sie Ihre aktuelle Miete mit dem lokalen Mietpreisspiegel und ermitteln Sie
+            Ihr Mieterhöhungspotenzial.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Select
               label="Stadt/Region"
               options={cityOptions}
@@ -135,9 +135,7 @@ export function RentIndexCalculator() {
               label="Wohnfläche (m²)"
               type="number"
               value={input.livingArea}
-              onChange={(e) =>
-                setInput({ ...input, livingArea: parseFloat(e.target.value) || 0 })
-              }
+              onChange={(e) => setInput({ ...input, livingArea: parseFloat(e.target.value) || 0 })}
               suffix="m²"
               min={10}
               max={500}
@@ -148,9 +146,7 @@ export function RentIndexCalculator() {
               label="Aktuelle Kaltmiete (monatlich)"
               type="number"
               value={input.currentRent}
-              onChange={(e) =>
-                setInput({ ...input, currentRent: parseFloat(e.target.value) || 0 })
-              }
+              onChange={(e) => setInput({ ...input, currentRent: parseFloat(e.target.value) || 0 })}
               suffix="€"
               min={0}
               helpText={helpTexts.currentRent}
@@ -160,9 +156,7 @@ export function RentIndexCalculator() {
               label="Baujahr"
               type="number"
               value={input.yearBuilt}
-              onChange={(e) =>
-                setInput({ ...input, yearBuilt: parseInt(e.target.value) || 1970 })
-              }
+              onChange={(e) => setInput({ ...input, yearBuilt: parseInt(e.target.value) || 1970 })}
               min={1800}
               max={new Date().getFullYear()}
               helpText={helpTexts.yearBuilt}
@@ -198,9 +192,7 @@ export function RentIndexCalculator() {
               label="Etage"
               type="number"
               value={input.floor}
-              onChange={(e) =>
-                setInput({ ...input, floor: parseInt(e.target.value) || 0 })
-              }
+              onChange={(e) => setInput({ ...input, floor: parseInt(e.target.value) || 0 })}
               min={0}
               max={30}
               helpText={helpTexts.floor}
@@ -211,9 +203,7 @@ export function RentIndexCalculator() {
                 <input
                   type="checkbox"
                   checked={input.hasBalcony}
-                  onChange={(e) =>
-                    setInput({ ...input, hasBalcony: e.target.checked })
-                  }
+                  onChange={(e) => setInput({ ...input, hasBalcony: e.target.checked })}
                   className="rounded border-slate-300 dark:border-slate-600 dark:bg-slate-800"
                 />
                 Balkon/Terrasse vorhanden
@@ -222,9 +212,7 @@ export function RentIndexCalculator() {
                 <input
                   type="checkbox"
                   checked={input.hasElevator}
-                  onChange={(e) =>
-                    setInput({ ...input, hasElevator: e.target.checked })
-                  }
+                  onChange={(e) => setInput({ ...input, hasElevator: e.target.checked })}
                   className="rounded border-slate-300 dark:border-slate-600 dark:bg-slate-800"
                 />
                 Aufzug vorhanden
@@ -233,7 +221,7 @@ export function RentIndexCalculator() {
           </div>
 
           <Button onClick={handleCalculate} className="w-full">
-            <Calculator className="h-4 w-4 mr-2" />
+            <Calculator className="mr-2 h-4 w-4" />
             Mietpotenzial berechnen
           </Button>
         </CardContent>
@@ -248,36 +236,30 @@ export function RentIndexCalculator() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-blue-50 dark:bg-blue-950/50 rounded-lg border border-blue-100 dark:border-blue-900/50">
-                <p className="text-xs text-blue-600 dark:text-blue-400">
-                  Ihre Miete/m²
-                </p>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              <div className="rounded-lg border border-blue-100 bg-blue-50 p-3 text-center dark:border-blue-900/50 dark:bg-blue-950/50">
+                <p className="text-xs text-blue-600 dark:text-blue-400">Ihre Miete/m²</p>
                 <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   {result.currentRentPerSqm.toFixed(2)} €
                 </p>
               </div>
-              <div className="text-center p-3 bg-green-50 dark:bg-green-950/50 rounded-lg border border-green-100 dark:border-green-900/50">
-                <p className="text-xs text-green-600 dark:text-green-400">
-                  Marktmiete/m²
-                </p>
+              <div className="rounded-lg border border-green-100 bg-green-50 p-3 text-center dark:border-green-900/50 dark:bg-green-950/50">
+                <p className="text-xs text-green-600 dark:text-green-400">Marktmiete/m²</p>
                 <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   {result.marketRentPerSqm.toFixed(2)} €
                 </p>
               </div>
-              <div className="text-center p-3 bg-purple-50 dark:bg-purple-950/50 rounded-lg border border-purple-100 dark:border-purple-900/50">
-                <p className="text-xs text-purple-600 dark:text-purple-400">
-                  Marktmiete (Monat)
-                </p>
+              <div className="rounded-lg border border-purple-100 bg-purple-50 p-3 text-center dark:border-purple-900/50 dark:bg-purple-950/50">
+                <p className="text-xs text-purple-600 dark:text-purple-400">Marktmiete (Monat)</p>
                 <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   {formatCurrency(result.adjustedMarketRent)}
                 </p>
               </div>
               <div
-                className={`text-center p-3 rounded-lg border ${
+                className={`rounded-lg border p-3 text-center ${
                   result.rentPotential > 0
-                    ? "bg-green-50 dark:bg-green-950/50 border-green-100 dark:border-green-900/50"
-                    : "bg-red-50 dark:bg-red-950/50 border-red-100 dark:border-red-900/50"
+                    ? "border-green-100 bg-green-50 dark:border-green-900/50 dark:bg-green-950/50"
+                    : "border-red-100 bg-red-50 dark:border-red-900/50 dark:bg-red-950/50"
                 }`}
               >
                 <p
@@ -296,15 +278,17 @@ export function RentIndexCalculator() {
               </div>
             </div>
 
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
-              <p className="text-sm font-medium mb-2 text-slate-900 dark:text-slate-100">Marktspanne für diese Region:</p>
+            <div className="rounded-lg border border-slate-100 bg-slate-50 p-4 dark:border-slate-700/50 dark:bg-slate-800/50">
+              <p className="mb-2 text-sm font-medium text-slate-900 dark:text-slate-100">
+                Marktspanne für diese Region:
+              </p>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-slate-600 dark:text-slate-400">
                   {result.marketRentRange.min.toFixed(2)} €/m²
                 </span>
-                <div className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
                   <div
-                    className="h-full bg-gradient-to-r from-green-400 to-green-600"
+                    className="h-full bg-green-500"
                     style={{
                       width: `${
                         ((result.marketRentPerSqm - result.marketRentRange.min) /
@@ -321,20 +305,22 @@ export function RentIndexCalculator() {
             </div>
 
             <div
-              className={`p-4 rounded-lg border-l-4 ${
+              className={`rounded-lg border-l-4 p-4 ${
                 result.rentPotential > 10
-                  ? "bg-green-50 dark:bg-green-950/50 border-green-500"
+                  ? "border-green-500 bg-green-50 dark:bg-green-950/50"
                   : result.rentPotential > 0
-                  ? "bg-yellow-50 dark:bg-yellow-950/50 border-yellow-500"
-                  : "bg-red-50 dark:bg-red-950/50 border-red-500"
+                    ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-950/50"
+                    : "border-red-500 bg-red-50 dark:bg-red-950/50"
               }`}
             >
-              <p className="font-medium text-slate-900 dark:text-slate-100">{result.recommendation}</p>
+              <p className="font-medium text-slate-900 dark:text-slate-100">
+                {result.recommendation}
+              </p>
             </div>
 
             {result.rentPotential > 5 && (
-              <div className="p-4 bg-blue-50 dark:bg-blue-950/50 rounded-lg border border-blue-100 dark:border-blue-900/50">
-                <div className="flex items-center gap-2 mb-2">
+              <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 dark:border-blue-900/50 dark:bg-blue-950/50">
+                <div className="mb-2 flex items-center gap-2">
                   <Home className="h-5 w-5 text-blue-600" />
                   <p className="font-medium text-blue-900 dark:text-blue-100">
                     Mögliche Mieterhöhung
@@ -342,14 +328,10 @@ export function RentIndexCalculator() {
                 </div>
                 <p className="text-sm text-blue-700 dark:text-blue-300">
                   Bei einer Anpassung an die Marktmiete könnten Sie monatlich{" "}
-                  <strong>
-                    {formatCurrency(result.adjustedMarketRent - input.currentRent)}
-                  </strong>{" "}
+                  <strong>{formatCurrency(result.adjustedMarketRent - input.currentRent)}</strong>{" "}
                   mehr erhalten. Das entspricht{" "}
                   <strong>
-                    {formatCurrency(
-                      (result.adjustedMarketRent - input.currentRent) * 12
-                    )}
+                    {formatCurrency((result.adjustedMarketRent - input.currentRent) * 12)}
                   </strong>{" "}
                   pro Jahr.
                 </p>
