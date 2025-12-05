@@ -12,3 +12,5 @@ export * from "./animated-number";
 export * from "./trend-indicator";
 export * from "./sheet";
 export * from "./bottom-navigation";
+export * from "./gauge";
+export * from "./swipeable-cards";

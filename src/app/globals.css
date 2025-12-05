@@ -529,6 +529,42 @@ textarea {
   }
 }
 
+@keyframes cashflow-glow-positive {
+  0%,
+  100% {
+    box-shadow:
+      0 4px 24px -4px rgba(34, 197, 94, 0.25),
+      0 0 0 1px rgba(34, 197, 94, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 8px 40px -4px rgba(34, 197, 94, 0.35),
+      0 0 0 2px rgba(34, 197, 94, 0.15);
+  }
+}
+
+@keyframes bounce-subtle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes swipe-hint {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+}
+
 /* ============================================
    UTILITY CLASSES
    ============================================ */
@@ -566,6 +602,18 @@ textarea {
 
 .animate-spin {
   animation: spin 1s linear infinite;
+}
+
+.animate-cashflow-glow {
+  animation: cashflow-glow-positive 2s ease-in-out infinite;
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 1s ease-in-out infinite;
+}
+
+.animate-swipe-hint {
+  animation: swipe-hint 1.5s ease-in-out infinite;
 }
 
 /* Staggered animation delays */
@@ -694,7 +742,10 @@ textarea {
   .animate-scale-in,
   .animate-slide-up,
   .animate-pulse-subtle,
-  .animate-spin {
+  .animate-spin,
+  .animate-cashflow-glow,
+  .animate-bounce-subtle,
+  .animate-swipe-hint {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
@@ -857,4 +908,14 @@ textarea {
 /* Chart animation */
 .chart-animate-in {
   animation: scaleIn 0.5s ease-out forwards;
+}
+
+/* Hide scrollbar for swipeable cards */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
