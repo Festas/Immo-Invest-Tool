@@ -435,7 +435,15 @@ export function ResultsPanel() {
   const isTaxSaving = output.tax.taxEffect > 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" aria-live="polite" aria-atomic="true">
+      {/* Screen reader announcement for calculation updates */}
+      <div className="sr-only" role="status">
+        Berechnung aktualisiert: Monatlicher Cashflow{" "}
+        {formatCurrency(output.cashflow.monthlyCashflowAfterTax)}.
+        {isPositiveCashflow ? " Cashflow ist positiv." : " Cashflow ist negativ."}
+        Eigenkapitalrendite: {output.yields.returnOnEquity.toFixed(1)} Prozent pro Jahr.
+      </div>
+
       {/* Hero Cashflow Card - Full Width */}
       <Card
         className={`overflow-hidden transition-all duration-300 ${
@@ -447,6 +455,7 @@ export function ResultsPanel() {
       >
         <CardContent className="p-6 text-center">
           <div
+            role="status"
             className={`mb-2 flex items-center justify-center gap-2 ${
               isPositiveCashflow
                 ? "text-green-700 dark:text-green-400"
@@ -454,9 +463,9 @@ export function ResultsPanel() {
             }`}
           >
             {isPositiveCashflow ? (
-              <TrendingUp className="animate-bounce-subtle h-8 w-8" />
+              <TrendingUp className="animate-bounce-subtle h-8 w-8" aria-hidden="true" />
             ) : (
-              <TrendingDown className="h-8 w-8" />
+              <TrendingDown className="h-8 w-8" aria-hidden="true" />
             )}
             <span className="text-sm font-semibold tracking-wide uppercase">
               Monatlicher Cashflow

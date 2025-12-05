@@ -75,6 +75,15 @@ interface SheetContentProps extends React.HTMLAttributes<HTMLDivElement> {
 const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
   ({ className, children, side = "bottom", ...props }, ref) => {
     const { open, setOpen } = useSheet();
+    const sheetRef = React.useRef<HTMLDivElement>(null);
+    const previousActiveElement = React.useRef<Element | null>(null);
+
+    // Store the previously focused element when opening
+    React.useEffect(() => {
+      if (open) {
+        previousActiveElement.current = document.activeElement;
+      }
+    }, [open]);
 
     // Close on escape key
     React.useEffect(() => {
@@ -99,6 +108,51 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
       };
     }, [open]);
 
+    // Focus trap and focus management
+    React.useEffect(() => {
+      if (!open || !sheetRef.current) return;
+
+      // Focus the first focusable element in the sheet
+      const focusableElements = sheetRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      // Focus first element
+      if (firstFocusable) {
+        firstFocusable.focus();
+      }
+
+      // Handle tab key for focus trap
+      const handleTab = (e: KeyboardEvent) => {
+        if (e.key !== "Tab") return;
+
+        if (e.shiftKey) {
+          // Shift + Tab
+          if (document.activeElement === firstFocusable) {
+            e.preventDefault();
+            lastFocusable?.focus();
+          }
+        } else {
+          // Tab
+          if (document.activeElement === lastFocusable) {
+            e.preventDefault();
+            firstFocusable?.focus();
+          }
+        }
+      };
+
+      document.addEventListener("keydown", handleTab);
+      return () => {
+        document.removeEventListener("keydown", handleTab);
+        // Return focus to previously focused element when closing
+        if (previousActiveElement.current instanceof HTMLElement) {
+          previousActiveElement.current.focus();
+        }
+      };
+    }, [open]);
+
     if (!open) return null;
 
     return (
@@ -111,9 +165,18 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
         />
         {/* Sheet */}
         <div
-          ref={ref}
+          ref={(node) => {
+            // Handle both internal ref and forwarded ref
+            (sheetRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+            if (typeof ref === "function") {
+              ref(node);
+            } else if (ref) {
+              ref.current = node;
+            }
+          }}
           role="dialog"
           aria-modal="true"
+          aria-labelledby="sheet-title"
           className={cn(
             "fixed z-[101] bg-white shadow-xl transition-transform duration-300 ease-out dark:bg-slate-900",
             "border-t border-indigo-100/50 dark:border-indigo-900/30",
@@ -127,7 +190,7 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
         >
           {/* Drag handle for bottom sheet */}
           {side === "bottom" && (
-            <div className="flex justify-center pt-3 pb-2">
+            <div className="flex justify-center pt-3 pb-2" aria-hidden="true">
               <div className="h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-600" />
             </div>
           )}
@@ -154,6 +217,7 @@ const SheetTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTM
   ({ className, ...props }, ref) => (
     <h2
       ref={ref}
+      id="sheet-title"
       className={cn("text-lg font-semibold text-slate-900 dark:text-white", className)}
       {...props}
     />
@@ -172,6 +236,7 @@ const SheetClose = React.forwardRef<
       ref={ref}
       type="button"
       onClick={() => setOpen(false)}
+      aria-label="Schließen"
       className={cn(
         "rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900",
         "dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white",
@@ -180,8 +245,8 @@ const SheetClose = React.forwardRef<
       )}
       {...props}
     >
-      <X className="h-5 w-5" />
-      <span className="sr-only">Close</span>
+      <X className="h-5 w-5" aria-hidden="true" />
+      <span className="sr-only">Schließen</span>
     </button>
   );
 });

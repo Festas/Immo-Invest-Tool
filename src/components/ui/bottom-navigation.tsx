@@ -76,6 +76,7 @@ export function BottomNavigation({ activeTab, onTabChange, className }: BottomNa
               <button
                 key={item.value}
                 onClick={() => handleNavClick(item.value)}
+                aria-label={item.label}
                 className={cn(
                   "flex min-w-[48px] flex-1 flex-col items-center justify-center gap-1 px-2",
                   "transition-all duration-200",
@@ -97,6 +98,7 @@ export function BottomNavigation({ activeTab, onTabChange, className }: BottomNa
                       "h-5 w-5 transition-transform duration-200",
                       isActive && "scale-110"
                     )}
+                    aria-hidden="true"
                   />
                 </div>
                 <span
@@ -104,11 +106,15 @@ export function BottomNavigation({ activeTab, onTabChange, className }: BottomNa
                     "text-[10px] leading-none font-medium",
                     isActive && "font-semibold"
                   )}
+                  aria-hidden="true"
                 >
                   {item.label}
                 </span>
                 {isActive && (
-                  <span className="absolute bottom-0 h-0.5 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500" />
+                  <span
+                    className="absolute bottom-0 h-0.5 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500"
+                    aria-hidden="true"
+                  />
                 )}
               </button>
             );
@@ -118,6 +124,7 @@ export function BottomNavigation({ activeTab, onTabChange, className }: BottomNa
           <Sheet open={isMoreOpen} onOpenChange={setIsMoreOpen}>
             <button
               onClick={() => setIsMoreOpen(true)}
+              aria-label="Weitere Funktionen"
               className={cn(
                 "flex min-w-[48px] flex-1 flex-col items-center justify-center gap-1 px-2",
                 "transition-all duration-200",
@@ -140,6 +147,7 @@ export function BottomNavigation({ activeTab, onTabChange, className }: BottomNa
                     "h-5 w-5 transition-transform duration-200",
                     isSecondaryActive && "scale-110"
                   )}
+                  aria-hidden="true"
                 />
               </div>
               <span
@@ -147,11 +155,15 @@ export function BottomNavigation({ activeTab, onTabChange, className }: BottomNa
                   "text-[10px] leading-none font-medium",
                   isSecondaryActive && "font-semibold"
                 )}
+                aria-hidden="true"
               >
                 Mehr
               </span>
               {isSecondaryActive && (
-                <span className="absolute bottom-0 h-0.5 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500" />
+                <span
+                  className="absolute bottom-0 h-0.5 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500"
+                  aria-hidden="true"
+                />
               )}
             </button>
 
@@ -162,7 +174,7 @@ export function BottomNavigation({ activeTab, onTabChange, className }: BottomNa
                 <SheetClose />
               </SheetHeader>
 
-              <div className="grid grid-cols-3 gap-3 px-4 pb-8">
+              <div className="grid grid-cols-3 gap-3 px-4 pb-8" role="menu">
                 {secondaryNavItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeTab === item.value;
@@ -171,6 +183,8 @@ export function BottomNavigation({ activeTab, onTabChange, className }: BottomNa
                     <button
                       key={item.value}
                       onClick={() => handleNavClick(item.value)}
+                      aria-label={item.label}
+                      role="menuitem"
                       className={cn(
                         "flex min-h-[80px] flex-col items-center justify-center gap-2 rounded-xl p-4",
                         "transition-all duration-200",
@@ -181,8 +195,10 @@ export function BottomNavigation({ activeTab, onTabChange, className }: BottomNa
                       )}
                       aria-current={isActive ? "page" : undefined}
                     >
-                      <Icon className="h-6 w-6" />
-                      <span className="text-xs font-medium">{item.label}</span>
+                      <Icon className="h-6 w-6" aria-hidden="true" />
+                      <span className="text-xs font-medium" aria-hidden="true">
+                        {item.label}
+                      </span>
                     </button>
                   );
                 })}
