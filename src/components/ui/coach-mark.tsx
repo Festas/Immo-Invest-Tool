@@ -72,8 +72,12 @@ export function CoachMark({
         });
         setIsReady(true);
 
-        // Scroll element into view
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Scroll element into view, respecting reduced motion preference
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        element.scrollIntoView({
+          behavior: prefersReducedMotion ? "auto" : "smooth",
+          block: "center",
+        });
       }
     };
 
@@ -132,9 +136,16 @@ export function CoachMark({
   return (
     <>
       {/* Overlay with spotlight */}
-      <div className="fixed inset-0 z-[90]" onClick={onSkip}>
+      <div
+        className="fixed inset-0 z-[90]"
+        onClick={onSkip}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Escape" && onSkip()}
+        aria-label="Klicken Sie zum Überspringen der Tour"
+      >
         {/* Dark overlay with cutout */}
-        <svg className="h-full w-full">
+        <svg className="h-full w-full" aria-hidden="true">
           <defs>
             <mask id="spotlight-mask">
               <rect x="0" y="0" width="100%" height="100%" fill="white" />

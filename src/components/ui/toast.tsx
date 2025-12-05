@@ -37,7 +37,7 @@ export function useToast() {
  * Generate a unique ID for toasts
  */
 function generateToastId(): string {
-  return `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `toast-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
 /**
@@ -45,6 +45,15 @@ function generateToastId(): string {
  */
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
+  const timeoutsRef = React.useRef<Map<string, NodeJS.Timeout>>(new Map());
+
+  // Clean up timeouts on unmount
+  React.useEffect(() => {
+    return () => {
+      timeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
+      timeoutsRef.current.clear();
+    };
+  }, []);
 
   const addToast = React.useCallback(
     (message: string, variant: ToastVariant = "info", duration: number = 4000) => {
@@ -55,15 +64,23 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
       // Auto-dismiss after duration
       if (duration > 0) {
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
           setToasts((prev) => prev.filter((t) => t.id !== id));
+          timeoutsRef.current.delete(id);
         }, duration);
+        timeoutsRef.current.set(id, timeout);
       }
     },
     []
   );
 
   const removeToast = React.useCallback((id: string) => {
+    // Clear timeout if exists
+    const timeout = timeoutsRef.current.get(id);
+    if (timeout) {
+      clearTimeout(timeout);
+      timeoutsRef.current.delete(id);
+    }
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 

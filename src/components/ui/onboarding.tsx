@@ -131,7 +131,7 @@ function WelcomeModal({ onContinue, onSkip }: { onContinue: () => void; onSkip: 
         {/* Actions */}
         <div className="flex flex-col gap-3">
           <Button onClick={onContinue} className="w-full">
-            Los geht&apos;s
+            Los geht{"'"}s
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
           <button
