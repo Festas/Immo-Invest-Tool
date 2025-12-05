@@ -1,6 +1,9 @@
+"use client";
+
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { HelpTooltip } from "./tooltip";
+import { HelpButton, ExpandableHelpContent } from "./expandable-help";
 import { Check, AlertCircle } from "lucide-react";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -15,6 +18,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, label, suffix, prefix, error, helpText, success, ...props }, ref) => {
     const [isFocused, setIsFocused] = React.useState(false);
+    const [isHelpExpanded, setIsHelpExpanded] = React.useState(false);
 
     return (
       <div className="w-full">
@@ -23,7 +27,19 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">
               {label}
             </label>
-            {helpText && <HelpTooltip content={helpText} />}
+            {/* Desktop: Tooltip, Mobile: hidden (info button shown separately) */}
+            {helpText && (
+              <span className="hidden sm:inline-flex">
+                <HelpTooltip content={helpText} />
+              </span>
+            )}
+            {/* Mobile: Info button for inline expansion */}
+            {helpText && (
+              <HelpButton
+                isExpanded={isHelpExpanded}
+                onToggle={() => setIsHelpExpanded(!isHelpExpanded)}
+              />
+            )}
           </div>
         )}
         <div className="group relative">
@@ -95,6 +111,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             </span>
           )}
         </div>
+        {/* Mobile: Inline expandable help text below input */}
+        {helpText && <ExpandableHelpContent content={helpText} isExpanded={isHelpExpanded} />}
         {error && (
           <p className="animate-fade-in mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-500 dark:text-red-400">
             {error}

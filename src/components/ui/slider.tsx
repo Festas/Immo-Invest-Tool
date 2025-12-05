@@ -1,6 +1,9 @@
+"use client";
+
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { HelpTooltip } from "./tooltip";
+import { HelpButton, ExpandableHelpContent } from "./expandable-help";
 
 interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   label?: string;
@@ -21,6 +24,7 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
     const percentage = ((value - min) / (max - min)) * 100;
     const [isHovered, setIsHovered] = React.useState(false);
     const [isDragging, setIsDragging] = React.useState(false);
+    const [isHelpExpanded, setIsHelpExpanded] = React.useState(false);
 
     return (
       <div className="w-full">
@@ -30,7 +34,19 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">
                 {label}
               </label>
-              {helpText && <HelpTooltip content={helpText} />}
+              {/* Desktop: Tooltip, Mobile: hidden (info button shown separately) */}
+              {helpText && (
+                <span className="hidden sm:inline-flex">
+                  <HelpTooltip content={helpText} />
+                </span>
+              )}
+              {/* Mobile: Info button for inline expansion */}
+              {helpText && (
+                <HelpButton
+                  isExpanded={isHelpExpanded}
+                  onToggle={() => setIsHelpExpanded(!isHelpExpanded)}
+                />
+              )}
             </div>
             <span
               className={cn(
@@ -44,12 +60,14 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
             </span>
           </div>
         )}
+        {/* Mobile: Inline expandable help text below label */}
+        {helpText && <ExpandableHelpContent content={helpText} isExpanded={isHelpExpanded} />}
         <div
-          className="relative py-2"
+          className="relative touch-pan-y py-4"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <div className="absolute inset-0 flex items-center">
+          <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-center">
             <div
               className={cn(
                 "h-2.5 w-full rounded-full shadow-inner transition-all duration-200",
@@ -79,13 +97,14 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
             onTouchStart={() => setIsDragging(true)}
             onTouchEnd={() => setIsDragging(false)}
             className={cn(
-              "relative z-10 h-2.5 w-full cursor-pointer appearance-none rounded-lg bg-transparent",
+              "relative z-10 h-12 w-full cursor-pointer appearance-none rounded-lg bg-transparent",
+              "touch-pan-y",
               className
             )}
             {...props}
           />
         </div>
-        <div className="mt-2 flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+        <div className="mt-1 flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
           <span className="tabular-nums">{formatValue ? formatValue(min) : min}</span>
           <span className="tabular-nums">{formatValue ? formatValue(max) : max}</span>
         </div>

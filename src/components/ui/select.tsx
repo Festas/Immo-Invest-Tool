@@ -1,6 +1,9 @@
+"use client";
+
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { HelpTooltip } from "./tooltip";
+import { HelpButton, ExpandableHelpContent } from "./expandable-help";
 
 interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "onChange"> {
   label?: string;
@@ -11,6 +14,8 @@ interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, label, options, onChange, value, helpText, ...props }, ref) => {
+    const [isHelpExpanded, setIsHelpExpanded] = React.useState(false);
+
     return (
       <div className="w-full">
         {label && (
@@ -18,7 +23,19 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">
               {label}
             </label>
-            {helpText && <HelpTooltip content={helpText} />}
+            {/* Desktop: Tooltip, Mobile: hidden (info button shown separately) */}
+            {helpText && (
+              <span className="hidden sm:inline-flex">
+                <HelpTooltip content={helpText} />
+              </span>
+            )}
+            {/* Mobile: Info button for inline expansion */}
+            {helpText && (
+              <HelpButton
+                isExpanded={isHelpExpanded}
+                onToggle={() => setIsHelpExpanded(!isHelpExpanded)}
+              />
+            )}
           </div>
         )}
         <select
@@ -50,6 +67,8 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
+        {/* Mobile: Inline expandable help text below select */}
+        {helpText && <ExpandableHelpContent content={helpText} isExpanded={isHelpExpanded} />}
       </div>
     );
   }

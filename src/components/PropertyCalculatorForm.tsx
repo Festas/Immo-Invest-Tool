@@ -1,10 +1,16 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Select } from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 import { useImmoCalcStore } from "@/store";
 import { BundeslandData, Bundesland, AfARates, AfAType } from "@/types";
 import { Building2, Banknote, Home, Receipt } from "lucide-react";
@@ -195,239 +201,247 @@ export function PropertyCalculatorForm() {
   }, [currentInput.propertyTransferTaxPercent]);
 
   return (
-    <div className="space-y-5">
+    <Accordion type="single" defaultValue="purchase" className="space-y-4">
       {/* Purchase & Costs Section */}
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-indigo-50 to-slate-50 pb-4 dark:from-indigo-950/30 dark:to-slate-800/50">
-          <CardTitle className="flex items-center gap-3 text-base">
+      <AccordionItem value="purchase">
+        <Card className="overflow-hidden">
+          <AccordionTrigger>
             <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
               <Building2 className="h-4 w-4 text-white" />
             </div>
-            <span className="font-bold text-slate-900 dark:text-white">
-              Kaufpreis & Nebenkosten
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5 pt-5">
-          <Input
-            label="Kaufpreis"
-            type="number"
-            value={currentInput.purchasePrice}
-            onChange={handlePurchasePriceChange}
-            suffix="€"
-            min={0}
-            step={1000}
-            helpText={helpTexts.purchasePrice}
-          />
+            <span>Kaufpreis & Nebenkosten</span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <CardContent className="space-y-5 pt-5">
+              <Input
+                label="Kaufpreis"
+                type="number"
+                value={currentInput.purchasePrice}
+                onChange={handlePurchasePriceChange}
+                suffix="€"
+                min={0}
+                step={1000}
+                helpText={helpTexts.purchasePrice}
+              />
 
-          <Select
-            label="Bundesland"
-            options={bundeslandOptions}
-            value={selectedBundesland}
-            onChange={handleBundeslandChange}
-            helpText={helpTexts.bundesland}
-          />
+              <Select
+                label="Bundesland"
+                options={bundeslandOptions}
+                value={selectedBundesland}
+                onChange={handleBundeslandChange}
+                helpText={helpTexts.bundesland}
+              />
 
-          <div className="grid grid-cols-2 gap-6">
-            <Input
-              label="Makler"
-              type="number"
-              value={currentInput.brokerPercent}
-              onChange={(e) => updateInput({ brokerPercent: parseFloat(e.target.value) || 0 })}
-              suffix="%"
-              min={0}
-              max={10}
-              step={0.01}
-              helpText={helpTexts.broker}
-            />
-            <Input
-              label="Notar & Grundbuch"
-              type="number"
-              value={currentInput.notaryPercent}
-              onChange={(e) => updateInput({ notaryPercent: parseFloat(e.target.value) || 0 })}
-              suffix="%"
-              min={0}
-              max={5}
-              step={0.1}
-              helpText={helpTexts.notary}
-            />
-          </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                <Input
+                  label="Makler"
+                  type="number"
+                  value={currentInput.brokerPercent}
+                  onChange={(e) => updateInput({ brokerPercent: parseFloat(e.target.value) || 0 })}
+                  suffix="%"
+                  min={0}
+                  max={10}
+                  step={0.01}
+                  helpText={helpTexts.broker}
+                />
+                <Input
+                  label="Notar & Grundbuch"
+                  type="number"
+                  value={currentInput.notaryPercent}
+                  onChange={(e) => updateInput({ notaryPercent: parseFloat(e.target.value) || 0 })}
+                  suffix="%"
+                  min={0}
+                  max={5}
+                  step={0.1}
+                  helpText={helpTexts.notary}
+                />
+              </div>
 
-          <Input
-            label="Renovierungskosten"
-            type="number"
-            value={currentInput.renovationCosts}
-            onChange={(e) => updateInput({ renovationCosts: parseFloat(e.target.value) || 0 })}
-            suffix="€"
-            min={0}
-            step={1000}
-            helpText={helpTexts.renovation}
-          />
-        </CardContent>
-      </Card>
+              <Input
+                label="Renovierungskosten"
+                type="number"
+                value={currentInput.renovationCosts}
+                onChange={(e) => updateInput({ renovationCosts: parseFloat(e.target.value) || 0 })}
+                suffix="€"
+                min={0}
+                step={1000}
+                helpText={helpTexts.renovation}
+              />
+            </CardContent>
+          </AccordionContent>
+        </Card>
+      </AccordionItem>
 
       {/* Financing Section */}
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-indigo-50 to-slate-50 pb-4 dark:from-indigo-950/30 dark:to-slate-800/50">
-          <CardTitle className="flex items-center gap-3 text-base">
+      <AccordionItem value="financing">
+        <Card className="overflow-hidden">
+          <AccordionTrigger>
             <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
               <Banknote className="h-4 w-4 text-white" />
             </div>
-            <span className="font-bold text-slate-900 dark:text-white">Finanzierung</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5 pt-5">
-          <Slider
-            label="Eigenkapital"
-            min={0}
-            max={currentInput.purchasePrice}
-            step={1000}
-            value={currentInput.equity}
-            onChange={(value) => updateInput({ equity: value })}
-            formatValue={(v) => `€${v.toLocaleString("de-DE")}`}
-            helpText={helpTexts.equity}
-          />
+            <span>Finanzierung</span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <CardContent className="space-y-5 pt-5">
+              <Slider
+                label="Eigenkapital"
+                min={0}
+                max={currentInput.purchasePrice}
+                step={1000}
+                value={currentInput.equity}
+                onChange={(value) => updateInput({ equity: value })}
+                formatValue={(v) => `€${v.toLocaleString("de-DE")}`}
+                helpText={helpTexts.equity}
+              />
 
-          <div className="grid grid-cols-2 gap-6">
-            <Input
-              label="Zinssatz"
-              type="number"
-              value={currentInput.interestRate}
-              onChange={(e) => updateInput({ interestRate: parseFloat(e.target.value) || 0 })}
-              suffix="%"
-              min={0}
-              max={15}
-              step={0.1}
-              helpText={helpTexts.interestRate}
-            />
-            <Input
-              label="Tilgung"
-              type="number"
-              value={currentInput.repaymentRate}
-              onChange={(e) => updateInput({ repaymentRate: parseFloat(e.target.value) || 0 })}
-              suffix="%"
-              min={0.5}
-              max={10}
-              step={0.1}
-              helpText={helpTexts.repayment}
-            />
-          </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                <Input
+                  label="Zinssatz"
+                  type="number"
+                  value={currentInput.interestRate}
+                  onChange={(e) => updateInput({ interestRate: parseFloat(e.target.value) || 0 })}
+                  suffix="%"
+                  min={0}
+                  max={15}
+                  step={0.1}
+                  helpText={helpTexts.interestRate}
+                />
+                <Input
+                  label="Tilgung"
+                  type="number"
+                  value={currentInput.repaymentRate}
+                  onChange={(e) => updateInput({ repaymentRate: parseFloat(e.target.value) || 0 })}
+                  suffix="%"
+                  min={0.5}
+                  max={10}
+                  step={0.1}
+                  helpText={helpTexts.repayment}
+                />
+              </div>
 
-          <Slider
-            label="Zinsbindung"
-            min={5}
-            max={30}
-            step={1}
-            value={currentInput.fixedInterestPeriod}
-            onChange={(value) => updateInput({ fixedInterestPeriod: value })}
-            formatValue={(v) => `${v} Jahre`}
-            helpText={helpTexts.fixedInterest}
-          />
-        </CardContent>
-      </Card>
+              <Slider
+                label="Zinsbindung"
+                min={5}
+                max={30}
+                step={1}
+                value={currentInput.fixedInterestPeriod}
+                onChange={(value) => updateInput({ fixedInterestPeriod: value })}
+                formatValue={(v) => `${v} Jahre`}
+                helpText={helpTexts.fixedInterest}
+              />
+            </CardContent>
+          </AccordionContent>
+        </Card>
+      </AccordionItem>
 
       {/* Rental Income Section */}
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-indigo-50 to-slate-50 pb-4 dark:from-indigo-950/30 dark:to-slate-800/50">
-          <CardTitle className="flex items-center gap-3 text-base">
+      <AccordionItem value="rental">
+        <Card className="overflow-hidden">
+          <AccordionTrigger>
             <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
               <Home className="h-4 w-4 text-white" />
             </div>
-            <span className="font-bold text-slate-900 dark:text-white">Mieteinnahmen</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5 pt-5">
-          <Input
-            label="Kaltmiete (IST) monatlich"
-            type="number"
-            value={currentInput.coldRentActual}
-            onChange={(e) => updateInput({ coldRentActual: parseFloat(e.target.value) || 0 })}
-            suffix="€"
-            min={0}
-            step={50}
-            helpText={helpTexts.coldRent}
-          />
+            <span>Mieteinnahmen</span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <CardContent className="space-y-5 pt-5">
+              <Input
+                label="Kaltmiete (IST) monatlich"
+                type="number"
+                value={currentInput.coldRentActual}
+                onChange={(e) => updateInput({ coldRentActual: parseFloat(e.target.value) || 0 })}
+                suffix="€"
+                min={0}
+                step={50}
+                helpText={helpTexts.coldRent}
+              />
 
-          <div className="grid grid-cols-2 gap-6">
-            <Input
-              label="Nicht umlegbare NK"
-              type="number"
-              value={currentInput.nonRecoverableCosts}
-              onChange={(e) =>
-                updateInput({ nonRecoverableCosts: parseFloat(e.target.value) || 0 })
-              }
-              suffix="€"
-              min={0}
-              step={10}
-              helpText={helpTexts.nonRecoverable}
-            />
-            <Input
-              label="Instandhaltung"
-              type="number"
-              value={currentInput.maintenanceReserve}
-              onChange={(e) => updateInput({ maintenanceReserve: parseFloat(e.target.value) || 0 })}
-              suffix="€"
-              min={0}
-              step={10}
-              helpText={helpTexts.maintenance}
-            />
-          </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                <Input
+                  label="Nicht umlegbare NK"
+                  type="number"
+                  value={currentInput.nonRecoverableCosts}
+                  onChange={(e) =>
+                    updateInput({ nonRecoverableCosts: parseFloat(e.target.value) || 0 })
+                  }
+                  suffix="€"
+                  min={0}
+                  step={10}
+                  helpText={helpTexts.nonRecoverable}
+                />
+                <Input
+                  label="Instandhaltung"
+                  type="number"
+                  value={currentInput.maintenanceReserve}
+                  onChange={(e) =>
+                    updateInput({ maintenanceReserve: parseFloat(e.target.value) || 0 })
+                  }
+                  suffix="€"
+                  min={0}
+                  step={10}
+                  helpText={helpTexts.maintenance}
+                />
+              </div>
 
-          <Slider
-            label="Mietausfallwagnis"
-            min={0}
-            max={10}
-            step={0.5}
-            value={currentInput.vacancyRiskPercent}
-            onChange={(value) => updateInput({ vacancyRiskPercent: value })}
-            formatValue={(v) => `${v}%`}
-            helpText={helpTexts.vacancy}
-          />
-        </CardContent>
-      </Card>
+              <Slider
+                label="Mietausfallwagnis"
+                min={0}
+                max={10}
+                step={0.5}
+                value={currentInput.vacancyRiskPercent}
+                onChange={(value) => updateInput({ vacancyRiskPercent: value })}
+                formatValue={(v) => `${v}%`}
+                helpText={helpTexts.vacancy}
+              />
+            </CardContent>
+          </AccordionContent>
+        </Card>
+      </AccordionItem>
 
       {/* Tax Section */}
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-indigo-50 to-slate-50 pb-4 dark:from-indigo-950/30 dark:to-slate-800/50">
-          <CardTitle className="flex items-center gap-3 text-base">
+      <AccordionItem value="tax">
+        <Card className="overflow-hidden">
+          <AccordionTrigger>
             <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
               <Receipt className="h-4 w-4 text-white" />
             </div>
-            <span className="font-bold text-slate-900 dark:text-white">Steuerliche Parameter</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5 pt-5">
-          <Select
-            label="AfA-Typ"
-            options={afaOptions}
-            value={currentInput.afaType}
-            onChange={(value) => updateInput({ afaType: value as AfAType })}
-            helpText={helpTexts.afaType}
-          />
+            <span>Steuerliche Parameter</span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <CardContent className="space-y-5 pt-5">
+              <Select
+                label="AfA-Typ"
+                options={afaOptions}
+                value={currentInput.afaType}
+                onChange={(value) => updateInput({ afaType: value as AfAType })}
+                helpText={helpTexts.afaType}
+              />
 
-          <Slider
-            label="Gebäudeanteil"
-            min={50}
-            max={95}
-            step={1}
-            value={currentInput.buildingSharePercent}
-            onChange={(value) => updateInput({ buildingSharePercent: value })}
-            formatValue={(v) => `${v}%`}
-            helpText={helpTexts.buildingShare}
-          />
+              <Slider
+                label="Gebäudeanteil"
+                min={50}
+                max={95}
+                step={1}
+                value={currentInput.buildingSharePercent}
+                onChange={(value) => updateInput({ buildingSharePercent: value })}
+                formatValue={(v) => `${v}%`}
+                helpText={helpTexts.buildingShare}
+              />
 
-          <Slider
-            label="Persönlicher Grenzsteuersatz"
-            min={0}
-            max={45}
-            step={1}
-            value={currentInput.personalTaxRate}
-            onChange={(value) => updateInput({ personalTaxRate: value })}
-            formatValue={(v) => `${v}%`}
-            helpText={helpTexts.taxRate}
-          />
-        </CardContent>
-      </Card>
-    </div>
+              <Slider
+                label="Persönlicher Grenzsteuersatz"
+                min={0}
+                max={45}
+                step={1}
+                value={currentInput.personalTaxRate}
+                onChange={(value) => updateInput({ personalTaxRate: value })}
+                formatValue={(v) => `${v}%`}
+                helpText={helpTexts.taxRate}
+              />
+            </CardContent>
+          </AccordionContent>
+        </Card>
+      </AccordionItem>
+    </Accordion>
   );
 }
