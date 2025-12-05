@@ -8,3 +8,5 @@ export * from "./tooltip";
 export * from "./skeleton";
 export * from "./animated-number";
 export * from "./trend-indicator";
+export * from "./sheet";
+export * from "./bottom-navigation";

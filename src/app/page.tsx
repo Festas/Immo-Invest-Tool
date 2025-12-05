@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { BottomNavigation } from "@/components/ui/bottom-navigation";
 import { ThemeToggle } from "@/components/theme";
 import {
   PropertyCalculatorForm,
@@ -35,40 +36,103 @@ import {
 
 export default function Home() {
   const { activeTab, setActiveTab, resetInput, calculate } = useImmoCalcStore();
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   // Initialize calculation on mount
   useEffect(() => {
     calculate();
   }, [calculate]);
 
+  // Handle header collapse on scroll (mobile only)
+  const handleScroll = useCallback(() => {
+    // Only apply on mobile screens
+    if (window.innerWidth >= 768) {
+      setIsHeaderCollapsed(false);
+      return;
+    }
+
+    const currentScrollY = window.scrollY;
+
+    // Collapse header when scrolling down past 50px threshold
+    if (currentScrollY > 50) {
+      if (currentScrollY > lastScrollY) {
+        // Scrolling down - collapse
+        setIsHeaderCollapsed(true);
+      } else {
+        // Scrolling up - expand
+        setIsHeaderCollapsed(false);
+      }
+    } else {
+      // At top of page - always show full header
+      setIsHeaderCollapsed(false);
+    }
+
+    setLastScrollY(currentScrollY);
+  }, [lastScrollY]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
   return (
     <div className="relative min-h-screen">
       {/* Subtle background pattern */}
       <div className="bg-pattern pointer-events-none fixed inset-0 z-0" />
 
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-indigo-100/50 bg-white/80 backdrop-blur-xl transition-all duration-300 dark:border-indigo-900/30 dark:bg-slate-900/80">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
+      {/* Header - Collapsible on mobile */}
+      <header
+        className={`sticky top-0 z-50 border-b border-indigo-100/50 bg-white/80 backdrop-blur-xl transition-all duration-300 dark:border-indigo-900/30 dark:bg-slate-900/80 ${
+          isHeaderCollapsed ? "py-1 md:py-4" : "py-4"
+        }`}
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 md:gap-4">
               <div className="relative">
-                <div className="relative rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-3 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
-                  <Calculator className="h-7 w-7 text-white" />
+                <div
+                  className={`relative rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20 ${
+                    isHeaderCollapsed ? "p-2 md:p-3" : "p-3"
+                  }`}
+                >
+                  <Calculator
+                    className={`text-white transition-all duration-300 ${
+                      isHeaderCollapsed ? "h-5 w-5 md:h-7 md:w-7" : "h-7 w-7"
+                    }`}
+                  />
                 </div>
               </div>
               <div>
-                <h1 className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-2xl font-bold tracking-tight text-transparent dark:from-white dark:via-indigo-100 dark:to-white">
+                <h1
+                  className={`bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text font-bold tracking-tight text-transparent transition-all duration-300 dark:from-white dark:via-indigo-100 dark:to-white ${
+                    isHeaderCollapsed ? "text-lg md:text-2xl" : "text-2xl"
+                  }`}
+                >
                   ImmoCalc Pro
                 </h1>
-                <p className="hidden items-center gap-1.5 text-sm text-slate-500 sm:flex dark:text-slate-400">
+                <p
+                  className={`items-center gap-1.5 text-sm text-slate-500 transition-all duration-300 dark:text-slate-400 ${
+                    isHeaderCollapsed ? "hidden" : "hidden sm:flex"
+                  }`}
+                >
                   Das All-in-One Immobilien Investment Tool
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               <ThemeToggle />
-              <Button variant="outline" size="sm" onClick={resetInput} className="group">
-                <RotateCcw className="mr-1.5 h-4 w-4 transition-transform group-hover:rotate-180" />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetInput}
+                className={`group ${isHeaderCollapsed ? "h-8 px-2 md:h-9 md:px-4" : ""}`}
+              >
+                <RotateCcw
+                  className={`transition-transform group-hover:rotate-180 ${
+                    isHeaderCollapsed ? "h-3.5 w-3.5 md:mr-1.5 md:h-4 md:w-4" : "mr-1.5 h-4 w-4"
+                  }`}
+                />
                 <span className="hidden sm:inline">Zurücksetzen</span>
               </Button>
             </div>
@@ -76,11 +140,11 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      {/* Main Content - Add bottom padding on mobile for bottom nav */}
+      <main className="relative z-10 mx-auto max-w-7xl px-4 py-8 pb-24 sm:px-6 md:pb-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          {/* Tab Navigation - Two Rows for Better Organization */}
-          <div className="mb-8 space-y-3">
+          {/* Tab Navigation - Hidden on mobile, visible on md and above */}
+          <div className="mb-8 hidden space-y-3 md:block">
             {/* Primary Tabs */}
             <div className="-mx-4 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6">
               <TabsList className="inline-flex w-full sm:w-auto">
@@ -214,8 +278,8 @@ export default function Home() {
         </Tabs>
       </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 mt-auto border-t border-indigo-100/50 bg-gradient-to-b from-white/70 to-indigo-50/30 backdrop-blur-xl transition-all duration-300 dark:border-indigo-900/30 dark:from-slate-900/70 dark:to-indigo-950/20">
+      {/* Footer - Add extra bottom margin on mobile to account for bottom nav */}
+      <footer className="relative z-10 mt-auto mb-[70px] border-t border-indigo-100/50 bg-gradient-to-b from-white/70 to-indigo-50/30 backdrop-blur-xl transition-all duration-300 md:mb-0 dark:border-indigo-900/30 dark:from-slate-900/70 dark:to-indigo-950/20">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
           <div className="space-y-3 text-center">
             <p className="flex flex-wrap items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
@@ -235,6 +299,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Mobile Bottom Navigation */}
+      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
 }
