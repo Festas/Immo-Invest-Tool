@@ -44,9 +44,7 @@ const Sheet = ({ children, open: controlledOpen, onOpenChange }: SheetProps) => 
   return <SheetContext.Provider value={{ open, setOpen }}>{children}</SheetContext.Provider>;
 };
 
-interface SheetTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  asChild?: boolean;
-}
+type SheetTriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const SheetTrigger = React.forwardRef<HTMLButtonElement, SheetTriggerProps>(
   ({ className, onClick, children, ...props }, ref) => {

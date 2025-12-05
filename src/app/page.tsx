@@ -20,6 +20,7 @@ import {
   LocationAnalysis,
 } from "@/components";
 import { useImmoCalcStore } from "@/store";
+import { cn } from "@/lib/utils";
 import {
   Calculator,
   BarChart3,
@@ -83,38 +84,43 @@ export default function Home() {
 
       {/* Header - Collapsible on mobile */}
       <header
-        className={`sticky top-0 z-50 border-b border-indigo-100/50 bg-white/80 backdrop-blur-xl transition-all duration-300 dark:border-indigo-900/30 dark:bg-slate-900/80 ${
+        className={cn(
+          "sticky top-0 z-50 border-b border-indigo-100/50 bg-white/80 backdrop-blur-xl transition-all duration-300 dark:border-indigo-900/30 dark:bg-slate-900/80",
           isHeaderCollapsed ? "py-1 md:py-4" : "py-4"
-        }`}
+        )}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="relative">
                 <div
-                  className={`relative rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20 ${
+                  className={cn(
+                    "relative rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20",
                     isHeaderCollapsed ? "p-2 md:p-3" : "p-3"
-                  }`}
+                  )}
                 >
                   <Calculator
-                    className={`text-white transition-all duration-300 ${
+                    className={cn(
+                      "text-white transition-all duration-300",
                       isHeaderCollapsed ? "h-5 w-5 md:h-7 md:w-7" : "h-7 w-7"
-                    }`}
+                    )}
                   />
                 </div>
               </div>
               <div>
                 <h1
-                  className={`bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text font-bold tracking-tight text-transparent transition-all duration-300 dark:from-white dark:via-indigo-100 dark:to-white ${
+                  className={cn(
+                    "bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text font-bold tracking-tight text-transparent transition-all duration-300 dark:from-white dark:via-indigo-100 dark:to-white",
                     isHeaderCollapsed ? "text-lg md:text-2xl" : "text-2xl"
-                  }`}
+                  )}
                 >
                   ImmoCalc Pro
                 </h1>
                 <p
-                  className={`items-center gap-1.5 text-sm text-slate-500 transition-all duration-300 dark:text-slate-400 ${
+                  className={cn(
+                    "items-center gap-1.5 text-sm text-slate-500 transition-all duration-300 dark:text-slate-400",
                     isHeaderCollapsed ? "hidden" : "hidden sm:flex"
-                  }`}
+                  )}
                 >
                   Das All-in-One Immobilien Investment Tool
                 </p>
@@ -126,12 +132,13 @@ export default function Home() {
                 variant="outline"
                 size="sm"
                 onClick={resetInput}
-                className={`group ${isHeaderCollapsed ? "h-8 px-2 md:h-9 md:px-4" : ""}`}
+                className={cn("group", isHeaderCollapsed && "h-8 px-2 md:h-9 md:px-4")}
               >
                 <RotateCcw
-                  className={`transition-transform group-hover:rotate-180 ${
+                  className={cn(
+                    "transition-transform group-hover:rotate-180",
                     isHeaderCollapsed ? "h-3.5 w-3.5 md:mr-1.5 md:h-4 md:w-4" : "mr-1.5 h-4 w-4"
-                  }`}
+                  )}
                 />
                 <span className="hidden sm:inline">Zurücksetzen</span>
               </Button>
