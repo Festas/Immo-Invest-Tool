@@ -174,7 +174,7 @@ export function BottomNavigation({ activeTab, onTabChange, className }: BottomNa
                 <SheetClose />
               </SheetHeader>
 
-              <div className="grid grid-cols-3 gap-3 px-4 pb-8" role="menu">
+              <div className="grid grid-cols-3 gap-3 px-4 pb-8">
                 {secondaryNavItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeTab === item.value;
@@ -184,7 +184,6 @@ export function BottomNavigation({ activeTab, onTabChange, className }: BottomNa
                       key={item.value}
                       onClick={() => handleNavClick(item.value)}
                       aria-label={item.label}
-                      role="menuitem"
                       className={cn(
                         "flex min-h-[80px] flex-col items-center justify-center gap-2 rounded-xl p-4",
                         "transition-all duration-200",

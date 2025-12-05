@@ -30,7 +30,6 @@ const TabsList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
     <div
       ref={ref}
       role="tablist"
-      aria-label="Navigation"
       className={cn(
         "relative inline-flex h-12 items-center justify-center gap-1 rounded-xl p-1.5",
         "bg-slate-100/90 backdrop-blur-sm dark:bg-slate-800/90",

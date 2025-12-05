@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 interface SheetContextType {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  titleId?: string;
 }
 
 const SheetContext = React.createContext<SheetContextType | undefined>(undefined);
@@ -77,6 +78,7 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
     const { open, setOpen } = useSheet();
     const sheetRef = React.useRef<HTMLDivElement>(null);
     const previousActiveElement = React.useRef<Element | null>(null);
+    const titleId = React.useId();
 
     // Store the previously focused element when opening
     React.useEffect(() => {
@@ -114,7 +116,7 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
 
       // Focus the first focusable element in the sheet
       const focusableElements = sheetRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), [contenteditable], audio[controls], video[controls], details'
       );
       const firstFocusable = focusableElements[0];
       const lastFocusable = focusableElements[focusableElements.length - 1];
@@ -156,7 +158,7 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
     if (!open) return null;
 
     return (
-      <>
+      <SheetContext.Provider value={{ open, setOpen, titleId }}>
         {/* Backdrop */}
         <div
           className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm transition-opacity duration-300"
@@ -176,7 +178,7 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
           }}
           role="dialog"
           aria-modal="true"
-          aria-labelledby="sheet-title"
+          aria-labelledby={titleId}
           className={cn(
             "fixed z-[101] bg-white shadow-xl transition-transform duration-300 ease-out dark:bg-slate-900",
             "border-t border-indigo-100/50 dark:border-indigo-900/30",
@@ -196,7 +198,7 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
           )}
           {children}
         </div>
-      </>
+      </SheetContext.Provider>
     );
   }
 );
@@ -214,14 +216,17 @@ const SheetHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
 SheetHeader.displayName = "SheetHeader";
 
 const SheetTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => (
-    <h2
-      ref={ref}
-      id="sheet-title"
-      className={cn("text-lg font-semibold text-slate-900 dark:text-white", className)}
-      {...props}
-    />
-  )
+  ({ className, ...props }, ref) => {
+    const { titleId } = useSheet();
+    return (
+      <h2
+        ref={ref}
+        id={titleId}
+        className={cn("text-lg font-semibold text-slate-900 dark:text-white", className)}
+        {...props}
+      />
+    );
+  }
 );
 SheetTitle.displayName = "SheetTitle";
 
