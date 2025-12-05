@@ -42,8 +42,10 @@ function Gauge({
 
   React.useEffect(() => {
     setMounted(true);
-    // Check for reduced motion preference
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Check for reduced motion preference (with SSR safety check)
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) {
       setAnimatedValue(value);
       return;
@@ -66,6 +68,9 @@ function Gauge({
 
     requestAnimationFrame(animate);
   }, [value]);
+
+  // Height adjustment for min/max labels below the gauge
+  const LABEL_HEIGHT_OFFSET = 10;
 
   const sizeConfig = {
     sm: { width: 100, height: 60, strokeWidth: 8, fontSize: "text-lg", labelSize: "text-xs" },
@@ -100,7 +105,7 @@ function Gauge({
       <svg
         width={config.width}
         height={config.height}
-        viewBox={`0 0 ${config.width} ${config.height + 10}`}
+        viewBox={`0 0 ${config.width} ${config.height + LABEL_HEIGHT_OFFSET}`}
         className="overflow-visible"
       >
         {/* Background zones */}

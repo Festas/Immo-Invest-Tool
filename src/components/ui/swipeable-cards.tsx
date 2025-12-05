@@ -86,11 +86,7 @@ function SwipeableCards({
         }}
       >
         {React.Children.map(children, (child, index) => (
-          <div
-            key={index}
-            className="min-w-full flex-shrink-0 snap-center"
-            style={{ scrollSnapAlign: "center" }}
-          >
+          <div key={index} className="min-w-full flex-shrink-0 snap-center">
             {child}
           </div>
         ))}

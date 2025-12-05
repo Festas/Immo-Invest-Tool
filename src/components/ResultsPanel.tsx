@@ -420,6 +420,13 @@ function SideCostsContent({ output }: SideCostsContentProps) {
   );
 }
 
+// Reusable class strings for better maintainability
+const secondaryMetricCardClasses =
+  "group relative min-w-[200px] flex-shrink-0 overflow-hidden border-slate-200/50 bg-gradient-to-br from-slate-50 to-slate-100/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg md:min-w-0 dark:border-slate-700 dark:from-slate-800/50 dark:to-slate-800/30";
+
+const secondaryMetricsRowClasses =
+  "scrollbar-hide -mx-2 flex gap-4 overflow-x-auto px-2 pb-2 md:mx-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 md:pb-0";
+
 export function ResultsPanel() {
   const { currentInput } = useImmoCalcStore();
   const output = calculatePropertyKPIs(currentInput);
@@ -489,12 +496,9 @@ export function ResultsPanel() {
       </Card>
 
       {/* Secondary Metrics Row - Horizontal scrollable on mobile, 3-column grid on desktop */}
-      <div className="scrollbar-hide -mx-2 flex gap-4 overflow-x-auto px-2 pb-2 md:mx-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 md:pb-0">
+      <div className={secondaryMetricsRowClasses}>
         {/* Total Investment */}
-        <Card
-          className="group relative min-w-[200px] flex-shrink-0 overflow-hidden border-slate-200/50 bg-gradient-to-br from-slate-50 to-slate-100/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg md:min-w-0 dark:border-slate-700 dark:from-slate-800/50 dark:to-slate-800/30"
-          hover={false}
-        >
+        <Card className={secondaryMetricCardClasses} hover={false}>
           <CardContent className="relative p-4">
             <div className="mb-2 flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <div className="rounded-lg bg-slate-500/10 p-1.5 transition-transform group-hover:scale-110">
@@ -515,10 +519,7 @@ export function ResultsPanel() {
         </Card>
 
         {/* Monthly Payment */}
-        <Card
-          className="group relative min-w-[200px] flex-shrink-0 overflow-hidden border-slate-200/50 bg-gradient-to-br from-slate-50 to-slate-100/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg md:min-w-0 dark:border-slate-700 dark:from-slate-800/50 dark:to-slate-800/30"
-          hover={false}
-        >
+        <Card className={secondaryMetricCardClasses} hover={false}>
           <CardContent className="relative p-4">
             <div className="mb-2 flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <div className="rounded-lg bg-slate-500/10 p-1.5 transition-transform group-hover:scale-110">
@@ -537,10 +538,7 @@ export function ResultsPanel() {
         </Card>
 
         {/* ROI with Progress */}
-        <Card
-          className="group relative min-w-[200px] flex-shrink-0 overflow-hidden border-slate-200/50 bg-gradient-to-br from-slate-50 to-slate-100/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg md:min-w-0 dark:border-slate-700 dark:from-slate-800/50 dark:to-slate-800/30"
-          hover={false}
-        >
+        <Card className={secondaryMetricCardClasses} hover={false}>
           <CardContent className="relative p-4">
             <div className="mb-2 flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <div className="rounded-lg bg-slate-500/10 p-1.5 transition-transform group-hover:scale-110">
