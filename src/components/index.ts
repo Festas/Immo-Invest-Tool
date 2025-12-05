@@ -9,3 +9,4 @@ export { RenovationCalculator } from "./RenovationCalculator";
 export { ExitStrategyCalculator } from "./ExitStrategyCalculator";
 export { DueDiligenceChecklist } from "./DueDiligenceChecklist";
 export { LocationAnalysis } from "./LocationAnalysis";
+export { SmartTips } from "./SmartTips";
