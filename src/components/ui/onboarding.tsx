@@ -277,25 +277,21 @@ export function Onboarding() {
     if (!hasSeenOnboarding) {
       // Small delay to allow page to render
       const timer = setTimeout(() => {
-        console.log("[Onboarding] Starting onboarding tour");
+        if (process.env.NODE_ENV === "development") {
+          console.log("[Onboarding] Starting onboarding tour");
+        }
         setCurrentStep("welcome");
       }, 500);
       return () => clearTimeout(timer);
     }
   }, [hasSeenOnboarding]);
 
-  // Cleanup effect to ensure body scroll is restored when component unmounts
-  React.useEffect(() => {
-    return () => {
-      console.log("[Onboarding] Cleaning up - restoring body scroll");
-      document.body.style.overflow = "";
-    };
-  }, []);
-
   const handleWelcomeContinue = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    console.log("[Onboarding] Transitioning from welcome to coachmarks");
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Onboarding] Transitioning from welcome to coachmarks");
+    }
 
     // Add delay to ensure clean transition
     setTimeout(() => {
@@ -308,14 +304,14 @@ export function Onboarding() {
   const handleSkip = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    console.log("[Onboarding] Skipping tour");
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Onboarding] Skipping tour");
+    }
 
     setTimeout(() => {
       setCurrentStep(null);
       markAsCompleted();
       setIsTransitioning(false);
-      // Ensure body scroll is restored
-      document.body.style.overflow = "";
     }, SKIP_DELAY_MS);
   };
 
@@ -324,14 +320,18 @@ export function Onboarding() {
     setIsTransitioning(true);
 
     if (coachMarkStep < COACH_MARK_STEPS.length) {
-      console.log(`[Onboarding] Moving to coach mark step ${coachMarkStep + 1}`);
+      if (process.env.NODE_ENV === "development") {
+        console.log(`[Onboarding] Moving to coach mark step ${coachMarkStep + 1}`);
+      }
       // Add delay between coach mark steps
       setTimeout(() => {
         setCoachMarkStep(coachMarkStep + 1);
         setIsTransitioning(false);
       }, TRANSITION_DELAY_MS);
     } else {
-      console.log("[Onboarding] Transitioning from coachmarks to quickstart");
+      if (process.env.NODE_ENV === "development") {
+        console.log("[Onboarding] Transitioning from coachmarks to quickstart");
+      }
       // Transition to quick start modal
       setTimeout(() => {
         setCurrentStep("quickstart");
@@ -343,7 +343,9 @@ export function Onboarding() {
   const handleLoadExample = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    console.log("[Onboarding] User chose to load example");
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Onboarding] User chose to load example");
+    }
 
     setTimeout(() => {
       setCurrentStep("presets");
@@ -354,28 +356,28 @@ export function Onboarding() {
   const handleOwnData = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    console.log("[Onboarding] User chose to enter own data");
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Onboarding] User chose to enter own data");
+    }
 
     setTimeout(() => {
       setCurrentStep(null);
       markAsCompleted();
       setIsTransitioning(false);
-      // Ensure body scroll is restored
-      document.body.style.overflow = "";
     }, SKIP_DELAY_MS);
   };
 
   const handlePresetsClose = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    console.log("[Onboarding] Closing presets, completing tour");
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Onboarding] Closing presets, completing tour");
+    }
 
     setTimeout(() => {
       setCurrentStep(null);
       markAsCompleted();
       setIsTransitioning(false);
-      // Ensure body scroll is restored
-      document.body.style.overflow = "";
     }, SKIP_DELAY_MS);
   };
 

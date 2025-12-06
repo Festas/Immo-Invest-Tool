@@ -140,10 +140,12 @@ export function CoachMark({
 
       // Debug logging
       if (!element) {
-        console.warn(
-          `[CoachMark] Target not found - targetSelector: ${targetSelector || "none"}, targetRef: ${targetRef ? "provided" : "none"}`
-        );
-        console.log("[CoachMark] Falling back to centered modal");
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            `[CoachMark] Target not found - targetSelector: ${targetSelector || "none"}, targetRef: ${targetRef ? "provided" : "none"}`
+          );
+          console.log("[CoachMark] Falling back to centered modal");
+        }
         setUseFallbackModal(true);
         setIsReady(true);
         return;
@@ -153,13 +155,17 @@ export function CoachMark({
       const isPartiallyVisible = isElementPartiallyVisible(element);
       const isFullyVisible = isElementInViewport(element);
 
-      console.log(
-        `[CoachMark] Target element found - selector: ${targetSelector || "ref"}, partially visible: ${isPartiallyVisible}, fully visible: ${isFullyVisible}`
-      );
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          `[CoachMark] Target element found - selector: ${targetSelector || "ref"}, partially visible: ${isPartiallyVisible}, fully visible: ${isFullyVisible}`
+        );
+      }
 
       if (!isPartiallyVisible) {
-        console.warn("[CoachMark] Target element is not visible in viewport");
-        console.log("[CoachMark] Falling back to centered modal");
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[CoachMark] Target element is not visible in viewport");
+          console.log("[CoachMark] Falling back to centered modal");
+        }
         setUseFallbackModal(true);
         setIsReady(true);
         return;
@@ -178,7 +184,9 @@ export function CoachMark({
 
       // Only scroll into view if element is not fully visible
       if (!isFullyVisible && isPartiallyVisible) {
-        console.log("[CoachMark] Scrolling element into view");
+        if (process.env.NODE_ENV === "development") {
+          console.log("[CoachMark] Scrolling element into view");
+        }
         // Scroll element into view, respecting reduced motion preference
         const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         element.scrollIntoView({

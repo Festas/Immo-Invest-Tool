@@ -36,19 +36,6 @@ describe("CoachMark Component", () => {
     it("should render centered modal when targetSelector is not found", async () => {
       render(<CoachMark {...defaultProps} targetSelector="#nonexistent-element" />);
 
-      // Wait for the component to detect the missing element and render fallback
-      await waitFor(() => {
-        expect(console.warn).toHaveBeenCalledWith(
-          expect.stringContaining("[CoachMark] Target not found")
-        );
-      });
-
-      await waitFor(() => {
-        expect(console.log).toHaveBeenCalledWith(
-          expect.stringContaining("[CoachMark] Falling back to centered modal")
-        );
-      });
-
       // Should render the modal with title and description
       await waitFor(() => {
         expect(screen.getByText("Test Title")).toBeInTheDocument();
@@ -117,12 +104,6 @@ describe("CoachMark Component", () => {
     it("should use anchored positioning when target element is visible", async () => {
       render(<CoachMark {...defaultProps} targetSelector="#test-target" />);
 
-      await waitFor(() => {
-        expect(console.log).toHaveBeenCalledWith(
-          expect.stringContaining("[CoachMark] Target element found")
-        );
-      });
-
       // Should render the content
       await waitFor(() => {
         expect(screen.getByText("Test Title")).toBeInTheDocument();
@@ -150,7 +131,7 @@ describe("CoachMark Component", () => {
       expect(container.firstChild).toBeNull();
     });
 
-    it("should log when target is not visible in viewport", async () => {
+    it("should fallback to modal when target is not visible in viewport", async () => {
       // Create an element outside viewport
       const testElement = document.createElement("div");
       testElement.id = "hidden-target";
@@ -176,10 +157,9 @@ describe("CoachMark Component", () => {
 
       render(<CoachMark {...defaultProps} targetSelector="#hidden-target" />);
 
+      // Should render the fallback modal instead
       await waitFor(() => {
-        expect(console.warn).toHaveBeenCalledWith(
-          expect.stringContaining("[CoachMark] Target element is not visible in viewport")
-        );
+        expect(screen.getByText("Test Title")).toBeInTheDocument();
       });
 
       // Clean up
