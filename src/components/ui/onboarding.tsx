@@ -281,16 +281,8 @@ export function Onboarding() {
     // Remove scroll locks
     document.body.style.overflow = "";
 
-    // Clear any lingering z-index overlays
-    const overlays = document.querySelectorAll('[class*="z-[9"]');
-    overlays.forEach((overlay) => {
-      if (overlay instanceof HTMLElement && overlay.style.zIndex) {
-        overlay.style.zIndex = "";
-      }
-    });
-
-    // Remove any event listeners that might have been added
-    // (This is handled by component cleanup, but we ensure it here too)
+    // Note: We don't forcefully remove overlays as React will handle unmounting them
+    // This is just to ensure scroll state is restored between transitions
   }, []);
 
   // Cleanup on unmount

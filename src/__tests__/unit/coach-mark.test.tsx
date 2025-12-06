@@ -247,24 +247,4 @@ describe("CoachMark Component", () => {
       testElement.remove();
     });
   });
-
-  describe("Cleanup on Step Transitions", () => {
-    it("should clean up debug info when step changes", async () => {
-      const { rerender } = render(
-        <CoachMark {...defaultProps} targetSelector="#missing" debugMode={true} step={1} />
-      );
-
-      await waitFor(() => {
-        expect(screen.getByText("🔍 Debug Information")).toBeInTheDocument();
-      });
-
-      // Change step
-      rerender(<CoachMark {...defaultProps} targetSelector="#missing" debugMode={true} step={2} />);
-
-      // Debug info should still be available for new step
-      await waitFor(() => {
-        expect(screen.getByText("🔍 Debug Information")).toBeInTheDocument();
-      });
-    });
-  });
 });

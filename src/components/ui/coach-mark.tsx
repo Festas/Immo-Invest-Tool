@@ -151,21 +151,15 @@ export function CoachMark({
   }, [isVisible, onSkip, onNext]);
 
   // Cleanup effect to ensure all locks and listeners are removed when component unmounts
-  // or when transitioning between steps
   React.useEffect(() => {
     return () => {
       // Ensure body scroll is restored
       document.body.style.overflow = "";
 
-      // Clear any lingering z-index overlays
-      const overlays = document.querySelectorAll('[class*="z-[9"]');
-      overlays.forEach((overlay) => {
-        if (overlay instanceof HTMLElement && overlay.style.zIndex) {
-          overlay.style.zIndex = "";
-        }
-      });
+      // Note: We don't remove overlays here as React will handle unmounting them
+      // This cleanup is just to ensure scroll state is restored
     };
-  }, [step]); // Run cleanup on step changes
+  }, []); // Only run on mount/unmount
 
   React.useEffect(() => {
     if (!isVisible) {
@@ -308,7 +302,10 @@ export function CoachMark({
   // Render centered modal fallback if target not found or not visible
   if (useFallbackModal) {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        data-coachmark-overlay="true"
+      >
         {/* Backdrop */}
         <div
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -354,9 +351,10 @@ export function CoachMark({
                 {debugInfo.boundingRect && (
                   <div>
                     <span className="font-medium">Rect:</span>{" "}
-                    {debugInfo.boundingRect.top.toFixed(0)},{debugInfo.boundingRect.left.toFixed(0)}{" "}
-                    ({debugInfo.boundingRect.width.toFixed(0)}×
-                    {debugInfo.boundingRect.height.toFixed(0)})
+                    {Math.round(debugInfo.boundingRect.top)},
+                    {Math.round(debugInfo.boundingRect.left)} (
+                    {Math.round(debugInfo.boundingRect.width)}×
+                    {Math.round(debugInfo.boundingRect.height)})
                   </div>
                 )}
                 <div>
@@ -456,6 +454,7 @@ export function CoachMark({
         tabIndex={0}
         onKeyDown={(e) => e.key === "Escape" && onSkip()}
         aria-label="Klicken Sie zum Überspringen der Tour"
+        data-coachmark-overlay="true"
       >
         {/* Dark overlay with cutout */}
         <svg className="h-full w-full" aria-hidden="true">
