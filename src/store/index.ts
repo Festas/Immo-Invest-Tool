@@ -41,6 +41,10 @@ interface ImmoCalcState {
   isCalculating: boolean;
   activeTab: string;
 
+  // Family purchase state - stores previous values when toggling
+  preFamilyPurchaseTaxPercent: number | null;
+  preFamilyPurchaseBrokerPercent: number | null;
+
   // Actions
   updateInput: (updates: Partial<PropertyInput>) => void;
   resetInput: () => void;
@@ -75,14 +79,20 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       selectedPropertyId: null,
       isCalculating: false,
       activeTab: "calculator",
+      preFamilyPurchaseTaxPercent: null,
+      preFamilyPurchaseBrokerPercent: null,
 
       // Update input and recalculate
       updateInput: (updates) => {
         set((state) => {
           let newInput = { ...state.currentInput, ...updates };
+          let preFamilyPurchaseTaxPercent = state.preFamilyPurchaseTaxPercent;
+          let preFamilyPurchaseBrokerPercent = state.preFamilyPurchaseBrokerPercent;
 
-          // If family purchase is toggled ON, set tax and broker to 0
+          // If family purchase is toggled ON, store current values and set tax and broker to 0
           if (updates.isFamilyPurchase === true) {
+            preFamilyPurchaseTaxPercent = state.currentInput.propertyTransferTaxPercent;
+            preFamilyPurchaseBrokerPercent = state.currentInput.brokerPercent;
             newInput = {
               ...newInput,
               propertyTransferTaxPercent: 0,
@@ -90,19 +100,25 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
             };
           }
 
-          // If family purchase is toggled OFF, restore default Bundesland tax rate (Bayern)
+          // If family purchase is toggled OFF, restore previous values or defaults
           if (updates.isFamilyPurchase === false) {
             const defaultInput = getDefaultPropertyInput();
             newInput = {
               ...newInput,
-              propertyTransferTaxPercent: defaultInput.propertyTransferTaxPercent,
-              brokerPercent: defaultInput.brokerPercent,
+              propertyTransferTaxPercent:
+                preFamilyPurchaseTaxPercent ?? defaultInput.propertyTransferTaxPercent,
+              brokerPercent: preFamilyPurchaseBrokerPercent ?? defaultInput.brokerPercent,
             };
+            // Clear the stored values
+            preFamilyPurchaseTaxPercent = null;
+            preFamilyPurchaseBrokerPercent = null;
           }
 
           return {
             currentInput: newInput,
             currentOutput: calculatePropertyKPIs(newInput),
+            preFamilyPurchaseTaxPercent,
+            preFamilyPurchaseBrokerPercent,
           };
         });
       },

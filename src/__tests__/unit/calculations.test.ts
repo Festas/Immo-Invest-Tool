@@ -22,6 +22,7 @@ import {
   calculateExitStrategy,
   calculateLocationAnalysis,
 } from "@/lib/calculations";
+import { calculateMarketValueDiscount } from "@/lib/utils";
 import type {
   PropertyInput,
   RentIndexInput,
@@ -1338,39 +1339,35 @@ describe("Market Value", () => {
     expect(outputWith.yields.returnOnEquity).toBe(outputWithout.yields.returnOnEquity);
   });
 
-  it("should calculate correct discount percentage", () => {
-    const input = createStandardInput();
-    input.purchasePrice = 250000;
-    input.marketValue = 300000;
+  it("should calculate correct discount percentage using utility function", () => {
+    const discount = calculateMarketValueDiscount(250000, 300000);
 
-    // Discount calculation: (300000 - 250000) / 300000 * 100 = 16.67%
-    const discountAmount = input.marketValue - input.purchasePrice;
-    const discountPercent = (discountAmount / input.marketValue) * 100;
-
-    expect(discountAmount).toBe(50000);
-    expect(discountPercent).toBeCloseTo(16.67, 1);
+    expect(discount).not.toBeNull();
+    expect(discount!.discountAmount).toBe(50000);
+    expect(discount!.discountPercent).toBeCloseTo(16.67, 1);
   });
 
-  it("should handle market value equal to purchase price", () => {
-    const input = createStandardInput();
-    input.purchasePrice = 300000;
-    input.marketValue = 300000;
+  it("should return null when market value equals purchase price", () => {
+    const discount = calculateMarketValueDiscount(300000, 300000);
 
-    const discountAmount = input.marketValue - input.purchasePrice;
-    const discountPercent = input.marketValue > 0 ? (discountAmount / input.marketValue) * 100 : 0;
-
-    expect(discountAmount).toBe(0);
-    expect(discountPercent).toBe(0);
+    expect(discount).toBeNull();
   });
 
-  it("should handle market value less than purchase price (no discount)", () => {
-    const input = createStandardInput();
-    input.purchasePrice = 350000;
-    input.marketValue = 300000;
+  it("should return null when market value is less than purchase price", () => {
+    const discount = calculateMarketValueDiscount(350000, 300000);
 
-    const discountAmount = input.marketValue - input.purchasePrice;
+    expect(discount).toBeNull();
+  });
 
-    // Negative discount means buying above market value
-    expect(discountAmount).toBe(-50000);
+  it("should return null when market value is undefined", () => {
+    const discount = calculateMarketValueDiscount(300000, undefined);
+
+    expect(discount).toBeNull();
+  });
+
+  it("should return null when market value is zero", () => {
+    const discount = calculateMarketValueDiscount(300000, 0);
+
+    expect(discount).toBeNull();
   });
 });

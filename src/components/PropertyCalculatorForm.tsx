@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/accordion";
 import { useImmoCalcStore } from "@/store";
 import { BundeslandData, Bundesland, AfARates, AfAType } from "@/types";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, calculateMarketValueDiscount } from "@/lib/utils";
 import { Building2, Banknote, Home, Receipt, CheckCircle, TrendingDown } from "lucide-react";
 
 const bundeslandOptions = Object.entries(BundeslandData).map(([key, data]) => ({
@@ -259,9 +259,12 @@ export function PropertyCalculatorForm() {
                 value={currentInput.marketValue ?? ""}
                 onChange={(e) => {
                   const value = e.target.value;
-                  updateInput({
-                    marketValue: value === "" ? undefined : parseFloat(value) || 0,
-                  });
+                  if (value === "") {
+                    updateInput({ marketValue: undefined });
+                  } else {
+                    const parsed = parseFloat(value);
+                    updateInput({ marketValue: isNaN(parsed) ? undefined : parsed });
+                  }
                 }}
                 suffix="€"
                 min={0}
@@ -271,22 +274,23 @@ export function PropertyCalculatorForm() {
               />
 
               {/* Show discount if market value is entered and higher than purchase price */}
-              {currentInput.marketValue &&
-                currentInput.marketValue > currentInput.purchasePrice && (
-                  <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-sm text-indigo-700 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-300">
-                    <TrendingDown className="h-4 w-4 flex-shrink-0" />
-                    <span>
-                      Sie kaufen{" "}
-                      {(
-                        ((currentInput.marketValue - currentInput.purchasePrice) /
-                          currentInput.marketValue) *
-                        100
-                      ).toFixed(1)}
-                      % unter Marktwert (Ersparnis:{" "}
-                      {formatCurrency(currentInput.marketValue - currentInput.purchasePrice)})
-                    </span>
-                  </div>
-                )}
+              {(() => {
+                const discount = calculateMarketValueDiscount(
+                  currentInput.purchasePrice,
+                  currentInput.marketValue
+                );
+                return (
+                  discount && (
+                    <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-sm text-indigo-700 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-300">
+                      <TrendingDown className="h-4 w-4 flex-shrink-0" />
+                      <span>
+                        Sie kaufen {discount.discountPercent.toFixed(1)}% unter Marktwert
+                        (Ersparnis: {formatCurrency(discount.discountAmount)})
+                      </span>
+                    </div>
+                  )
+                );
+              })()}
 
               <Select
                 label="Bundesland"
