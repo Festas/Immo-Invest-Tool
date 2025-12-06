@@ -114,9 +114,9 @@
   --secondary-hover: #293548;
   --secondary-foreground: #f1f5f9;
 
-  /* Muted */
+  /* Muted - Improved contrast for WCAG AA compliance */
   --muted: #1e293b;
-  --muted-foreground: #94a3b8;
+  --muted-foreground: #a1a1aa;
 
   /* Accent - Matching indigo for dark mode */
   --accent: #312e81;
@@ -348,10 +348,57 @@ input[type="number"] {
   color: var(--foreground) !important;
 }
 
-/* Focus styles */
+/* Focus styles - Enhanced for accessibility */
 *:focus-visible {
-  outline: 2px solid var(--primary);
+  outline: 3px solid var(--primary);
   outline-offset: 2px;
+}
+
+/* High contrast focus for buttons */
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.3);
+}
+
+.dark button:focus-visible,
+.dark [role="button"]:focus-visible {
+  box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.3);
+}
+
+/* Input focus enhancement */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.dark input:focus-visible,
+.dark select:focus-visible,
+.dark textarea:focus-visible {
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+}
+
+/* Link focus */
+a:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* Smooth transitions for all interactive elements */

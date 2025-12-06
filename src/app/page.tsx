@@ -1,28 +1,17 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { BottomNavigation } from "@/components/ui/bottom-navigation";
 import { ToastProvider } from "@/components/ui/toast";
 import { Onboarding } from "@/components/ui/onboarding";
 import { PresetButton } from "@/components/ui/preset-selector";
+import { SkipLink } from "@/components/ui/skip-link";
 import { ThemeToggle } from "@/components/theme";
-import {
-  PropertyCalculatorForm,
-  ResultsPanel,
-  AmortizationChart,
-  CumulativeCashflowChart,
-  ScenarioComparison,
-  PortfolioDashboard,
-  RentIndexCalculator,
-  BreakEvenCalculator,
-  RenovationCalculator,
-  ExitStrategyCalculator,
-  DueDiligenceChecklist,
-  LocationAnalysis,
-  SmartTips,
-} from "@/components";
+import { PropertyCalculatorForm, ResultsPanel, SmartTips } from "@/components";
+import { ChartSkeleton, DashboardSkeleton, CalculatorSkeleton } from "@/components/skeletons";
 import { useImmoCalcStore } from "@/store";
 import { cn } from "@/lib/utils";
 import {
@@ -38,6 +27,104 @@ import {
   ClipboardCheck,
   TrendingUp,
 } from "lucide-react";
+
+// Lazy load heavy components for better performance
+const AmortizationChart = dynamic(
+  () => import("@/components/Charts").then((mod) => ({ default: mod.AmortizationChart })),
+  {
+    loading: () => <ChartSkeleton />,
+    ssr: false,
+  }
+);
+
+const CumulativeCashflowChart = dynamic(
+  () => import("@/components/Charts").then((mod) => ({ default: mod.CumulativeCashflowChart })),
+  {
+    loading: () => <ChartSkeleton />,
+    ssr: false,
+  }
+);
+
+const ScenarioComparison = dynamic(
+  () =>
+    import("@/components/ScenarioComparison").then((mod) => ({ default: mod.ScenarioComparison })),
+  {
+    loading: () => <DashboardSkeleton />,
+    ssr: false,
+  }
+);
+
+const PortfolioDashboard = dynamic(
+  () =>
+    import("@/components/PortfolioDashboard").then((mod) => ({ default: mod.PortfolioDashboard })),
+  {
+    loading: () => <DashboardSkeleton />,
+    ssr: false,
+  }
+);
+
+const RentIndexCalculator = dynamic(
+  () =>
+    import("@/components/RentIndexCalculator").then((mod) => ({
+      default: mod.RentIndexCalculator,
+    })),
+  {
+    loading: () => <CalculatorSkeleton />,
+    ssr: false,
+  }
+);
+
+const BreakEvenCalculator = dynamic(
+  () =>
+    import("@/components/BreakEvenCalculator").then((mod) => ({
+      default: mod.BreakEvenCalculator,
+    })),
+  {
+    loading: () => <CalculatorSkeleton />,
+    ssr: false,
+  }
+);
+
+const RenovationCalculator = dynamic(
+  () =>
+    import("@/components/RenovationCalculator").then((mod) => ({
+      default: mod.RenovationCalculator,
+    })),
+  {
+    loading: () => <CalculatorSkeleton />,
+    ssr: false,
+  }
+);
+
+const ExitStrategyCalculator = dynamic(
+  () =>
+    import("@/components/ExitStrategyCalculator").then((mod) => ({
+      default: mod.ExitStrategyCalculator,
+    })),
+  {
+    loading: () => <CalculatorSkeleton />,
+    ssr: false,
+  }
+);
+
+const LocationAnalysis = dynamic(
+  () => import("@/components/LocationAnalysis").then((mod) => ({ default: mod.LocationAnalysis })),
+  {
+    loading: () => <CalculatorSkeleton />,
+    ssr: false,
+  }
+);
+
+const DueDiligenceChecklist = dynamic(
+  () =>
+    import("@/components/DueDiligenceChecklist").then((mod) => ({
+      default: mod.DueDiligenceChecklist,
+    })),
+  {
+    loading: () => <CalculatorSkeleton />,
+    ssr: false,
+  }
+);
 
 export default function Home() {
   const { activeTab, setActiveTab, resetInput, calculate } = useImmoCalcStore();
@@ -84,20 +171,28 @@ export default function Home() {
   return (
     <ToastProvider>
       <div className="relative min-h-screen">
+        {/* Skip link for keyboard navigation */}
+        <SkipLink />
+
         {/* Onboarding flow for first-time users */}
         <Onboarding />
 
         {/* Subtle background pattern */}
-        <div className="bg-pattern pointer-events-none fixed inset-0 z-0" />
+        <div className="bg-pattern pointer-events-none fixed inset-0 z-0" aria-hidden="true" />
 
         {/* Header - Collapsible on mobile */}
         <header
+          role="banner"
           className={cn(
             "sticky top-0 z-50 border-b border-indigo-100/50 bg-white/80 backdrop-blur-xl transition-all duration-300 dark:border-indigo-900/30 dark:bg-slate-900/80",
             isHeaderCollapsed ? "py-1 md:py-4" : "py-4"
           )}
         >
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <nav
+            role="navigation"
+            aria-label="Hauptnavigation"
+            className="mx-auto max-w-7xl px-4 sm:px-6"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 md:gap-4">
                 <div className="relative">
@@ -112,6 +207,7 @@ export default function Home() {
                         "text-white transition-all duration-300",
                         isHeaderCollapsed ? "h-5 w-5 md:h-7 md:w-7" : "h-7 w-7"
                       )}
+                      aria-hidden="true"
                     />
                   </div>
                 </div>
@@ -141,6 +237,7 @@ export default function Home() {
                   variant="outline"
                   size="sm"
                   onClick={resetInput}
+                  aria-label="Eingaben zurücksetzen"
                   className={cn("group", isHeaderCollapsed && "h-8 px-2 md:h-9 md:px-4")}
                 >
                   <RotateCcw
@@ -148,66 +245,84 @@ export default function Home() {
                       "transition-transform group-hover:rotate-180",
                       isHeaderCollapsed ? "h-3.5 w-3.5 md:mr-1.5 md:h-4 md:w-4" : "mr-1.5 h-4 w-4"
                     )}
+                    aria-hidden="true"
                   />
                   <span className="hidden sm:inline">Zurücksetzen</span>
                 </Button>
               </div>
             </div>
-          </div>
+          </nav>
         </header>
 
         {/* Main Content - Add bottom padding on mobile for bottom nav */}
-        <main className="relative z-10 mx-auto max-w-7xl px-4 py-8 pb-24 sm:px-6 md:pb-8">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="relative z-10 mx-auto max-w-7xl px-4 py-8 pb-24 sm:px-6 md:pb-8"
+        >
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             {/* Tab Navigation - Hidden on mobile, visible on md and above */}
             <div className="mb-8 hidden space-y-3 md:block" data-onboarding="tabs">
               {/* Primary Tabs */}
               <div className="-mx-4 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6">
-                <TabsList className="inline-flex w-full sm:w-auto">
+                <TabsList className="inline-flex w-full sm:w-auto" aria-label="Hauptfunktionen">
                   <TabsTrigger value="calculator" className="flex items-center gap-2 px-4">
-                    <Calculator className="h-4 w-4" />
+                    <Calculator className="h-4 w-4" aria-hidden="true" />
                     <span className="hidden sm:inline">Rechner</span>
+                    <span className="sr-only sm:hidden">Rechner</span>
                   </TabsTrigger>
                   <TabsTrigger value="charts" className="flex items-center gap-2 px-4">
-                    <BarChart3 className="h-4 w-4" />
+                    <BarChart3 className="h-4 w-4" aria-hidden="true" />
                     <span className="hidden sm:inline">Charts</span>
+                    <span className="sr-only sm:hidden">Charts</span>
                   </TabsTrigger>
                   <TabsTrigger value="comparison" className="flex items-center gap-2 px-4">
-                    <GitCompare className="h-4 w-4" />
+                    <GitCompare className="h-4 w-4" aria-hidden="true" />
                     <span className="hidden sm:inline">Vergleich</span>
+                    <span className="sr-only sm:hidden">Vergleich</span>
                   </TabsTrigger>
                   <TabsTrigger value="dashboard" className="flex items-center gap-2 px-4">
-                    <LayoutDashboard className="h-4 w-4" />
+                    <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
                     <span className="hidden sm:inline">Dashboard</span>
+                    <span className="sr-only sm:hidden">Dashboard</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
               {/* Secondary Tabs - New Features */}
               <div className="-mx-4 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6">
-                <TabsList className="inline-flex w-full bg-slate-100/80 sm:w-auto dark:bg-slate-800/80">
+                <TabsList
+                  className="inline-flex w-full bg-slate-100/80 sm:w-auto dark:bg-slate-800/80"
+                  aria-label="Weitere Funktionen"
+                >
                   <TabsTrigger value="rent-index" className="flex items-center gap-2 px-4">
-                    <TrendingUp className="h-4 w-4" />
+                    <TrendingUp className="h-4 w-4" aria-hidden="true" />
                     <span className="hidden sm:inline">Mietspiegel</span>
+                    <span className="sr-only sm:hidden">Mietspiegel</span>
                   </TabsTrigger>
                   <TabsTrigger value="break-even" className="flex items-center gap-2 px-4">
-                    <Target className="h-4 w-4" />
+                    <Target className="h-4 w-4" aria-hidden="true" />
                     <span className="hidden sm:inline">Break-Even</span>
+                    <span className="sr-only sm:hidden">Break-Even</span>
                   </TabsTrigger>
                   <TabsTrigger value="renovation" className="flex items-center gap-2 px-4">
-                    <Wrench className="h-4 w-4" />
+                    <Wrench className="h-4 w-4" aria-hidden="true" />
                     <span className="hidden sm:inline">Renovierung</span>
+                    <span className="sr-only sm:hidden">Renovierung</span>
                   </TabsTrigger>
                   <TabsTrigger value="exit-strategy" className="flex items-center gap-2 px-4">
-                    <LogOut className="h-4 w-4" />
+                    <LogOut className="h-4 w-4" aria-hidden="true" />
                     <span className="hidden sm:inline">Exit</span>
+                    <span className="sr-only sm:hidden">Exit</span>
                   </TabsTrigger>
                   <TabsTrigger value="location" className="flex items-center gap-2 px-4">
-                    <MapPin className="h-4 w-4" />
+                    <MapPin className="h-4 w-4" aria-hidden="true" />
                     <span className="hidden sm:inline">Standort</span>
+                    <span className="sr-only sm:hidden">Standort</span>
                   </TabsTrigger>
                   <TabsTrigger value="checklist" className="flex items-center gap-2 px-4">
-                    <ClipboardCheck className="h-4 w-4" />
+                    <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
                     <span className="hidden sm:inline">Checkliste</span>
+                    <span className="sr-only sm:hidden">Checkliste</span>
                   </TabsTrigger>
                 </TabsList>
               </div>

@@ -446,7 +446,11 @@ export function ResultsPanel() {
         hover={false}
       >
         <CardContent className="p-6 text-center">
+          {/* Live region for screen reader - announces on updates */}
           <div
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
             className={`mb-2 flex items-center justify-center gap-2 ${
               isPositiveCashflow
                 ? "text-green-700 dark:text-green-400"
@@ -454,9 +458,9 @@ export function ResultsPanel() {
             }`}
           >
             {isPositiveCashflow ? (
-              <TrendingUp className="animate-bounce-subtle h-8 w-8" />
+              <TrendingUp className="animate-bounce-subtle h-8 w-8" aria-hidden="true" />
             ) : (
-              <TrendingDown className="h-8 w-8" />
+              <TrendingDown className="h-8 w-8" aria-hidden="true" />
             )}
             <span className="text-sm font-semibold tracking-wide uppercase">
               Monatlicher Cashflow
