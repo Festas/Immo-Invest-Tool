@@ -357,17 +357,19 @@ export function Onboarding() {
     }, SKIP_DELAY_MS);
   };
 
-  // Render nothing if no onboarding step is active or transitioning to new step
+  // Render nothing if no onboarding step is active
   if (currentStep === null) return null;
+
+  // Don't render any modal during transitions to prevent overlapping
+  if (isTransitioning) return null;
 
   return (
     <>
-      {/* Ensure only one modal is rendered at a time */}
-      {currentStep === "welcome" && !isTransitioning && (
+      {currentStep === "welcome" && (
         <WelcomeModal onContinue={handleWelcomeContinue} onSkip={handleSkip} />
       )}
 
-      {currentStep === "coachmarks" && coachMarkStep > 0 && !isTransitioning && (
+      {currentStep === "coachmarks" && coachMarkStep > 0 && (
         <CoachMark
           targetSelector={COACH_MARK_STEPS[coachMarkStep - 1].targetSelector}
           title={COACH_MARK_STEPS[coachMarkStep - 1].title}
@@ -382,13 +384,11 @@ export function Onboarding() {
         />
       )}
 
-      {currentStep === "quickstart" && !isTransitioning && (
+      {currentStep === "quickstart" && (
         <QuickStartOffer onLoadExample={handleLoadExample} onOwnData={handleOwnData} />
       )}
 
-      {currentStep === "presets" && !isTransitioning && (
-        <PresetSelector isOpen={true} onClose={handlePresetsClose} />
-      )}
+      {currentStep === "presets" && <PresetSelector isOpen={true} onClose={handlePresetsClose} />}
     </>
   );
 }
