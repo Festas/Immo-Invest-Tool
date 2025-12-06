@@ -27,6 +27,19 @@ interface CoachMarkProps {
   isVisible: boolean;
   /** Whether this is the last step */
   isLastStep?: boolean;
+  /** Force fallback modal mode (for testing/debugging) */
+  forceFallback?: boolean;
+  /** Enable debug mode to show diagnostic information */
+  debugMode?: boolean;
+}
+
+interface DebugInfo {
+  targetSelector: string;
+  targetFound: boolean;
+  boundingRect: DOMRect | null;
+  fallbackReason: string;
+  isPartiallyVisible: boolean;
+  isFullyVisible: boolean;
 }
 
 /**
@@ -94,10 +107,25 @@ export function CoachMark({
   onSkip,
   isVisible,
   isLastStep = false,
+  forceFallback = false,
+  debugMode = false,
 }: CoachMarkProps) {
   const [coords, setCoords] = React.useState({ top: 0, left: 0, width: 0, height: 0 });
   const [isReady, setIsReady] = React.useState(false);
   const [useFallbackModal, setUseFallbackModal] = React.useState(false);
+  const [debugInfo, setDebugInfo] = React.useState<DebugInfo>({
+    targetSelector: targetSelector || "ref",
+    targetFound: false,
+    boundingRect: null,
+    fallbackReason: "",
+    isPartiallyVisible: false,
+    isFullyVisible: false,
+  });
+
+  // Check for environment-based debug mode or force fallback
+  const isDebugMode = debugMode || process.env.NEXT_PUBLIC_COACHMARK_DEBUG === "true";
+  const shouldForceFallback =
+    forceFallback || process.env.NEXT_PUBLIC_COACHMARK_FORCE_FALLBACK === "true";
 
   // Lock body scroll when visible
   useBodyScrollLock(isVisible);
@@ -122,10 +150,53 @@ export function CoachMark({
     };
   }, [isVisible, onSkip, onNext]);
 
+  // Cleanup effect to ensure all locks and listeners are removed when component unmounts
+  // or when transitioning between steps
+  React.useEffect(() => {
+    return () => {
+      // Ensure body scroll is restored
+      document.body.style.overflow = "";
+
+      // Clear any lingering z-index overlays
+      const overlays = document.querySelectorAll('[class*="z-[9"]');
+      overlays.forEach((overlay) => {
+        if (overlay instanceof HTMLElement && overlay.style.zIndex) {
+          overlay.style.zIndex = "";
+        }
+      });
+    };
+  }, [step]); // Run cleanup on step changes
+
   React.useEffect(() => {
     if (!isVisible) {
       setIsReady(false);
       setUseFallbackModal(false);
+      setDebugInfo({
+        targetSelector: targetSelector || "ref",
+        targetFound: false,
+        boundingRect: null,
+        fallbackReason: "",
+        isPartiallyVisible: false,
+        isFullyVisible: false,
+      });
+      return;
+    }
+
+    // Force fallback if enabled
+    if (shouldForceFallback) {
+      if (isDebugMode) {
+        console.log("[CoachMark] Force fallback mode enabled");
+      }
+      setUseFallbackModal(true);
+      setDebugInfo({
+        targetSelector: targetSelector || "ref",
+        targetFound: false,
+        boundingRect: null,
+        fallbackReason: "Force fallback mode enabled",
+        isPartiallyVisible: false,
+        isFullyVisible: false,
+      });
+      setIsReady(true);
       return;
     }
 
@@ -140,39 +211,57 @@ export function CoachMark({
 
       // Debug logging
       if (!element) {
-        if (process.env.NODE_ENV === "development") {
-          console.warn(
-            `[CoachMark] Target not found - targetSelector: ${targetSelector || "none"}, targetRef: ${targetRef ? "provided" : "none"}`
-          );
+        const reason = `Target not found - targetSelector: ${targetSelector || "none"}, targetRef: ${targetRef ? "provided" : "none"}`;
+        if (isDebugMode) {
+          console.warn(`[CoachMark] ${reason}`);
           console.log("[CoachMark] Falling back to centered modal");
         }
         setUseFallbackModal(true);
+        setDebugInfo({
+          targetSelector: targetSelector || "ref",
+          targetFound: false,
+          boundingRect: null,
+          fallbackReason: reason,
+          isPartiallyVisible: false,
+          isFullyVisible: false,
+        });
         setIsReady(true);
         return;
       }
+
+      const rect = element.getBoundingClientRect();
 
       // Check if element is visible in viewport
       const isPartiallyVisible = isElementPartiallyVisible(element);
       const isFullyVisible = isElementInViewport(element);
 
-      if (process.env.NODE_ENV === "development") {
+      if (isDebugMode) {
         console.log(
           `[CoachMark] Target element found - selector: ${targetSelector || "ref"}, partially visible: ${isPartiallyVisible}, fully visible: ${isFullyVisible}`
         );
+        console.log(`[CoachMark] Bounding rect:`, rect);
       }
 
       if (!isPartiallyVisible) {
-        if (process.env.NODE_ENV === "development") {
-          console.warn("[CoachMark] Target element is not visible in viewport");
+        const reason = "Target element is not visible in viewport";
+        if (isDebugMode) {
+          console.warn(`[CoachMark] ${reason}`);
           console.log("[CoachMark] Falling back to centered modal");
         }
         setUseFallbackModal(true);
+        setDebugInfo({
+          targetSelector: targetSelector || "ref",
+          targetFound: true,
+          boundingRect: rect,
+          fallbackReason: reason,
+          isPartiallyVisible,
+          isFullyVisible,
+        });
         setIsReady(true);
         return;
       }
 
       // Element exists and is at least partially visible, use anchored positioning
-      const rect = element.getBoundingClientRect();
       setCoords({
         top: rect.top + window.scrollY,
         left: rect.left + window.scrollX,
@@ -180,11 +269,19 @@ export function CoachMark({
         height: rect.height,
       });
       setUseFallbackModal(false);
+      setDebugInfo({
+        targetSelector: targetSelector || "ref",
+        targetFound: true,
+        boundingRect: rect,
+        fallbackReason: "",
+        isPartiallyVisible,
+        isFullyVisible,
+      });
       setIsReady(true);
 
       // Only scroll into view if element is not fully visible
       if (!isFullyVisible && isPartiallyVisible) {
-        if (process.env.NODE_ENV === "development") {
+        if (isDebugMode) {
           console.log("[CoachMark] Scrolling element into view");
         }
         // Scroll element into view, respecting reduced motion preference
@@ -204,7 +301,7 @@ export function CoachMark({
       clearTimeout(timer);
       window.removeEventListener("resize", updatePosition);
     };
-  }, [isVisible, targetRef, targetSelector]);
+  }, [isVisible, targetRef, targetSelector, shouldForceFallback, isDebugMode]);
 
   if (!isVisible || !isReady) return null;
 
@@ -227,6 +324,47 @@ export function CoachMark({
           {/* Content */}
           <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">{title}</h3>
           <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">{description}</p>
+
+          {/* Debug Information - Only shown in debug mode */}
+          {isDebugMode && (
+            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs dark:border-amber-800 dark:bg-amber-950">
+              <div className="mb-1 font-semibold text-amber-900 dark:text-amber-100">
+                🔍 Debug Information
+              </div>
+              <div className="space-y-1 text-amber-800 dark:text-amber-200">
+                <div>
+                  <span className="font-medium">Target:</span> {debugInfo.targetSelector}
+                </div>
+                <div>
+                  <span className="font-medium">Found:</span>{" "}
+                  {debugInfo.targetFound ? "✓ Yes" : "✗ No"}
+                </div>
+                {debugInfo.targetFound && (
+                  <>
+                    <div>
+                      <span className="font-medium">Partially Visible:</span>{" "}
+                      {debugInfo.isPartiallyVisible ? "✓ Yes" : "✗ No"}
+                    </div>
+                    <div>
+                      <span className="font-medium">Fully Visible:</span>{" "}
+                      {debugInfo.isFullyVisible ? "✓ Yes" : "✗ No"}
+                    </div>
+                  </>
+                )}
+                {debugInfo.boundingRect && (
+                  <div>
+                    <span className="font-medium">Rect:</span>{" "}
+                    {debugInfo.boundingRect.top.toFixed(0)},{debugInfo.boundingRect.left.toFixed(0)}{" "}
+                    ({debugInfo.boundingRect.width.toFixed(0)}×
+                    {debugInfo.boundingRect.height.toFixed(0)})
+                  </div>
+                )}
+                <div>
+                  <span className="font-medium">Fallback Reason:</span> {debugInfo.fallbackReason}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Progress and Actions */}
           <div className="flex items-center justify-between">
