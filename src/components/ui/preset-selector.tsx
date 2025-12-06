@@ -273,6 +273,18 @@ export function PresetSelector({ isOpen, onClose }: { isOpen: boolean; onClose: 
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
+  // Prevent body scroll when modal is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   const handleLoadPreset = () => {
     const preset = PRESETS.find((p) => p.id === selectedPreset);
     if (preset) {
@@ -286,7 +298,12 @@ export function PresetSelector({ isOpen, onClose }: { isOpen: boolean; onClose: 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="preset-modal-title"
+    >
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -294,8 +311,8 @@ export function PresetSelector({ isOpen, onClose }: { isOpen: boolean; onClose: 
         aria-hidden="true"
       />
 
-      {/* Modal */}
-      <div className="animate-slide-up sm:animate-scale-in relative flex max-h-[85vh] w-full flex-col overflow-hidden rounded-t-2xl border border-slate-200 bg-white shadow-2xl sm:m-4 sm:max-w-lg sm:rounded-2xl dark:border-slate-700 dark:bg-slate-900">
+      {/* Modal - Always centered */}
+      <div className="animate-scale-in relative flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900">
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
           <div className="flex items-center gap-3">
@@ -303,7 +320,10 @@ export function PresetSelector({ isOpen, onClose }: { isOpen: boolean; onClose: 
               <Sparkles className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              <h2
+                id="preset-modal-title"
+                className="text-lg font-bold text-slate-900 dark:text-white"
+              >
                 Beispiel auswählen
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400">
