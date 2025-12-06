@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Select } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   Accordion,
   AccordionItem,
@@ -13,7 +14,8 @@ import {
 } from "@/components/ui/accordion";
 import { useImmoCalcStore } from "@/store";
 import { BundeslandData, Bundesland, AfARates, AfAType } from "@/types";
-import { Building2, Banknote, Home, Receipt } from "lucide-react";
+import { formatCurrency, calculateMarketValueDiscount } from "@/lib/utils";
+import { Building2, Banknote, Home, Receipt, CheckCircle, TrendingDown } from "lucide-react";
 
 const bundeslandOptions = Object.entries(BundeslandData).map(([key, data]) => ({
   value: key,
@@ -174,6 +176,33 @@ Trotzdem eigene Reserve einplanen!`,
 • 80.000+ € Einkommen: ca. 42-45%
 
 💡 Finden Sie im Steuerbescheid oder fragen Sie Ihren Steuerberater.`,
+
+  familyPurchase: `Familienkauf - Steuerbefreiung nach § 3 Nr. 6 GrEStG
+
+📍 Befreit sind Käufe zwischen:
+• Eltern ↔ Kinder
+• Großeltern ↔ Enkel
+• Ehepartner / eingetragene Lebenspartner
+
+❌ NICHT befreit:
+• Geschwister
+• Onkel/Tanten ↔ Neffen/Nichten
+• Schwiegereltern
+
+💡 Bei Familienkäufen entfällt meist auch der Makler, da privat verkauft wird.`,
+
+  marketValue: `Der geschätzte Marktwert der Immobilie.
+
+📍 Wofür ist das nützlich?
+• Zeigt Ihre Ersparnis bei Käufen unter Marktwert
+• Hilft bei der Einschätzung des Deals
+
+💡 Ermittlung des Marktwerts:
+• Vergleichbare Angebote auf ImmoScout24
+• Gutachter / Sachverständiger
+• Bodenrichtwert + Gebäudewert
+
+Hinweis: Alle Berechnungen basieren auf dem tatsächlichen Kaufpreis.`,
 };
 
 export function PropertyCalculatorForm() {
@@ -200,6 +229,11 @@ export function PropertyCalculatorForm() {
     );
   }, [currentInput.propertyTransferTaxPercent]);
 
+  // Memoize market value discount calculation
+  const marketValueDiscount = React.useMemo(() => {
+    return calculateMarketValueDiscount(currentInput.purchasePrice, currentInput.marketValue);
+  }, [currentInput.purchasePrice, currentInput.marketValue]);
+
   return (
     <Accordion type="single" defaultValue="purchase" className="space-y-4">
       {/* Purchase & Costs Section */}
@@ -224,6 +258,37 @@ export function PropertyCalculatorForm() {
                 helpText={helpTexts.purchasePrice}
               />
 
+              <Input
+                label="Marktwert (optional)"
+                type="number"
+                value={currentInput.marketValue ?? ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "") {
+                    updateInput({ marketValue: undefined });
+                  } else {
+                    const parsed = parseFloat(value);
+                    updateInput({ marketValue: isNaN(parsed) ? undefined : parsed });
+                  }
+                }}
+                suffix="€"
+                min={0}
+                step={1000}
+                placeholder="Geschätzter Marktwert..."
+                helpText={helpTexts.marketValue}
+              />
+
+              {/* Show discount if market value is entered and higher than purchase price */}
+              {marketValueDiscount && (
+                <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-sm text-indigo-700 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-300">
+                  <TrendingDown className="h-4 w-4 flex-shrink-0" />
+                  <span>
+                    Sie kaufen {marketValueDiscount.discountPercent.toFixed(1)}% unter Marktwert
+                    (Ersparnis: {formatCurrency(marketValueDiscount.discountAmount)})
+                  </span>
+                </div>
+              )}
+
               <Select
                 label="Bundesland"
                 options={bundeslandOptions}
@@ -231,6 +296,31 @@ export function PropertyCalculatorForm() {
                 onChange={handleBundeslandChange}
                 helpText={helpTexts.bundesland}
               />
+
+              {/* Family Purchase Toggle */}
+              <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+                <div className="flex-1">
+                  <label className="font-medium text-slate-900 dark:text-white">
+                    Familienkauf (direkte Linie)
+                  </label>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                    Käufe von Eltern, Großeltern, Kindern sind von der Grunderwerbsteuer befreit
+                  </p>
+                </div>
+                <Switch
+                  checked={currentInput.isFamilyPurchase}
+                  onChange={(checked) => updateInput({ isFamilyPurchase: checked })}
+                  aria-label="Familienkauf aktivieren"
+                />
+              </div>
+
+              {/* Family Purchase Info Banner */}
+              {currentInput.isFamilyPurchase && (
+                <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-300">
+                  <CheckCircle className="h-4 w-4 flex-shrink-0" />
+                  <span>Grunderwerbsteuer: 0% (Familienbefreiung) · Makler: 0%</span>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
                 <Input
