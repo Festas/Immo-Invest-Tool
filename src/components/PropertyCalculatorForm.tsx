@@ -229,6 +229,11 @@ export function PropertyCalculatorForm() {
     );
   }, [currentInput.propertyTransferTaxPercent]);
 
+  // Memoize market value discount calculation
+  const marketValueDiscount = React.useMemo(() => {
+    return calculateMarketValueDiscount(currentInput.purchasePrice, currentInput.marketValue);
+  }, [currentInput.purchasePrice, currentInput.marketValue]);
+
   return (
     <Accordion type="single" defaultValue="purchase" className="space-y-4">
       {/* Purchase & Costs Section */}
@@ -274,23 +279,15 @@ export function PropertyCalculatorForm() {
               />
 
               {/* Show discount if market value is entered and higher than purchase price */}
-              {(() => {
-                const discount = calculateMarketValueDiscount(
-                  currentInput.purchasePrice,
-                  currentInput.marketValue
-                );
-                return (
-                  discount && (
-                    <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-sm text-indigo-700 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-300">
-                      <TrendingDown className="h-4 w-4 flex-shrink-0" />
-                      <span>
-                        Sie kaufen {discount.discountPercent.toFixed(1)}% unter Marktwert
-                        (Ersparnis: {formatCurrency(discount.discountAmount)})
-                      </span>
-                    </div>
-                  )
-                );
-              })()}
+              {marketValueDiscount && (
+                <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-sm text-indigo-700 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-300">
+                  <TrendingDown className="h-4 w-4 flex-shrink-0" />
+                  <span>
+                    Sie kaufen {marketValueDiscount.discountPercent.toFixed(1)}% unter Marktwert
+                    (Ersparnis: {formatCurrency(marketValueDiscount.discountAmount)})
+                  </span>
+                </div>
+              )}
 
               <Select
                 label="Bundesland"
