@@ -276,21 +276,18 @@ export function Onboarding() {
   const [coachMarkStep, setCoachMarkStep] = React.useState(0);
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
-  // Cleanup function to ensure all overlays and locks are removed
-  const cleanupOverlays = React.useCallback(() => {
+  // Cleanup function to restore scroll state between transitions
+  const restoreScrollState = React.useCallback(() => {
     // Remove scroll locks
     document.body.style.overflow = "";
-
-    // Note: We don't forcefully remove overlays as React will handle unmounting them
-    // This is just to ensure scroll state is restored between transitions
   }, []);
 
   // Cleanup on unmount
   React.useEffect(() => {
     return () => {
-      cleanupOverlays();
+      restoreScrollState();
     };
-  }, [cleanupOverlays]);
+  }, [restoreScrollState]);
 
   // Check if should show onboarding on mount
   React.useEffect(() => {
@@ -309,7 +306,7 @@ export function Onboarding() {
   const handleWelcomeContinue = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    cleanupOverlays(); // Clean up before transition
+    restoreScrollState(); // Clean up before transition
     if (process.env.NODE_ENV === "development") {
       console.log("[Onboarding] Transitioning from welcome to coachmarks");
     }
@@ -325,7 +322,7 @@ export function Onboarding() {
   const handleSkip = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    cleanupOverlays(); // Clean up before skipping
+    restoreScrollState(); // Clean up before skipping
     if (process.env.NODE_ENV === "development") {
       console.log("[Onboarding] Skipping tour");
     }
@@ -340,7 +337,7 @@ export function Onboarding() {
   const handleCoachMarkNext = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    cleanupOverlays(); // Clean up before moving to next step
+    restoreScrollState(); // Clean up before moving to next step
 
     if (coachMarkStep < COACH_MARK_STEPS.length) {
       if (process.env.NODE_ENV === "development") {
@@ -366,7 +363,7 @@ export function Onboarding() {
   const handleLoadExample = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    cleanupOverlays(); // Clean up before transition
+    restoreScrollState(); // Clean up before transition
     if (process.env.NODE_ENV === "development") {
       console.log("[Onboarding] User chose to load example");
     }
@@ -380,7 +377,7 @@ export function Onboarding() {
   const handleOwnData = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    cleanupOverlays(); // Clean up before closing
+    restoreScrollState(); // Clean up before closing
     if (process.env.NODE_ENV === "development") {
       console.log("[Onboarding] User chose to enter own data");
     }
@@ -395,7 +392,7 @@ export function Onboarding() {
   const handlePresetsClose = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    cleanupOverlays(); // Clean up before closing
+    restoreScrollState(); // Clean up before closing
     if (process.env.NODE_ENV === "development") {
       console.log("[Onboarding] Closing presets, completing tour");
     }

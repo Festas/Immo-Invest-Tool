@@ -350,11 +350,11 @@ export function CoachMark({
                 )}
                 {debugInfo.boundingRect && (
                   <div>
-                    <span className="font-medium">Rect:</span>{" "}
-                    {Math.round(debugInfo.boundingRect.top)},
-                    {Math.round(debugInfo.boundingRect.left)} (
+                    <span className="font-medium">Rect:</span> (
+                    {Math.round(debugInfo.boundingRect.top)},{" "}
+                    {Math.round(debugInfo.boundingRect.left)}){" "}
                     {Math.round(debugInfo.boundingRect.width)}×
-                    {Math.round(debugInfo.boundingRect.height)})
+                    {Math.round(debugInfo.boundingRect.height)}
                   </div>
                 )}
                 <div>
