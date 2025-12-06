@@ -5,9 +5,14 @@ import { Button } from "./button";
 import { CoachMark } from "./coach-mark";
 import { PresetSelector } from "./preset-selector";
 import { Calculator, Sparkles, X, ArrowRight } from "lucide-react";
+import { useBodyScrollLock } from "@/lib/hooks";
 
 // Onboarding storage key
 const ONBOARDING_STORAGE_KEY = "immocalc-onboarding";
+
+// Transition delays for smooth step changes on mobile
+const TRANSITION_DELAY_MS = 150;
+const SKIP_DELAY_MS = 100;
 
 interface OnboardingState {
   hasSeenOnboarding: boolean;
@@ -96,6 +101,23 @@ export function useOnboarding() {
  * Welcome Modal (Step 1)
  */
 function WelcomeModal({ onContinue, onSkip }: { onContinue: () => void; onSkip: () => void }) {
+  // Lock body scroll when modal is mounted
+  useBodyScrollLock();
+
+  // Handle escape key
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onSkip();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onSkip]);
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -156,6 +178,23 @@ function QuickStartOffer({
   onLoadExample: () => void;
   onOwnData: () => void;
 }) {
+  // Lock body scroll when modal is mounted
+  useBodyScrollLock();
+
+  // Handle escape key
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onOwnData();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onOwnData]);
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -231,6 +270,7 @@ export function Onboarding() {
     "welcome" | "coachmarks" | "quickstart" | "presets" | null
   >(null);
   const [coachMarkStep, setCoachMarkStep] = React.useState(0);
+  const [isTransitioning, setIsTransitioning] = React.useState(false);
 
   // Check if should show onboarding on mount
   React.useEffect(() => {
@@ -244,39 +284,84 @@ export function Onboarding() {
   }, [hasSeenOnboarding]);
 
   const handleWelcomeContinue = () => {
-    setCurrentStep("coachmarks");
-    setCoachMarkStep(1);
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+
+    // Add delay to ensure clean transition
+    setTimeout(() => {
+      setCurrentStep("coachmarks");
+      setCoachMarkStep(1);
+      setIsTransitioning(false);
+    }, TRANSITION_DELAY_MS);
   };
 
   const handleSkip = () => {
-    setCurrentStep(null);
-    markAsCompleted();
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+      setCurrentStep(null);
+      markAsCompleted();
+      setIsTransitioning(false);
+    }, SKIP_DELAY_MS);
   };
 
   const handleCoachMarkNext = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+
     if (coachMarkStep < COACH_MARK_STEPS.length) {
-      setCoachMarkStep(coachMarkStep + 1);
+      // Add delay between coach mark steps
+      setTimeout(() => {
+        setCoachMarkStep(coachMarkStep + 1);
+        setIsTransitioning(false);
+      }, TRANSITION_DELAY_MS);
     } else {
-      setCurrentStep("quickstart");
+      // Transition to quick start modal
+      setTimeout(() => {
+        setCurrentStep("quickstart");
+        setIsTransitioning(false);
+      }, TRANSITION_DELAY_MS);
     }
   };
 
   const handleLoadExample = () => {
-    setCurrentStep("presets");
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+      setCurrentStep("presets");
+      setIsTransitioning(false);
+    }, TRANSITION_DELAY_MS);
   };
 
   const handleOwnData = () => {
-    setCurrentStep(null);
-    markAsCompleted();
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+      setCurrentStep(null);
+      markAsCompleted();
+      setIsTransitioning(false);
+    }, SKIP_DELAY_MS);
   };
 
   const handlePresetsClose = () => {
-    setCurrentStep(null);
-    markAsCompleted();
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+      setCurrentStep(null);
+      markAsCompleted();
+      setIsTransitioning(false);
+    }, SKIP_DELAY_MS);
   };
 
   // Render nothing if no onboarding step is active
   if (currentStep === null) return null;
+
+  // Don't render any modal during transitions to prevent overlapping
+  if (isTransitioning) return null;
 
   return (
     <>
