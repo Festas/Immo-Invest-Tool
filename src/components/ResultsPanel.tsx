@@ -10,7 +10,7 @@ import { SwipeableCards } from "@/components/ui/swipeable-cards";
 import { useImmoCalcStore } from "@/store";
 import { formatCurrency } from "@/lib/utils";
 import { calculatePropertyKPIs } from "@/lib/calculations";
-import { PropertyOutput } from "@/types";
+import { PropertyOutput, PropertyInput } from "@/types";
 import {
   TrendingUp,
   TrendingDown,
@@ -23,6 +23,7 @@ import {
   Receipt,
   Landmark,
   Percent,
+  Tag,
 } from "lucide-react";
 
 // Help texts for results
@@ -569,6 +570,29 @@ export function ResultsPanel() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Market Value Comparison - show if market value entered */}
+      {currentInput.marketValue && currentInput.marketValue > currentInput.purchasePrice && (
+        <Card className="overflow-hidden border-indigo-200 bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:border-indigo-800 dark:from-indigo-900/30 dark:to-indigo-900/20">
+          <CardContent className="p-4">
+            <div className="mb-2 flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+              <Tag className="h-4 w-4" />
+              <span className="text-sm font-semibold tracking-wide uppercase">Kaufvorteil</span>
+            </div>
+            <p className="text-2xl font-bold text-indigo-900 dark:text-indigo-100">
+              {(
+                ((currentInput.marketValue - currentInput.purchasePrice) /
+                  currentInput.marketValue) *
+                100
+              ).toFixed(1)}
+              % unter Marktwert
+            </p>
+            <p className="mt-1 text-sm text-indigo-600 dark:text-indigo-400">
+              Ersparnis: {formatCurrency(currentInput.marketValue - currentInput.purchasePrice)}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Swipeable Cards for Mobile */}
       <div className="md:hidden">

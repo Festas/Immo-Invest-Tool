@@ -1257,4 +1257,120 @@ describe("getDefaultPropertyInput", () => {
 
     expect(defaults.propertyTransferTaxPercent).toBe(3.5);
   });
+
+  it("should return family purchase defaults", () => {
+    const defaults = getDefaultPropertyInput();
+
+    expect(defaults.isFamilyPurchase).toBe(false);
+    expect(defaults.marketValue).toBeUndefined();
+  });
+});
+
+// ===========================================
+// Family Purchase Tests
+// ===========================================
+describe("Family Purchase", () => {
+  it("should calculate correctly with family purchase settings (zero tax and broker)", () => {
+    const input = createStandardInput();
+    input.isFamilyPurchase = true;
+    input.propertyTransferTaxPercent = 0;
+    input.brokerPercent = 0;
+
+    const sideCosts = calculateSideCosts(input);
+
+    expect(sideCosts.propertyTransferTax).toBe(0);
+    expect(sideCosts.brokerCost).toBe(0);
+    expect(sideCosts.notaryCost).toBeGreaterThan(0); // Notary still applies
+  });
+
+  it("should calculate total investment correctly for family purchase", () => {
+    const input = createStandardInput();
+    input.purchasePrice = 300000;
+    input.isFamilyPurchase = true;
+    input.propertyTransferTaxPercent = 0;
+    input.brokerPercent = 0;
+    input.notaryPercent = 1.5;
+    input.renovationCosts = 0;
+
+    const investmentVolume = calculateInvestmentVolume(input);
+
+    // Only notary costs: 300000 * 1.5% = 4500
+    expect(investmentVolume.sideCosts.totalSideCosts).toBeCloseTo(4500, 0);
+    expect(investmentVolume.totalInvestment).toBeCloseTo(304500, 0);
+  });
+
+  it("should maintain all calculations when family purchase is enabled", () => {
+    const input = createStandardInput();
+    input.isFamilyPurchase = true;
+    input.propertyTransferTaxPercent = 0;
+    input.brokerPercent = 0;
+
+    const output = calculatePropertyKPIs(input);
+
+    expect(output.investmentVolume).toBeDefined();
+    expect(output.financing).toBeDefined();
+    expect(output.cashflow).toBeDefined();
+    expect(output.yields).toBeDefined();
+    expect(output.tax).toBeDefined();
+  });
+});
+
+// ===========================================
+// Market Value Tests
+// ===========================================
+describe("Market Value", () => {
+  it("should not affect calculations when market value is set", () => {
+    const inputWithMarketValue = createStandardInput();
+    inputWithMarketValue.marketValue = 400000;
+
+    const inputWithoutMarketValue = createStandardInput();
+    inputWithoutMarketValue.marketValue = undefined;
+
+    const outputWith = calculatePropertyKPIs(inputWithMarketValue);
+    const outputWithout = calculatePropertyKPIs(inputWithoutMarketValue);
+
+    // All calculations should be identical - market value is informational only
+    expect(outputWith.investmentVolume.totalInvestment).toBe(
+      outputWithout.investmentVolume.totalInvestment
+    );
+    expect(outputWith.financing.loanAmount).toBe(outputWithout.financing.loanAmount);
+    expect(outputWith.cashflow.cashflowAfterTax).toBe(outputWithout.cashflow.cashflowAfterTax);
+    expect(outputWith.yields.returnOnEquity).toBe(outputWithout.yields.returnOnEquity);
+  });
+
+  it("should calculate correct discount percentage", () => {
+    const input = createStandardInput();
+    input.purchasePrice = 250000;
+    input.marketValue = 300000;
+
+    // Discount calculation: (300000 - 250000) / 300000 * 100 = 16.67%
+    const discountAmount = input.marketValue - input.purchasePrice;
+    const discountPercent = (discountAmount / input.marketValue) * 100;
+
+    expect(discountAmount).toBe(50000);
+    expect(discountPercent).toBeCloseTo(16.67, 1);
+  });
+
+  it("should handle market value equal to purchase price", () => {
+    const input = createStandardInput();
+    input.purchasePrice = 300000;
+    input.marketValue = 300000;
+
+    const discountAmount = input.marketValue - input.purchasePrice;
+    const discountPercent = input.marketValue > 0 ? (discountAmount / input.marketValue) * 100 : 0;
+
+    expect(discountAmount).toBe(0);
+    expect(discountPercent).toBe(0);
+  });
+
+  it("should handle market value less than purchase price (no discount)", () => {
+    const input = createStandardInput();
+    input.purchasePrice = 350000;
+    input.marketValue = 300000;
+
+    const discountAmount = input.marketValue - input.purchasePrice;
+
+    // Negative discount means buying above market value
+    expect(discountAmount).toBe(-50000);
+  });
 });

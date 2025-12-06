@@ -79,7 +79,27 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       // Update input and recalculate
       updateInput: (updates) => {
         set((state) => {
-          const newInput = { ...state.currentInput, ...updates };
+          let newInput = { ...state.currentInput, ...updates };
+
+          // If family purchase is toggled ON, set tax and broker to 0
+          if (updates.isFamilyPurchase === true) {
+            newInput = {
+              ...newInput,
+              propertyTransferTaxPercent: 0,
+              brokerPercent: 0,
+            };
+          }
+
+          // If family purchase is toggled OFF, restore default Bundesland tax rate (Bayern)
+          if (updates.isFamilyPurchase === false) {
+            const defaultInput = getDefaultPropertyInput();
+            newInput = {
+              ...newInput,
+              propertyTransferTaxPercent: defaultInput.propertyTransferTaxPercent,
+              brokerPercent: defaultInput.brokerPercent,
+            };
+          }
+
           return {
             currentInput: newInput,
             currentOutput: calculatePropertyKPIs(newInput),

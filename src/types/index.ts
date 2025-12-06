@@ -65,6 +65,10 @@ export interface PropertyInput {
   propertyTransferTaxPercent: number;
   renovationCosts: number;
 
+  // Family Purchase
+  isFamilyPurchase: boolean;
+  marketValue?: number;
+
   // Financing
   equity: number;
   loanAmount: number;

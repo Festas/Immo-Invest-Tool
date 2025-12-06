@@ -377,6 +377,10 @@ export function getDefaultPropertyInput(): PropertyInput {
     propertyTransferTaxPercent: 3.5, // Bayern
     renovationCosts: 0,
 
+    // Family Purchase
+    isFamilyPurchase: false,
+    marketValue: undefined,
+
     // Financing
     equity: 60000,
     loanAmount: 0, // Calculated from totalInvestment - equity in calculatePropertyKPIs
