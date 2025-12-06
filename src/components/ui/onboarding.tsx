@@ -5,9 +5,14 @@ import { Button } from "./button";
 import { CoachMark } from "./coach-mark";
 import { PresetSelector } from "./preset-selector";
 import { Calculator, Sparkles, X, ArrowRight } from "lucide-react";
+import { useBodyScrollLock } from "@/lib/hooks";
 
 // Onboarding storage key
 const ONBOARDING_STORAGE_KEY = "immocalc-onboarding";
+
+// Transition delays for smooth step changes on mobile
+const TRANSITION_DELAY_MS = 150;
+const SKIP_DELAY_MS = 100;
 
 interface OnboardingState {
   hasSeenOnboarding: boolean;
@@ -97,14 +102,7 @@ export function useOnboarding() {
  */
 function WelcomeModal({ onContinue, onSkip }: { onContinue: () => void; onSkip: () => void }) {
   // Lock body scroll when modal is mounted
-  React.useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, []);
+  useBodyScrollLock();
 
   // Handle escape key
   React.useEffect(() => {
@@ -181,14 +179,7 @@ function QuickStartOffer({
   onOwnData: () => void;
 }) {
   // Lock body scroll when modal is mounted
-  React.useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, []);
+  useBodyScrollLock();
 
   // Handle escape key
   React.useEffect(() => {
@@ -301,7 +292,7 @@ export function Onboarding() {
       setCurrentStep("coachmarks");
       setCoachMarkStep(1);
       setIsTransitioning(false);
-    }, 150);
+    }, TRANSITION_DELAY_MS);
   };
 
   const handleSkip = () => {
@@ -312,7 +303,7 @@ export function Onboarding() {
       setCurrentStep(null);
       markAsCompleted();
       setIsTransitioning(false);
-    }, 100);
+    }, SKIP_DELAY_MS);
   };
 
   const handleCoachMarkNext = () => {
@@ -324,13 +315,13 @@ export function Onboarding() {
       setTimeout(() => {
         setCoachMarkStep(coachMarkStep + 1);
         setIsTransitioning(false);
-      }, 150);
+      }, TRANSITION_DELAY_MS);
     } else {
       // Transition to quick start modal
       setTimeout(() => {
         setCurrentStep("quickstart");
         setIsTransitioning(false);
-      }, 150);
+      }, TRANSITION_DELAY_MS);
     }
   };
 
@@ -341,7 +332,7 @@ export function Onboarding() {
     setTimeout(() => {
       setCurrentStep("presets");
       setIsTransitioning(false);
-    }, 150);
+    }, TRANSITION_DELAY_MS);
   };
 
   const handleOwnData = () => {
@@ -352,7 +343,7 @@ export function Onboarding() {
       setCurrentStep(null);
       markAsCompleted();
       setIsTransitioning(false);
-    }, 100);
+    }, SKIP_DELAY_MS);
   };
 
   const handlePresetsClose = () => {
@@ -363,7 +354,7 @@ export function Onboarding() {
       setCurrentStep(null);
       markAsCompleted();
       setIsTransitioning(false);
-    }, 100);
+    }, SKIP_DELAY_MS);
   };
 
   // Render nothing if no onboarding step is active or transitioning to new step
