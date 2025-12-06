@@ -267,7 +267,6 @@ export function PresetSelector({ isOpen, onClose }: { isOpen: boolean; onClose: 
   // Ensure we only render portal on client side
   React.useEffect(() => {
     setMounted(true);
-    return () => setMounted(false);
   }, []);
 
   // Handle escape key
