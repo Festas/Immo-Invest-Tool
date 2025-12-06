@@ -6,7 +6,14 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { PropertyInput, PropertyOutput, Property, Scenario, PortfolioSummary } from "@/types";
+import {
+  PropertyInput,
+  PropertyOutput,
+  Property,
+  Scenario,
+  PortfolioSummary,
+  AfAType,
+} from "@/types";
 import { calculatePropertyKPIs, getDefaultPropertyInput } from "@/lib/calculations";
 
 /**
@@ -48,6 +55,7 @@ interface ImmoCalcState {
   // Actions
   updateInput: (updates: Partial<PropertyInput>) => void;
   resetInput: () => void;
+  clearInput: () => void;
   calculate: () => void;
 
   // Property actions
@@ -131,6 +139,38 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
           currentOutput: calculatePropertyKPIs(defaultInput),
           selectedPropertyId: null,
         });
+      },
+
+      // Clear input to zero/empty values with sensible defaults
+      clearInput: () => {
+        set({
+          currentInput: {
+            // Reset to zero/empty
+            purchasePrice: 0,
+            marketValue: undefined,
+            renovationCosts: 0,
+            equity: 0,
+            loanAmount: 0,
+            coldRentActual: 0,
+            coldRentTarget: 0,
+            nonRecoverableCosts: 0,
+            maintenanceReserve: 0,
+            isFamilyPurchase: false,
+
+            // Keep sensible defaults (these are always needed)
+            brokerPercent: 3.57,
+            notaryPercent: 1.5,
+            propertyTransferTaxPercent: 6.0, // Default to common rate
+            interestRate: 3.5,
+            repaymentRate: 2.0,
+            fixedInterestPeriod: 10,
+            vacancyRiskPercent: 2,
+            personalTaxRate: 42,
+            buildingSharePercent: 80,
+            afaType: "ALTBAU_AB_1925" as AfAType,
+          },
+        });
+        get().calculate();
       },
 
       // Manual calculate

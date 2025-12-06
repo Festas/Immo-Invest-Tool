@@ -20,6 +20,7 @@ import {
   GitCompare,
   LayoutDashboard,
   RotateCcw,
+  Eraser,
   MapPin,
   Target,
   Wrench,
@@ -127,7 +128,7 @@ const DueDiligenceChecklist = dynamic(
 );
 
 export default function Home() {
-  const { activeTab, setActiveTab, resetInput, calculate } = useImmoCalcStore();
+  const { activeTab, setActiveTab, resetInput, clearInput, calculate } = useImmoCalcStore();
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -233,6 +234,22 @@ export default function Home() {
               <div className="flex items-center gap-2 md:gap-3">
                 <PresetButton />
                 <ThemeToggle />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearInput}
+                  aria-label="Alle Eingaben leeren"
+                  className={cn("group", isHeaderCollapsed && "h-8 px-2 md:h-9 md:px-4")}
+                >
+                  <Eraser
+                    className={cn(
+                      "transition-transform",
+                      isHeaderCollapsed ? "h-3.5 w-3.5 md:mr-1.5 md:h-4 md:w-4" : "mr-1.5 h-4 w-4"
+                    )}
+                    aria-hidden="true"
+                  />
+                  <span className="hidden sm:inline">Leeren</span>
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"

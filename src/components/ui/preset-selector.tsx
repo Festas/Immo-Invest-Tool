@@ -57,25 +57,33 @@ export const PRESETS: Preset[] = [
     icon: "🏠",
     bundesland: "Mecklenburg-Vorpommern",
     values: {
+      // Kaufpreis & Nebenkosten
       purchasePrice: 160000,
-      marketValue: 240000, // Purchase price is 33% below market value
-      isFamilyPurchase: true, // Enables 0% GrESt
-      propertyTransferTaxPercent: 0, // Family exemption
-      brokerPercent: 0, // No broker in family sale
+      marketValue: 240000,
+      isFamilyPurchase: true,
+      propertyTransferTaxPercent: 0,
+      brokerPercent: 0,
       notaryPercent: 2,
       renovationCosts: 500,
-      equity: 3700, // Notary + renovation from own funds
+
+      // Finanzierung - Loan is full purchase price, side costs from equity
+      equity: 3700,
+      loanAmount: 160000, // Full purchase price - side costs paid from equity
       interestRate: 3.0,
       repaymentRate: 2.25,
       fixedInterestPeriod: 10,
+
+      // Mieteinnahmen
       coldRentActual: 900,
       coldRentTarget: 900,
       nonRecoverableCosts: 69,
-      maintenanceReserve: 95, // ~1€/m² for Altbau
+      maintenanceReserve: 95,
       vacancyRiskPercent: 2,
+
+      // Steuern
       personalTaxRate: 42,
       buildingSharePercent: 95,
-      afaType: "ALTBAU_VOR_1925" as AfAType, // Built 1907 = 2.5% AfA
+      afaType: "ALTBAU_VOR_1925" as AfAType,
     },
   },
   {
@@ -86,23 +94,31 @@ export const PRESETS: Preset[] = [
     bundesland: "Mecklenburg-Vorpommern",
     values: {
       purchasePrice: 185000,
+      marketValue: 195000, // Slightly above purchase price
       isFamilyPurchase: false,
-      propertyTransferTaxPercent: 6.0, // MV rate
+      propertyTransferTaxPercent: 6.0,
       brokerPercent: 3.57,
       notaryPercent: 1.5,
       renovationCosts: 5000,
-      equity: 45000, // ~20% + Nebenkosten
+
+      // Side costs: 185000 * (6% + 3.57% + 1.5%) + 5000 = ~25,500
+      // Total: 185000 + 25500 = 210,500
+      // Loan: 210500 - 45000 = 165,500
+      equity: 45000,
+      loanAmount: 165500, // Calculated
       interestRate: 3.5,
       repaymentRate: 2.0,
       fixedInterestPeriod: 10,
-      coldRentActual: 750, // ~8.50€/m² for 88m²
+
+      coldRentActual: 750,
       coldRentTarget: 750,
       nonRecoverableCosts: 60,
       maintenanceReserve: 80,
       vacancyRiskPercent: 3,
-      personalTaxRate: 35,
+
+      personalTaxRate: 42, // Changed from 35%
       buildingSharePercent: 80,
-      afaType: "ALTBAU_AB_1925" as AfAType, // Post-war building
+      afaType: "ALTBAU_AB_1925" as AfAType,
     },
   },
   {
@@ -113,20 +129,28 @@ export const PRESETS: Preset[] = [
     bundesland: "Schleswig-Holstein",
     values: {
       purchasePrice: 420000,
+      marketValue: 450000,
       isFamilyPurchase: false,
-      propertyTransferTaxPercent: 6.5, // SH rate
+      propertyTransferTaxPercent: 6.5,
       brokerPercent: 3.57,
       notaryPercent: 1.5,
       renovationCosts: 15000,
-      equity: 120000, // ~25%
+
+      // Side costs: 420000 * (6.5% + 3.57% + 1.5%) + 15000 = ~63,500
+      // Total: 420000 + 63500 = 483,500
+      // Loan: 483500 - 120000 = 363,500
+      equity: 120000,
+      loanAmount: 363500, // Calculated
       interestRate: 3.4,
       repaymentRate: 2.0,
       fixedInterestPeriod: 15,
-      coldRentActual: 2400, // 4 units × ~600€
+
+      coldRentActual: 2400,
       coldRentTarget: 2600,
       nonRecoverableCosts: 180,
       maintenanceReserve: 250,
       vacancyRiskPercent: 3,
+
       personalTaxRate: 42,
       buildingSharePercent: 75,
       afaType: "ALTBAU_AB_1925" as AfAType,
@@ -140,23 +164,31 @@ export const PRESETS: Preset[] = [
     bundesland: "Hamburg",
     values: {
       purchasePrice: 480000,
+      marketValue: 510000,
       isFamilyPurchase: false,
-      propertyTransferTaxPercent: 5.5, // Hamburg rate
-      brokerPercent: 3.0, // Often lower for new builds
+      propertyTransferTaxPercent: 5.5,
+      brokerPercent: 3.0,
       notaryPercent: 1.5,
-      renovationCosts: 0, // New = no renovation
-      equity: 130000, // ~25%
+      renovationCosts: 0,
+
+      // Side costs: 480000 * (5.5% + 3% + 1.5%) + 0 = 48,000
+      // Total: 480000 + 48000 = 528,000
+      // Loan: 528000 - 130000 = 398,000
+      equity: 130000,
+      loanAmount: 398000, // Calculated
       interestRate: 3.3,
       repaymentRate: 2.5,
       fixedInterestPeriod: 15,
-      coldRentActual: 1350, // ~16€/m² for 85m²
+
+      coldRentActual: 1350,
       coldRentTarget: 1400,
       nonRecoverableCosts: 80,
-      maintenanceReserve: 50, // New building = lower reserve
+      maintenanceReserve: 50,
       vacancyRiskPercent: 2,
+
       personalTaxRate: 42,
       buildingSharePercent: 85,
-      afaType: "NEUBAU_AB_2023" as AfAType, // 3% AfA
+      afaType: "NEUBAU_AB_2023" as AfAType,
     },
   },
   {
@@ -167,21 +199,29 @@ export const PRESETS: Preset[] = [
     bundesland: "Bremen",
     values: {
       purchasePrice: 95000,
+      marketValue: 100000,
       isFamilyPurchase: false,
-      propertyTransferTaxPercent: 5.0, // Bremen rate
+      propertyTransferTaxPercent: 5.0,
       brokerPercent: 3.57,
       notaryPercent: 1.5,
       renovationCosts: 8000,
+
+      // Side costs: 95000 * (5% + 3.57% + 1.5%) + 8000 = ~17,570
+      // Total: 95000 + 17570 = 112,570
+      // Loan: 112570 - 25000 = 87,570
       equity: 25000,
-      interestRate: 3.8, // Slightly higher for smaller loan
+      loanAmount: 87570, // Calculated
+      interestRate: 3.8,
       repaymentRate: 2.0,
       fixedInterestPeriod: 10,
-      coldRentActual: 520, // ~8€/m² for 65m²
+
+      coldRentActual: 520,
       coldRentTarget: 550,
       nonRecoverableCosts: 50,
       maintenanceReserve: 70,
-      vacancyRiskPercent: 4, // B-location = slightly higher
-      personalTaxRate: 35,
+      vacancyRiskPercent: 4,
+
+      personalTaxRate: 42, // Changed from 35%
       buildingSharePercent: 80,
       afaType: "ALTBAU_AB_1925" as AfAType,
     },
