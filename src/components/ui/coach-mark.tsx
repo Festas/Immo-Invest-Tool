@@ -30,6 +30,56 @@ interface CoachMarkProps {
 }
 
 /**
+ * Check if an element is visible in the viewport
+ */
+function isElementInViewport(element: HTMLElement): boolean {
+  const rect = element.getBoundingClientRect();
+  const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+  const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+
+  // Check if element is within viewport bounds
+  const isInViewport =
+    rect.top >= 0 && rect.left >= 0 && rect.bottom <= windowHeight && rect.right <= windowWidth;
+
+  // Check if element has visible dimensions
+  const hasVisibleSize = rect.width > 0 && rect.height > 0;
+
+  // Check if element is visible (not display:none or visibility:hidden)
+  const computedStyle = window.getComputedStyle(element);
+  const isVisible =
+    computedStyle.display !== "none" &&
+    computedStyle.visibility !== "hidden" &&
+    computedStyle.opacity !== "0";
+
+  return isInViewport && hasVisibleSize && isVisible;
+}
+
+/**
+ * Check if an element is at least partially visible in the viewport
+ */
+function isElementPartiallyVisible(element: HTMLElement): boolean {
+  const rect = element.getBoundingClientRect();
+  const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+  const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+
+  // Check if at least part of the element is in viewport
+  const isPartiallyInViewport =
+    rect.bottom > 0 && rect.right > 0 && rect.top < windowHeight && rect.left < windowWidth;
+
+  // Check if element has visible dimensions
+  const hasVisibleSize = rect.width > 0 && rect.height > 0;
+
+  // Check if element is visible (not display:none or visibility:hidden)
+  const computedStyle = window.getComputedStyle(element);
+  const isVisible =
+    computedStyle.display !== "none" &&
+    computedStyle.visibility !== "hidden" &&
+    computedStyle.opacity !== "0";
+
+  return isPartiallyInViewport && hasVisibleSize && isVisible;
+}
+
+/**
  * Coach Mark component for onboarding highlights
  */
 export function CoachMark({
@@ -47,6 +97,7 @@ export function CoachMark({
 }: CoachMarkProps) {
   const [coords, setCoords] = React.useState({ top: 0, left: 0, width: 0, height: 0 });
   const [isReady, setIsReady] = React.useState(false);
+  const [useFallbackModal, setUseFallbackModal] = React.useState(false);
 
   // Lock body scroll when visible
   useBodyScrollLock(isVisible);
@@ -74,6 +125,7 @@ export function CoachMark({
   React.useEffect(() => {
     if (!isVisible) {
       setIsReady(false);
+      setUseFallbackModal(false);
       return;
     }
 
@@ -86,16 +138,55 @@ export function CoachMark({
         element = document.querySelector(targetSelector);
       }
 
-      if (element) {
-        const rect = element.getBoundingClientRect();
-        setCoords({
-          top: rect.top + window.scrollY,
-          left: rect.left + window.scrollX,
-          width: rect.width,
-          height: rect.height,
-        });
+      // Debug logging
+      if (!element) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            `[CoachMark] Target not found - targetSelector: ${targetSelector || "none"}, targetRef: ${targetRef ? "provided" : "none"}`
+          );
+          console.log("[CoachMark] Falling back to centered modal");
+        }
+        setUseFallbackModal(true);
         setIsReady(true);
+        return;
+      }
 
+      // Check if element is visible in viewport
+      const isPartiallyVisible = isElementPartiallyVisible(element);
+      const isFullyVisible = isElementInViewport(element);
+
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          `[CoachMark] Target element found - selector: ${targetSelector || "ref"}, partially visible: ${isPartiallyVisible}, fully visible: ${isFullyVisible}`
+        );
+      }
+
+      if (!isPartiallyVisible) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[CoachMark] Target element is not visible in viewport");
+          console.log("[CoachMark] Falling back to centered modal");
+        }
+        setUseFallbackModal(true);
+        setIsReady(true);
+        return;
+      }
+
+      // Element exists and is at least partially visible, use anchored positioning
+      const rect = element.getBoundingClientRect();
+      setCoords({
+        top: rect.top + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+        height: rect.height,
+      });
+      setUseFallbackModal(false);
+      setIsReady(true);
+
+      // Only scroll into view if element is not fully visible
+      if (!isFullyVisible && isPartiallyVisible) {
+        if (process.env.NODE_ENV === "development") {
+          console.log("[CoachMark] Scrolling element into view");
+        }
         // Scroll element into view, respecting reduced motion preference
         const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         element.scrollIntoView({
@@ -116,6 +207,66 @@ export function CoachMark({
   }, [isVisible, targetRef, targetSelector]);
 
   if (!isVisible || !isReady) return null;
+
+  // Render centered modal fallback if target not found or not visible
+  if (useFallbackModal) {
+    return (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          onClick={onSkip}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === "Escape" && onSkip()}
+          aria-label="Klicken Sie zum Überspringen der Tour"
+        />
+
+        {/* Centered Modal */}
+        <div className="animate-scale-in relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+          {/* Content */}
+          <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">{title}</h3>
+          <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">{description}</p>
+
+          {/* Progress and Actions */}
+          <div className="flex items-center justify-between">
+            {/* Progress dots */}
+            <div className="flex gap-1.5">
+              {Array.from({ length: totalSteps }).map((_, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "h-2 w-2 rounded-full transition-colors",
+                    i + 1 === step
+                      ? "bg-indigo-500 dark:bg-indigo-400"
+                      : i + 1 < step
+                        ? "bg-indigo-300 dark:bg-indigo-600"
+                        : "bg-slate-200 dark:bg-slate-600"
+                  )}
+                />
+              ))}
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-2">
+              <button
+                onClick={onSkip}
+                className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+              >
+                Überspringen
+              </button>
+              <button
+                onClick={onNext}
+                className="rounded-lg bg-indigo-500 px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-600 dark:bg-indigo-400 dark:text-slate-900 dark:hover:bg-indigo-300"
+              >
+                {isLastStep ? "Fertig" : "Weiter"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Calculate popover position
   const getPopoverStyle = (): React.CSSProperties => {

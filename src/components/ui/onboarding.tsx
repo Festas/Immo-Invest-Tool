@@ -277,6 +277,9 @@ export function Onboarding() {
     if (!hasSeenOnboarding) {
       // Small delay to allow page to render
       const timer = setTimeout(() => {
+        if (process.env.NODE_ENV === "development") {
+          console.log("[Onboarding] Starting onboarding tour");
+        }
         setCurrentStep("welcome");
       }, 500);
       return () => clearTimeout(timer);
@@ -286,6 +289,9 @@ export function Onboarding() {
   const handleWelcomeContinue = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Onboarding] Transitioning from welcome to coachmarks");
+    }
 
     // Add delay to ensure clean transition
     setTimeout(() => {
@@ -298,6 +304,9 @@ export function Onboarding() {
   const handleSkip = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Onboarding] Skipping tour");
+    }
 
     setTimeout(() => {
       setCurrentStep(null);
@@ -311,12 +320,18 @@ export function Onboarding() {
     setIsTransitioning(true);
 
     if (coachMarkStep < COACH_MARK_STEPS.length) {
+      if (process.env.NODE_ENV === "development") {
+        console.log(`[Onboarding] Moving to coach mark step ${coachMarkStep + 1}`);
+      }
       // Add delay between coach mark steps
       setTimeout(() => {
         setCoachMarkStep(coachMarkStep + 1);
         setIsTransitioning(false);
       }, TRANSITION_DELAY_MS);
     } else {
+      if (process.env.NODE_ENV === "development") {
+        console.log("[Onboarding] Transitioning from coachmarks to quickstart");
+      }
       // Transition to quick start modal
       setTimeout(() => {
         setCurrentStep("quickstart");
@@ -328,6 +343,9 @@ export function Onboarding() {
   const handleLoadExample = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Onboarding] User chose to load example");
+    }
 
     setTimeout(() => {
       setCurrentStep("presets");
@@ -338,6 +356,9 @@ export function Onboarding() {
   const handleOwnData = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Onboarding] User chose to enter own data");
+    }
 
     setTimeout(() => {
       setCurrentStep(null);
@@ -349,6 +370,9 @@ export function Onboarding() {
   const handlePresetsClose = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Onboarding] Closing presets, completing tour");
+    }
 
     setTimeout(() => {
       setCurrentStep(null);
