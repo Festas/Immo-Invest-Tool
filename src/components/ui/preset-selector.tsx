@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { useImmoCalcStore } from "@/store";
@@ -255,12 +256,18 @@ function PresetCard({
 }
 
 /**
- * Preset Selector Modal component
+ * Preset Selector Modal component - Uses Portal for proper overlay
  */
 export function PresetSelector({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [selectedPreset, setSelectedPreset] = React.useState<string | null>(null);
+  const [mounted, setMounted] = React.useState(false);
   const { updateInput } = useImmoCalcStore();
   const { addToast } = useToast();
+
+  // Ensure we only render portal on client side
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Handle escape key
   React.useEffect(() => {
@@ -295,24 +302,26 @@ export function PresetSelector({ isOpen, onClose }: { isOpen: boolean; onClose: 
     }
   };
 
-  if (!isOpen) return null;
+  // Don't render anything if not open or not mounted (SSR safety)
+  if (!isOpen || !mounted) return null;
 
-  return (
+  // Use Portal to render modal at document.body level
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="preset-modal-title"
     >
-      {/* Backdrop */}
+      {/* Backdrop - covers entire screen */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Modal - Always centered */}
-      <div className="animate-scale-in relative flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+      {/* Modal - truly centered on screen */}
+      <div className="animate-scale-in relative z-10 flex max-h-[80vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900">
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
           <div className="flex items-center gap-3">
@@ -363,7 +372,7 @@ export function PresetSelector({ isOpen, onClose }: { isOpen: boolean; onClose: 
               <span className="sm:hidden">Werte anpassbar</span>
             </p>
             <div className="flex shrink-0 gap-2">
-              <Button variant="outline" size="sm" onClick={onClose} className="hidden sm:flex">
+              <Button variant="outline" size="sm" onClick={onClose}>
                 Abbrechen
               </Button>
               <Button size="sm" onClick={handleLoadPreset} disabled={!selectedPreset}>
@@ -373,7 +382,8 @@ export function PresetSelector({ isOpen, onClose }: { isOpen: boolean; onClose: 
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body // <-- KEY FIX: Render to document.body, not as child of button
   );
 }
 
