@@ -158,6 +158,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
             isFamilyPurchase: false,
 
             // Keep sensible defaults (these are always needed)
+            bundesland: "BAYERN",
             brokerPercent: 3.57,
             notaryPercent: 1.5,
             propertyTransferTaxPercent: 6.0, // Default to common rate
@@ -168,6 +169,8 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
             personalTaxRate: 42,
             buildingSharePercent: 80,
             afaType: "ALTBAU_AB_1925" as AfAType,
+            expectedAppreciationPercent: 2.0,
+            expectedRentIncreasePercent: 1.5,
           },
         });
         get().calculate();

@@ -69,6 +69,9 @@ export interface PropertyInput {
   isFamilyPurchase: boolean;
   marketValue?: number;
 
+  // Bundesland - stores the actual selected Bundesland
+  bundesland?: Bundesland;
+
   // Financing
   equity: number;
   loanAmount: number;
@@ -87,6 +90,10 @@ export interface PropertyInput {
   personalTaxRate: number;
   buildingSharePercent: number;
   afaType: AfAType;
+
+  // Forecast/Prognose
+  expectedAppreciationPercent: number; // Expected annual property value increase
+  expectedRentIncreasePercent: number; // Expected annual rent increase
 }
 
 /**

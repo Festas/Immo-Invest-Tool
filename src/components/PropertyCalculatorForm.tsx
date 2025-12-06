@@ -15,7 +15,16 @@ import {
 import { useImmoCalcStore } from "@/store";
 import { BundeslandData, Bundesland, AfARates, AfAType } from "@/types";
 import { formatCurrency, calculateMarketValueDiscount } from "@/lib/utils";
-import { Building2, Banknote, Home, Receipt, CheckCircle, TrendingDown } from "lucide-react";
+import {
+  Building2,
+  Banknote,
+  Home,
+  Receipt,
+  CheckCircle,
+  TrendingDown,
+  TrendingUp,
+  Info,
+} from "lucide-react";
 
 const bundeslandOptions = Object.entries(BundeslandData).map(([key, data]) => ({
   value: key,
@@ -203,6 +212,26 @@ Trotzdem eigene Reserve einplanen!`,
 • Bodenrichtwert + Gebäudewert
 
 Hinweis: Alle Berechnungen basieren auf dem tatsächlichen Kaufpreis.`,
+
+  appreciation: `Erwartete jährliche Wertsteigerung der Immobilie.
+
+📍 Richtwerte:
+• Großstädte (München, Hamburg): 2-4%
+• Mittelstädte: 1-2%
+• Ländliche Gebiete: 0-1%
+• Schrumpfende Regionen: -1 bis 0%
+
+💡 Historisch: Durchschnitt in Deutschland ca. 2-3% p.a.`,
+
+  rentIncrease: `Erwartete jährliche Mietsteigerung.
+
+📍 Richtwerte:
+• Nachgefragte Lagen: 1,5-3%
+• Normale Lagen: 1-1,5%
+• Schwächere Lagen: 0-1%
+
+💡 Mieterhöhungen sind gesetzlich begrenzt (Kappungsgrenze).
+Orientierung: Inflationsrate + lokale Nachfrage.`,
 };
 
 export function PropertyCalculatorForm() {
@@ -216,18 +245,14 @@ export function PropertyCalculatorForm() {
   const handleBundeslandChange = (value: string) => {
     const bundesland = value as Bundesland;
     const taxRate = BundeslandData[bundesland].taxRate;
-    updateInput({ propertyTransferTaxPercent: taxRate });
+    updateInput({
+      bundesland: bundesland,
+      propertyTransferTaxPercent: taxRate,
+    });
   };
 
-  // Memoize the bundesland lookup to avoid recalculating on every render
-  const selectedBundesland = React.useMemo(() => {
-    return (
-      Object.keys(BundeslandData).find(
-        (key) =>
-          BundeslandData[key as Bundesland].taxRate === currentInput.propertyTransferTaxPercent
-      ) || "BAYERN"
-    );
-  }, [currentInput.propertyTransferTaxPercent]);
+  // Simply use the stored bundesland value
+  const selectedBundesland = currentInput.bundesland || "BAYERN";
 
   // Memoize market value discount calculation
   const marketValueDiscount = React.useMemo(() => {
@@ -528,6 +553,49 @@ export function PropertyCalculatorForm() {
                 formatValue={(v) => `${v}%`}
                 helpText={helpTexts.taxRate}
               />
+            </CardContent>
+          </AccordionContent>
+        </Card>
+      </AccordionItem>
+
+      {/* Prognose Section */}
+      <AccordionItem value="forecast">
+        <Card className="overflow-hidden">
+          <AccordionTrigger>
+            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2 shadow-lg shadow-indigo-500/25 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
+              <TrendingUp className="h-4 w-4 text-white" />
+            </div>
+            <span>Prognose</span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <CardContent className="space-y-5 pt-5">
+              <Slider
+                label="Erwartete Wertsteigerung p.a."
+                min={-2}
+                max={8}
+                step={0.5}
+                value={currentInput.expectedAppreciationPercent}
+                onChange={(value) => updateInput({ expectedAppreciationPercent: value })}
+                formatValue={(v) => `${v}%`}
+                helpText={helpTexts.appreciation}
+              />
+
+              <Slider
+                label="Erwartete Mietsteigerung p.a."
+                min={0}
+                max={5}
+                step={0.5}
+                value={currentInput.expectedRentIncreasePercent}
+                onChange={(value) => updateInput({ expectedRentIncreasePercent: value })}
+                formatValue={(v) => `${v}%`}
+                helpText={helpTexts.rentIncrease}
+              />
+
+              {/* Info Banner */}
+              <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
+                <Info className="h-4 w-4 flex-shrink-0" />
+                <span>Diese Werte beeinflussen die Langzeitprognose in den Charts.</span>
+              </div>
             </CardContent>
           </AccordionContent>
         </Card>

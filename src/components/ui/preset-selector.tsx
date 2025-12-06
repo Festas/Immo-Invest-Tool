@@ -57,6 +57,9 @@ export const PRESETS: Preset[] = [
     icon: "🏠",
     bundesland: "Mecklenburg-Vorpommern",
     values: {
+      // Bundesland
+      bundesland: "MECKLENBURG_VORPOMMERN",
+
       // Kaufpreis & Nebenkosten
       purchasePrice: 160000,
       marketValue: 240000,
@@ -84,6 +87,10 @@ export const PRESETS: Preset[] = [
       personalTaxRate: 42,
       buildingSharePercent: 95,
       afaType: "ALTBAU_VOR_1925" as AfAType,
+
+      // Prognose
+      expectedAppreciationPercent: 1.5, // MV is slower growth
+      expectedRentIncreasePercent: 1.0,
     },
   },
   {
@@ -93,6 +100,9 @@ export const PRESETS: Preset[] = [
     icon: "🏢",
     bundesland: "Mecklenburg-Vorpommern",
     values: {
+      // Bundesland
+      bundesland: "MECKLENBURG_VORPOMMERN",
+
       purchasePrice: 185000,
       marketValue: 195000, // Slightly above purchase price
       isFamilyPurchase: false,
@@ -119,6 +129,10 @@ export const PRESETS: Preset[] = [
       personalTaxRate: 42, // Changed from 35%
       buildingSharePercent: 80,
       afaType: "ALTBAU_AB_1925" as AfAType,
+
+      // Prognose
+      expectedAppreciationPercent: 2.0,
+      expectedRentIncreasePercent: 1.5,
     },
   },
   {
@@ -128,6 +142,9 @@ export const PRESETS: Preset[] = [
     icon: "🏘️",
     bundesland: "Schleswig-Holstein",
     values: {
+      // Bundesland
+      bundesland: "SCHLESWIG_HOLSTEIN",
+
       purchasePrice: 420000,
       marketValue: 450000,
       isFamilyPurchase: false,
@@ -154,6 +171,10 @@ export const PRESETS: Preset[] = [
       personalTaxRate: 42,
       buildingSharePercent: 75,
       afaType: "ALTBAU_AB_1925" as AfAType,
+
+      // Prognose
+      expectedAppreciationPercent: 2.0,
+      expectedRentIncreasePercent: 1.5,
     },
   },
   {
@@ -163,6 +184,9 @@ export const PRESETS: Preset[] = [
     icon: "🏗️",
     bundesland: "Hamburg",
     values: {
+      // Bundesland
+      bundesland: "HAMBURG",
+
       purchasePrice: 480000,
       marketValue: 510000,
       isFamilyPurchase: false,
@@ -189,6 +213,10 @@ export const PRESETS: Preset[] = [
       personalTaxRate: 42,
       buildingSharePercent: 85,
       afaType: "NEUBAU_AB_2023" as AfAType,
+
+      // Prognose
+      expectedAppreciationPercent: 3.0, // Hamburg has higher appreciation
+      expectedRentIncreasePercent: 2.0,
     },
   },
   {
@@ -198,6 +226,9 @@ export const PRESETS: Preset[] = [
     icon: "💰",
     bundesland: "Bremen",
     values: {
+      // Bundesland
+      bundesland: "BREMEN",
+
       purchasePrice: 95000,
       marketValue: 100000,
       isFamilyPurchase: false,
@@ -224,6 +255,10 @@ export const PRESETS: Preset[] = [
       personalTaxRate: 42, // Changed from 35%
       buildingSharePercent: 80,
       afaType: "ALTBAU_AB_1925" as AfAType,
+
+      // Prognose
+      expectedAppreciationPercent: 1.5,
+      expectedRentIncreasePercent: 1.0,
     },
   },
 ];
