@@ -276,7 +276,7 @@ export function calculateCumulativeCashflow(
   purchasePrice: number,
   amortizationSchedule: AmortizationYear[],
   annualCashflow: number,
-  annualAppreciationPercent: number = 1.5
+  annualAppreciationPercent: number = 2.0
 ): CumulativeCashflowPoint[] {
   if (amortizationSchedule.length === 0) return [];
 
@@ -351,7 +351,7 @@ export function calculatePropertyKPIs(input: PropertyInput): PropertyOutput {
     input.purchasePrice,
     amortizationSchedule,
     cashflow.cashflowAfterTax,
-    1.5 // 1.5% annual appreciation
+    input.expectedAppreciationPercent
   );
 
   return {
@@ -381,6 +381,9 @@ export function getDefaultPropertyInput(): PropertyInput {
     isFamilyPurchase: false,
     marketValue: undefined,
 
+    // Bundesland
+    bundesland: "BAYERN",
+
     // Financing
     equity: 60000,
     loanAmount: 0, // Calculated from totalInvestment - equity in calculatePropertyKPIs
@@ -399,6 +402,10 @@ export function getDefaultPropertyInput(): PropertyInput {
     personalTaxRate: 35.0,
     buildingSharePercent: 75.0,
     afaType: "ALTBAU_AB_1925",
+
+    // Forecast/Prognose
+    expectedAppreciationPercent: 2.0, // 2% annual appreciation
+    expectedRentIncreasePercent: 1.5, // 1.5% annual rent increase
   };
 }
 
