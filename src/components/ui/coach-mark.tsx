@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useBodyScrollLock } from "@/lib/hooks";
 
 interface CoachMarkProps {
   /** Target element to highlight */
@@ -48,18 +49,7 @@ export function CoachMark({
   const [isReady, setIsReady] = React.useState(false);
 
   // Lock body scroll when visible
-  React.useEffect(() => {
-    if (!isVisible) {
-      return;
-    }
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isVisible]);
+  useBodyScrollLock(isVisible);
 
   // Handle keyboard events
   React.useEffect(() => {
