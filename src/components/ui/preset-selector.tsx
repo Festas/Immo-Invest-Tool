@@ -6,7 +6,7 @@ import { Button } from "./button";
 import { useImmoCalcStore } from "@/store";
 import { useToast } from "./toast";
 import { PropertyInput, AfAType, BundeslandData, Bundesland } from "@/types";
-import { Sparkles, X, Building2, Home, Factory, HardHat } from "lucide-react";
+import { Sparkles, X } from "lucide-react";
 
 /**
  * Preset configuration interface
@@ -15,117 +15,143 @@ export interface Preset {
   id: string;
   name: string;
   description: string;
-  icon: React.ReactNode;
-  city: string;
+  icon: string;
   values: Partial<PropertyInput>;
 }
 
 /**
- * Pre-defined presets with realistic German real estate examples
+ * Pre-defined presets with realistic Northern Germany real estate examples
  */
 export const PRESETS: Preset[] = [
   {
-    id: "munich-apartment",
-    name: "ETW München",
-    description: "Typische Eigentumswohnung in München-Schwabing",
-    icon: <Building2 className="h-5 w-5" />,
-    city: "München",
+    id: "family-schwerin",
+    name: "Familienkauf Schwerin",
+    description: "Wohnung von Großeltern kaufen - steuerbegünstigt & unter Marktwert",
+    icon: "🏠",
     values: {
-      purchasePrice: 450000,
-      brokerPercent: 3.57,
-      notaryPercent: 1.5,
-      propertyTransferTaxPercent: 3.5, // Bayern
-      renovationCosts: 15000,
-      equity: 100000,
-      interestRate: 3.8,
-      repaymentRate: 2.0,
-      fixedInterestPeriod: 15,
-      coldRentActual: 1200,
-      coldRentTarget: 1350,
-      nonRecoverableCosts: 120,
-      maintenanceReserve: 80,
-      vacancyRiskPercent: 2.0,
-      personalTaxRate: 42,
-      buildingSharePercent: 80,
-      afaType: "ALTBAU_AB_1925" as AfAType,
-    },
-  },
-  {
-    id: "berlin-altbau",
-    name: "Altbau Berlin",
-    description: "Klassischer Altbau in Berlin-Prenzlauer Berg",
-    icon: <Home className="h-5 w-5" />,
-    city: "Berlin",
-    values: {
-      purchasePrice: 320000,
-      brokerPercent: 3.57,
-      notaryPercent: 1.5,
-      propertyTransferTaxPercent: 6.0, // Berlin
-      renovationCosts: 25000,
-      equity: 80000,
-      interestRate: 3.9,
-      repaymentRate: 2.0,
+      purchasePrice: 160000,
+      marketValue: 240000, // Purchase price is 33% below market value
+      isFamilyPurchase: true, // Enables 0% GrESt
+      propertyTransferTaxPercent: 0, // Family exemption
+      brokerPercent: 0, // No broker in family sale
+      notaryPercent: 2,
+      renovationCosts: 500,
+      equity: 3700, // Notary + renovation from own funds
+      interestRate: 3.0,
+      repaymentRate: 2.25,
       fixedInterestPeriod: 10,
       coldRentActual: 900,
-      coldRentTarget: 1100,
-      nonRecoverableCosts: 100,
-      maintenanceReserve: 100,
-      vacancyRiskPercent: 2.5,
-      personalTaxRate: 38,
-      buildingSharePercent: 75,
-      afaType: "ALTBAU_VOR_1925" as AfAType,
+      coldRentTarget: 900,
+      nonRecoverableCosts: 69,
+      maintenanceReserve: 95, // ~1€/m² for Altbau
+      vacancyRiskPercent: 2,
+      personalTaxRate: 42,
+      buildingSharePercent: 95,
+      afaType: "ALTBAU_VOR_1925" as AfAType, // Built 1907 = 2.5% AfA
     },
   },
   {
-    id: "ruhr-mfh",
-    name: "MFH Ruhrgebiet",
-    description: "Mehrfamilienhaus in Essen-Werden mit 4 Einheiten",
-    icon: <Factory className="h-5 w-5" />,
-    city: "Essen",
+    id: "apartment-rostock",
+    name: "ETW Rostock",
+    description: "Eigentumswohnung in der Hansestadt - solide Rendite an der Ostsee",
+    icon: "🏢",
     values: {
-      purchasePrice: 280000,
+      purchasePrice: 185000,
+      isFamilyPurchase: false,
+      propertyTransferTaxPercent: 6.0, // MV rate
       brokerPercent: 3.57,
       notaryPercent: 1.5,
-      propertyTransferTaxPercent: 6.5, // NRW
-      renovationCosts: 30000,
-      equity: 70000,
-      interestRate: 4.0,
-      repaymentRate: 2.5,
+      renovationCosts: 5000,
+      equity: 45000, // ~20% + Nebenkosten
+      interestRate: 3.5,
+      repaymentRate: 2.0,
       fixedInterestPeriod: 10,
-      coldRentActual: 1800,
-      coldRentTarget: 2000,
-      nonRecoverableCosts: 200,
-      maintenanceReserve: 200,
-      vacancyRiskPercent: 3.0,
+      coldRentActual: 750, // ~8.50€/m² for 88m²
+      coldRentTarget: 750,
+      nonRecoverableCosts: 60,
+      maintenanceReserve: 80,
+      vacancyRiskPercent: 3,
       personalTaxRate: 35,
-      buildingSharePercent: 70,
+      buildingSharePercent: 80,
+      afaType: "ALTBAU_AB_1925" as AfAType, // Post-war building
+    },
+  },
+  {
+    id: "mfh-luebeck",
+    name: "MFH Lübeck",
+    description: "Mehrfamilienhaus in der Altstadt - 4 Einheiten, stabiler Cashflow",
+    icon: "🏘️",
+    values: {
+      purchasePrice: 420000,
+      isFamilyPurchase: false,
+      propertyTransferTaxPercent: 6.5, // SH rate
+      brokerPercent: 3.57,
+      notaryPercent: 1.5,
+      renovationCosts: 15000,
+      equity: 120000, // ~25%
+      interestRate: 3.4,
+      repaymentRate: 2.0,
+      fixedInterestPeriod: 15,
+      coldRentActual: 2400, // 4 units × ~600€
+      coldRentTarget: 2600,
+      nonRecoverableCosts: 180,
+      maintenanceReserve: 250,
+      vacancyRiskPercent: 3,
+      personalTaxRate: 42,
+      buildingSharePercent: 75,
       afaType: "ALTBAU_AB_1925" as AfAType,
     },
   },
   {
-    id: "hamburg-neubau",
+    id: "neubau-hamburg",
     name: "Neubau Hamburg",
-    description: "Moderne Neubauwohnung in Hamburg-Hafencity",
-    icon: <HardHat className="h-5 w-5" />,
-    city: "Hamburg",
+    description: "Neubauwohnung in Hamburg - Premium-Lage mit Wertsteigerungspotenzial",
+    icon: "🏗️",
     values: {
-      purchasePrice: 520000,
-      brokerPercent: 3.12,
+      purchasePrice: 480000,
+      isFamilyPurchase: false,
+      propertyTransferTaxPercent: 5.5, // Hamburg rate
+      brokerPercent: 3.0, // Often lower for new builds
       notaryPercent: 1.5,
-      propertyTransferTaxPercent: 5.5, // Hamburg
-      renovationCosts: 0,
-      equity: 130000,
-      interestRate: 3.7,
-      repaymentRate: 2.0,
+      renovationCosts: 0, // New = no renovation
+      equity: 130000, // ~25%
+      interestRate: 3.3,
+      repaymentRate: 2.5,
       fixedInterestPeriod: 15,
-      coldRentActual: 1400,
+      coldRentActual: 1350, // ~16€/m² for 85m²
       coldRentTarget: 1400,
-      nonRecoverableCosts: 100,
-      maintenanceReserve: 50,
-      vacancyRiskPercent: 1.5,
+      nonRecoverableCosts: 80,
+      maintenanceReserve: 50, // New building = lower reserve
+      vacancyRiskPercent: 2,
       personalTaxRate: 42,
       buildingSharePercent: 85,
-      afaType: "NEUBAU_AB_2023" as AfAType,
+      afaType: "NEUBAU_AB_2023" as AfAType, // 3% AfA
+    },
+  },
+  {
+    id: "cashflow-bremen",
+    name: "Cashflow-Objekt Bremen",
+    description: "Renditestarke Wohnung in Bremen-Nord - positiver Cashflow ab Tag 1",
+    icon: "💰",
+    values: {
+      purchasePrice: 95000,
+      isFamilyPurchase: false,
+      propertyTransferTaxPercent: 5.0, // Bremen rate
+      brokerPercent: 3.57,
+      notaryPercent: 1.5,
+      renovationCosts: 8000,
+      equity: 25000,
+      interestRate: 3.8, // Slightly higher for smaller loan
+      repaymentRate: 2.0,
+      fixedInterestPeriod: 10,
+      coldRentActual: 520, // ~8€/m² for 65m²
+      coldRentTarget: 550,
+      nonRecoverableCosts: 50,
+      maintenanceReserve: 70,
+      vacancyRiskPercent: 4, // B-location = slightly higher
+      personalTaxRate: 35,
+      buildingSharePercent: 80,
+      afaType: "ALTBAU_AB_1925" as AfAType,
     },
   },
 ];
@@ -151,6 +177,12 @@ function PresetCard({
   isSelected: boolean;
 }) {
   const bundesland = getBundeslandFromTaxRate(preset.values.propertyTransferTaxPercent || 0);
+  const marketValue = preset.values.marketValue;
+  const purchasePrice = preset.values.purchasePrice || 0;
+  const belowMarketPercent =
+    marketValue && marketValue > purchasePrice
+      ? Math.round(((marketValue - purchasePrice) / marketValue) * 100)
+      : 0;
 
   return (
     <button
@@ -166,10 +198,10 @@ function PresetCard({
       <div className="flex items-start gap-3">
         <div
           className={cn(
-            "rounded-lg p-2 transition-colors",
+            "flex h-10 w-10 items-center justify-center rounded-lg text-xl transition-colors",
             isSelected
-              ? "bg-indigo-500 text-white dark:bg-indigo-400"
-              : "bg-indigo-100 text-indigo-600 group-hover:bg-indigo-200 dark:bg-indigo-900 dark:text-indigo-300"
+              ? "bg-indigo-500 dark:bg-indigo-400"
+              : "bg-indigo-100 group-hover:bg-indigo-200 dark:bg-indigo-900"
           )}
         >
           {preset.icon}
@@ -179,7 +211,7 @@ function PresetCard({
           <p className="text-sm text-slate-600 dark:text-slate-400">{preset.description}</p>
           <div className="mt-2 flex flex-wrap gap-2">
             <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-300">
-              €{(preset.values.purchasePrice || 0).toLocaleString("de-DE")}
+              €{purchasePrice.toLocaleString("de-DE")}
             </span>
             <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">
               €{(preset.values.coldRentActual || 0).toLocaleString("de-DE")}/Monat
@@ -187,6 +219,16 @@ function PresetCard({
             {bundesland && (
               <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
                 {bundesland}
+              </span>
+            )}
+            {preset.values.isFamilyPurchase && (
+              <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                🏷️ 0% Grunderwerbsteuer
+              </span>
+            )}
+            {belowMarketPercent > 0 && (
+              <span className="inline-flex items-center rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
+                📉 {belowMarketPercent}% unter Marktwert
               </span>
             )}
           </div>
@@ -236,7 +278,7 @@ export function PresetSelector({ isOpen, onClose }: { isOpen: boolean; onClose: 
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">Beispiele laden</h2>
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                Wählen Sie ein Beispiel, um typische Werte zu laden
+                Beispiele aus Norddeutschland
               </p>
             </div>
           </div>
