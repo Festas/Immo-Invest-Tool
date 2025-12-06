@@ -89,7 +89,7 @@ export const PRESETS: Preset[] = [
       afaType: "ALTBAU_VOR_1925" as AfAType,
 
       // Prognose
-      expectedAppreciationPercent: 1.5, // MV is slower growth
+      expectedAppreciationPercent: 1.5, // Mecklenburg-Vorpommern has slower growth
       expectedRentIncreasePercent: 1.0,
     },
   },
@@ -216,7 +216,7 @@ export const PRESETS: Preset[] = [
 
       // Prognose
       expectedAppreciationPercent: 3.0, // Hamburg has higher appreciation
-      expectedRentIncreasePercent: 2.0,
+      expectedRentIncreasePercent: 2.0, // Strong rental market
     },
   },
   {

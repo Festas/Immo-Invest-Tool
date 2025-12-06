@@ -276,7 +276,7 @@ export function calculateCumulativeCashflow(
   purchasePrice: number,
   amortizationSchedule: AmortizationYear[],
   annualCashflow: number,
-  annualAppreciationPercent: number = 1.5
+  annualAppreciationPercent: number = 2.0
 ): CumulativeCashflowPoint[] {
   if (amortizationSchedule.length === 0) return [];
 
