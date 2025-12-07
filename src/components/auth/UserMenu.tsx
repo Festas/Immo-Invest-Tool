@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { getCurrentUser, signOut, type User } from "@/lib/supabase/auth";
-import { isSupabaseConfigured } from "@/lib/supabase/client";
-import { User as UserIcon, LogOut, ChevronDown, Cloud, CloudOff } from "lucide-react";
+import { User as UserIcon, LogOut, ChevronDown, Cloud } from "lucide-react";
+
+interface User {
+  id: string;
+  username: string;
+}
 
 interface UserMenuProps {
   onLoginClick?: () => void;
@@ -15,36 +18,40 @@ export function UserMenu({ onLoginClick }: UserMenuProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
 
-  const isConfigured = isSupabaseConfigured();
-
   useEffect(() => {
     async function loadUser() {
-      if (isConfigured) {
-        const currentUser = await getCurrentUser();
-        setUser(currentUser);
+      try {
+        const response = await fetch("/api/auth/session");
+        const data = await response.json();
+
+        if (data.authenticated && data.user) {
+          setUser(data.user);
+        }
+      } catch (error) {
+        console.error("Failed to load session:", error);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
     loadUser();
-  }, [isConfigured]);
+  }, []);
 
   const handleSignOut = async () => {
-    await signOut();
-    setUser(null);
-    setIsOpen(false);
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+      setUser(null);
+      setIsOpen(false);
+      // Refresh the page to clear any cached state
+      window.location.reload();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   if (isLoading) {
     return <div className="bg-muted h-8 w-8 animate-pulse rounded-full" />;
-  }
-
-  if (!isConfigured) {
-    return (
-      <div className="text-muted-foreground flex items-center gap-2 text-sm">
-        <CloudOff className="h-4 w-4" />
-        <span className="hidden sm:inline">Offline-Modus</span>
-      </div>
-    );
   }
 
   if (!user) {
@@ -63,21 +70,13 @@ export function UserMenu({ onLoginClick }: UserMenuProps) {
         className="hover:bg-muted flex items-center gap-2 rounded-lg p-2 transition-colors"
       >
         <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-full">
-          {user.avatarUrl ? (
-            <img
-              src={user.avatarUrl}
-              alt={user.name || user.email}
-              className="h-8 w-8 rounded-full"
-            />
-          ) : (
-            <UserIcon className="text-primary h-4 w-4" />
-          )}
+          <UserIcon className="text-primary h-4 w-4" />
         </div>
         <div className="hidden text-left sm:block">
-          <p className="text-sm font-medium">{user.name || user.email.split("@")[0]}</p>
+          <p className="text-sm font-medium">{user.username}</p>
           <div className="text-muted-foreground flex items-center gap-1 text-xs">
             <Cloud className="h-3 w-3 text-green-500" />
-            Synchronisiert
+            Angemeldet
           </div>
         </div>
         <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -88,8 +87,8 @@ export function UserMenu({ onLoginClick }: UserMenuProps) {
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           <div className="bg-card absolute right-0 z-50 mt-2 w-56 rounded-lg border shadow-lg">
             <div className="border-b p-3">
-              <p className="text-sm font-medium">{user.name || "Benutzer"}</p>
-              <p className="text-muted-foreground text-xs">{user.email}</p>
+              <p className="text-sm font-medium">{user.username}</p>
+              <p className="text-muted-foreground text-xs">Benutzer</p>
             </div>
             <div className="p-1">
               <button
