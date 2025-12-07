@@ -276,11 +276,26 @@ export function Onboarding() {
   const [coachMarkStep, setCoachMarkStep] = React.useState(0);
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
+  // Check debug mode from environment (consistent with CoachMark)
+  const isDebugMode =
+    process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_ONBOARDING_DEBUG === "true";
+
   // Cleanup function to restore scroll state between transitions
   const restoreScrollState = React.useCallback(() => {
-    // Remove scroll locks
-    document.body.style.overflow = "";
-  }, []);
+    // Remove scroll locks - ensure it's always restored
+    try {
+      document.body.style.overflow = "";
+      // Also clear any inline styles that might have been added
+      if (document.body.style.position === "fixed") {
+        document.body.style.position = "";
+      }
+      if (isDebugMode) {
+        console.log("[Onboarding] Scroll state restored");
+      }
+    } catch (error) {
+      console.error("[Onboarding] Error restoring scroll state:", error);
+    }
+  }, [isDebugMode]);
 
   // Cleanup on unmount
   React.useEffect(() => {
@@ -294,20 +309,20 @@ export function Onboarding() {
     if (!hasSeenOnboarding) {
       // Small delay to allow page to render
       const timer = setTimeout(() => {
-        if (process.env.NODE_ENV === "development") {
+        if (isDebugMode) {
           console.log("[Onboarding] Starting onboarding tour");
         }
         setCurrentStep("welcome");
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [hasSeenOnboarding]);
+  }, [hasSeenOnboarding, isDebugMode]);
 
   const handleWelcomeContinue = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
     restoreScrollState(); // Clean up before transition
-    if (process.env.NODE_ENV === "development") {
+    if (isDebugMode) {
       console.log("[Onboarding] Transitioning from welcome to coachmarks");
     }
 
@@ -323,7 +338,7 @@ export function Onboarding() {
     if (isTransitioning) return;
     setIsTransitioning(true);
     restoreScrollState(); // Clean up before skipping
-    if (process.env.NODE_ENV === "development") {
+    if (isDebugMode) {
       console.log("[Onboarding] Skipping tour");
     }
 
@@ -340,7 +355,7 @@ export function Onboarding() {
     restoreScrollState(); // Clean up before moving to next step
 
     if (coachMarkStep < COACH_MARK_STEPS.length) {
-      if (process.env.NODE_ENV === "development") {
+      if (isDebugMode) {
         console.log(`[Onboarding] Moving to coach mark step ${coachMarkStep + 1}`);
       }
       // Add delay between coach mark steps
@@ -349,7 +364,7 @@ export function Onboarding() {
         setIsTransitioning(false);
       }, TRANSITION_DELAY_MS);
     } else {
-      if (process.env.NODE_ENV === "development") {
+      if (isDebugMode) {
         console.log("[Onboarding] Transitioning from coachmarks to quickstart");
       }
       // Transition to quick start modal
@@ -364,7 +379,7 @@ export function Onboarding() {
     if (isTransitioning) return;
     setIsTransitioning(true);
     restoreScrollState(); // Clean up before transition
-    if (process.env.NODE_ENV === "development") {
+    if (isDebugMode) {
       console.log("[Onboarding] User chose to load example");
     }
 
@@ -378,7 +393,7 @@ export function Onboarding() {
     if (isTransitioning) return;
     setIsTransitioning(true);
     restoreScrollState(); // Clean up before closing
-    if (process.env.NODE_ENV === "development") {
+    if (isDebugMode) {
       console.log("[Onboarding] User chose to enter own data");
     }
 
@@ -393,7 +408,7 @@ export function Onboarding() {
     if (isTransitioning) return;
     setIsTransitioning(true);
     restoreScrollState(); // Clean up before closing
-    if (process.env.NODE_ENV === "development") {
+    if (isDebugMode) {
       console.log("[Onboarding] Closing presets, completing tour");
     }
 
