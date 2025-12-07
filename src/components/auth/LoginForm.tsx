@@ -44,7 +44,7 @@ export function LoginForm({ onSuccess, onRegisterClick }: LoginFormProps) {
 
       if (!response.ok) {
         // Display specific error message from backend
-        // Backend provides German error messages
+        // Backend provides German error messages with error codes
         const errorMessage = data.error || "Anmeldung fehlgeschlagen.";
         setError(errorMessage);
         setIsLoading(false);
@@ -55,9 +55,29 @@ export function LoginForm({ onSuccess, onRegisterClick }: LoginFormProps) {
       onSuccess?.();
     } catch (networkError) {
       // Network error - could be connection issue, timeout, etc.
+      // This is a true network failure (server unreachable)
       console.error("Login network error:", networkError);
+
+      // Try to check if the server is reachable via health check
+      let healthCheckMessage = "";
+      try {
+        const healthResponse = await fetch("/api/health", {
+          signal: AbortSignal.timeout(3000), // 3 second timeout
+        });
+        if (!healthResponse.ok) {
+          const healthData = await healthResponse.json();
+          if (healthData.status === "unhealthy" || healthData.status === "degraded") {
+            healthCheckMessage =
+              " Der Server meldet Probleme mit dem Datenspeicher oder der Konfiguration.";
+          }
+        }
+      } catch {
+        // Health check also failed - server is likely down
+        healthCheckMessage = " Der Server ist möglicherweise nicht erreichbar.";
+      }
+
       setError(
-        "Netzwerkfehler: Verbindung zum Server fehlgeschlagen. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut."
+        `Netzwerkfehler: Verbindung zum Server fehlgeschlagen.${healthCheckMessage} Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.`
       );
     } finally {
       setIsLoading(false);
