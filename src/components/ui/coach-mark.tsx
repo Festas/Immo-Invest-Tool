@@ -145,16 +145,16 @@ function CoachMarkInternal({
   const [coords, setCoords] = React.useState({ top: 0, left: 0, width: 0, height: 0 });
   const [isReady, setIsReady] = React.useState(false);
   const [useFallbackModal, setUseFallbackModal] = React.useState(false);
-  const [debugInfo, setDebugInfo] = React.useState<DebugInfo>(() => ({
+  const [debugInfo, setDebugInfo] = React.useState<DebugInfo>({
     targetSelector: targetSelector || "ref",
     targetFound: false,
     boundingRect: null,
     fallbackReason: "",
     isPartiallyVisible: false,
     isFullyVisible: false,
-    renderTimestamp: Date.now(),
+    renderTimestamp: 0,
     positioningError: null,
-  }));
+  });
 
   // Check for environment-based debug mode or force fallback
   const isDebugMode = debugMode || process.env.NEXT_PUBLIC_COACHMARK_DEBUG === "true";
@@ -355,38 +355,36 @@ function CoachMarkInternal({
       }
     };
 
-    // Small delay to ensure DOM is ready, with safety timeout
+    // Small delay to ensure DOM is ready
     const timer = setTimeout(updatePosition, 100);
 
     // Safety timeout: Force fallback if not ready after reasonable time
+    // Use a flag to track if component is still mounted
+    let isMounted = true;
     const safetyTimer = setTimeout(() => {
-      if (!isReady) {
+      if (isMounted) {
+        setUseFallbackModal(true);
+        setDebugInfo((prev) => ({
+          ...prev,
+          fallbackReason: "Safety timeout - positioning took too long",
+          renderTimestamp: Date.now(),
+        }));
+        setIsReady(true);
         if (isDebugMode) {
           console.warn("[CoachMark] Safety timeout triggered - forcing fallback modal");
         }
-        setUseFallbackModal(true);
-        setDebugInfo({
-          targetSelector: targetSelector || "ref",
-          targetFound: false,
-          boundingRect: null,
-          fallbackReason: "Safety timeout - positioning took too long",
-          isPartiallyVisible: false,
-          isFullyVisible: false,
-          renderTimestamp: Date.now(),
-          positioningError: null,
-        });
-        setIsReady(true);
       }
     }, 1000); // 1 second safety timeout
 
     window.addEventListener("resize", updatePosition);
 
     return () => {
+      isMounted = false; // Mark as unmounted to prevent race condition
       clearTimeout(timer);
       clearTimeout(safetyTimer);
       window.removeEventListener("resize", updatePosition);
     };
-  }, [isVisible, targetRef, targetSelector, shouldForceFallback, isDebugMode, isReady]);
+  }, [isVisible, targetRef, targetSelector, shouldForceFallback, isDebugMode]);
 
   if (!isVisible || !isReady) return null;
 
