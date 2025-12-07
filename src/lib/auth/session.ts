@@ -6,8 +6,18 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const SECRET_KEY = process.env.JWT_SECRET || "default-secret-key-change-in-production";
-const secret = new TextEncoder().encode(SECRET_KEY);
+const SECRET_KEY = process.env.JWT_SECRET;
+
+// In production environments (not during build), enforce JWT_SECRET
+if (!SECRET_KEY && process.env.NODE_ENV === "production" && !process.env.NEXT_PHASE) {
+  throw new Error("JWT_SECRET environment variable is required in production");
+}
+
+if (!SECRET_KEY) {
+  console.warn("JWT_SECRET not set. Using default secret key for development only.");
+}
+
+const secret = new TextEncoder().encode(SECRET_KEY || "default-dev-secret-key-change-me");
 
 export interface SessionData {
   userId: string;

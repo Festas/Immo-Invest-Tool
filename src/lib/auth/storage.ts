@@ -84,10 +84,3 @@ export async function createUser(username: string, passwordHash: string): Promis
 
   return newUser;
 }
-
-/**
- * Get all users (for debugging - remove in production)
- */
-export async function getAllUsers(): Promise<StoredUser[]> {
-  return loadUsers();
-}

@@ -52,6 +52,7 @@ export function LoginForm({ onSuccess, onRegisterClick }: LoginFormProps) {
       onSuccess?.();
     } catch {
       setError("Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.");
+    } finally {
       setIsLoading(false);
     }
   };
