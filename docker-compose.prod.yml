@@ -11,6 +11,10 @@ services:
     volumes:
       # Persistent data storage for user authentication
       - immocalc-data:/data
+      # Mount .env file from deployment directory
+      - ./.env:/app/.env:ro
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
     healthcheck:
