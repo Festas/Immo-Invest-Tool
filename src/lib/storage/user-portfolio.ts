@@ -22,17 +22,34 @@ export function getUserDataDir(): string {
 }
 
 /**
+ * Validate and sanitize user ID to prevent path traversal attacks
+ */
+function validateUserId(userId: string): string {
+  // Only allow alphanumeric characters, hyphens, and underscores
+  if (!/^[a-zA-Z0-9_-]+$/.test(userId)) {
+    throw new Error("Invalid user ID format");
+  }
+  // Prevent path traversal
+  if (userId.includes("..") || userId.includes("/") || userId.includes("\\")) {
+    throw new Error("Invalid user ID format");
+  }
+  return userId;
+}
+
+/**
  * Get the portfolio file path for a specific user
  */
 export function getUserPortfolioPath(userId: string): string {
-  return path.join(getUserDataDir(), userId, "portfolio.json");
+  const sanitizedUserId = validateUserId(userId);
+  return path.join(getUserDataDir(), sanitizedUserId, "portfolio.json");
 }
 
 /**
  * Ensure user directory exists
  */
 async function ensureUserDir(userId: string): Promise<void> {
-  const userDir = path.join(getUserDataDir(), userId);
+  const sanitizedUserId = validateUserId(userId);
+  const userDir = path.join(getUserDataDir(), sanitizedUserId);
   try {
     await fs.access(userDir);
   } catch {
@@ -115,7 +132,7 @@ export async function updatePropertyInPortfolio(
   const index = properties.findIndex((p) => p.id === propertyId);
 
   if (index === -1) {
-    throw new Error("Property not found");
+    throw new Error("Immobilie nicht gefunden");
   }
 
   properties[index] = {
@@ -139,7 +156,7 @@ export async function deletePropertyFromPortfolio(
   const filtered = properties.filter((p) => p.id !== propertyId);
 
   if (filtered.length === properties.length) {
-    throw new Error("Property not found");
+    throw new Error("Immobilie nicht gefunden");
   }
 
   await saveUserPortfolio(userId, filtered);

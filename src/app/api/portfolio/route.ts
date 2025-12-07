@@ -45,8 +45,28 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const property: Property = body.property;
 
+    // Validate required fields
     if (!property || !property.id || !property.name) {
-      return NextResponse.json({ error: "Ungültige Immobiliendaten" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Ungültige Immobiliendaten: ID und Name sind erforderlich" },
+        { status: 400 }
+      );
+    }
+
+    // Validate property structure
+    if (!property.input || typeof property.input !== "object") {
+      return NextResponse.json(
+        { error: "Ungültige Immobiliendaten: Eingabedaten fehlen" },
+        { status: 400 }
+      );
+    }
+
+    // Validate dates
+    if (!property.createdAt || !property.updatedAt) {
+      return NextResponse.json(
+        { error: "Ungültige Immobiliendaten: Zeitstempel fehlen" },
+        { status: 400 }
+      );
     }
 
     // Add property to user's portfolio

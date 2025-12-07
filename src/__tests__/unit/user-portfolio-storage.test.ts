@@ -221,7 +221,7 @@ describe("Per-User Portfolio Storage", () => {
     it("should throw error for non-existent property", async () => {
       await expect(
         updatePropertyInPortfolio(testUserId, "non-existent", { name: "Test" })
-      ).rejects.toThrow("Property not found");
+      ).rejects.toThrow("Immobilie nicht gefunden");
     });
 
     it("should update updatedAt timestamp", async () => {
@@ -272,7 +272,7 @@ describe("Per-User Portfolio Storage", () => {
 
     it("should throw error for non-existent property", async () => {
       await expect(deletePropertyFromPortfolio(testUserId, "non-existent")).rejects.toThrow(
-        "Property not found"
+        "Immobilie nicht gefunden"
       );
     });
   });

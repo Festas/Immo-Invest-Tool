@@ -67,6 +67,8 @@ interface ImmoCalcState {
   syncWithServer: () => Promise<void>;
   isServerSyncEnabled: boolean;
   setServerSyncEnabled: (enabled: boolean) => void;
+  syncError: string | null;
+  setSyncError: (error: string | null) => void;
 
   // Scenario actions
   addScenario: (name: string) => void;
@@ -95,6 +97,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       preFamilyPurchaseTaxPercent: null,
       preFamilyPurchaseBrokerPercent: null,
       isServerSyncEnabled: false,
+      syncError: null,
 
       // Update input and recalculate
       updateInput: (updates) => {
@@ -216,12 +219,22 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
         // Sync with server if enabled
         if (state.isServerSyncEnabled) {
           try {
-            await fetch("/api/portfolio", {
+            const response = await fetch("/api/portfolio", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ property: newProperty }),
             });
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              set({ syncError: `Fehler beim Speichern auf dem Server: ${errorText}` });
+              console.error("Failed to sync property with server:", errorText);
+            } else {
+              set({ syncError: null });
+            }
           } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler";
+            set({ syncError: `Fehler beim Speichern auf dem Server: ${errorMessage}` });
             console.error("Failed to sync property with server:", error);
           }
         }
@@ -252,10 +265,20 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
         // Sync with server if enabled
         if (state.isServerSyncEnabled) {
           try {
-            await fetch(`/api/portfolio/${id}`, {
+            const response = await fetch(`/api/portfolio/${id}`, {
               method: "DELETE",
             });
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              set({ syncError: `Fehler beim Löschen auf dem Server: ${errorText}` });
+              console.error("Failed to delete property from server:", errorText);
+            } else {
+              set({ syncError: null });
+            }
           } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler";
+            set({ syncError: `Fehler beim Löschen auf dem Server: ${errorMessage}` });
             console.error("Failed to delete property from server:", error);
           }
         }
@@ -365,8 +388,12 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
               isServerSyncEnabled: true,
             });
           } else if (response.status === 401) {
-            // Not authenticated, disable server sync
-            set({ isServerSyncEnabled: false });
+            // Not authenticated, disable server sync and clear server-synced properties
+            set({
+              isServerSyncEnabled: false,
+              properties: [], // Clear properties as they're no longer valid
+              syncError: null,
+            });
           }
         } catch (error) {
           console.error("Failed to sync with server:", error);
@@ -380,6 +407,11 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
         if (enabled) {
           get().syncWithServer();
         }
+      },
+
+      // Set sync error message
+      setSyncError: (error) => {
+        set({ syncError: error });
       },
     }),
     {

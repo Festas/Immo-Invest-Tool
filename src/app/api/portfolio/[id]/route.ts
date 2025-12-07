@@ -68,7 +68,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ success: true, properties });
   } catch (error) {
-    if (error instanceof Error && error.message === "Property not found") {
+    if (error instanceof Error && error.message === "Immobilie nicht gefunden") {
       return NextResponse.json({ error: "Immobilie nicht gefunden" }, { status: 404 });
     }
 
@@ -95,7 +95,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ success: true, properties });
   } catch (error) {
-    if (error instanceof Error && error.message === "Property not found") {
+    if (error instanceof Error && error.message === "Immobilie nicht gefunden") {
       return NextResponse.json({ error: "Immobilie nicht gefunden" }, { status: 404 });
     }
 
