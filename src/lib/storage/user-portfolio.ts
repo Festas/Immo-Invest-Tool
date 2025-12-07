@@ -26,11 +26,8 @@ export function getUserDataDir(): string {
  */
 function validateUserId(userId: string): string {
   // Only allow alphanumeric characters, hyphens, and underscores
+  // This prevents path traversal attempts
   if (!/^[a-zA-Z0-9_-]+$/.test(userId)) {
-    throw new Error("Invalid user ID format");
-  }
-  // Prevent path traversal
-  if (userId.includes("..") || userId.includes("/") || userId.includes("\\")) {
     throw new Error("Invalid user ID format");
   }
   return userId;

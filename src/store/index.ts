@@ -32,6 +32,23 @@ function generateId(): string {
   });
 }
 
+/**
+ * Helper function to handle server sync errors
+ */
+async function handleSyncError(
+  response: Response,
+  operation: string,
+  set: (state: Partial<ImmoCalcState>) => void
+): Promise<void> {
+  if (!response.ok) {
+    const errorText = await response.text();
+    set({ syncError: `Fehler beim ${operation}: ${errorText}` });
+    console.error(`Failed to ${operation}:`, errorText);
+  } else {
+    set({ syncError: null });
+  }
+}
+
 interface ImmoCalcState {
   // Current calculator input
   currentInput: PropertyInput;
@@ -224,14 +241,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ property: newProperty }),
             });
-
-            if (!response.ok) {
-              const errorText = await response.text();
-              set({ syncError: `Fehler beim Speichern auf dem Server: ${errorText}` });
-              console.error("Failed to sync property with server:", errorText);
-            } else {
-              set({ syncError: null });
-            }
+            await handleSyncError(response, "Speichern auf dem Server", set);
           } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler";
             set({ syncError: `Fehler beim Speichern auf dem Server: ${errorMessage}` });
@@ -268,14 +278,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
             const response = await fetch(`/api/portfolio/${id}`, {
               method: "DELETE",
             });
-
-            if (!response.ok) {
-              const errorText = await response.text();
-              set({ syncError: `Fehler beim Löschen auf dem Server: ${errorText}` });
-              console.error("Failed to delete property from server:", errorText);
-            } else {
-              set({ syncError: null });
-            }
+            await handleSyncError(response, "Löschen auf dem Server", set);
           } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler";
             set({ syncError: `Fehler beim Löschen auf dem Server: ${errorMessage}` });
@@ -388,12 +391,21 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
               isServerSyncEnabled: true,
             });
           } else if (response.status === 401) {
-            // Not authenticated, disable server sync and clear server-synced properties
-            set({
-              isServerSyncEnabled: false,
-              properties: [], // Clear properties as they're no longer valid
-              syncError: null,
-            });
+            // Not authenticated
+            // Only clear properties if they were server-synced (to prevent showing wrong user's data)
+            // Keep properties that were saved to localStorage
+            const currentState = get();
+            if (currentState.isServerSyncEnabled) {
+              // We were synced, so clear to prevent stale data from wrong user
+              set({
+                isServerSyncEnabled: false,
+                properties: [],
+                syncError: null,
+              });
+            } else {
+              // Already not synced, just ensure flag is off
+              set({ isServerSyncEnabled: false });
+            }
           }
         } catch (error) {
           console.error("Failed to sync with server:", error);
