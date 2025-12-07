@@ -63,6 +63,87 @@ describe("CoachMark Component", () => {
     });
   });
 
+  describe("Debug Mode", () => {
+    it("should show debug information when debugMode is enabled", async () => {
+      render(
+        <CoachMark {...defaultProps} targetSelector="#nonexistent-element" debugMode={true} />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("🔍 Debug Information")).toBeInTheDocument();
+        expect(screen.getByText(/Target:/)).toBeInTheDocument();
+        expect(screen.getByText(/Found:/)).toBeInTheDocument();
+        expect(screen.getByText(/Fallback Reason:/)).toBeInTheDocument();
+      });
+    });
+
+    it("should not show debug information when debugMode is disabled", async () => {
+      render(
+        <CoachMark {...defaultProps} targetSelector="#nonexistent-element" debugMode={false} />
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText("🔍 Debug Information")).not.toBeInTheDocument();
+      });
+    });
+
+    it("should display correct debug info when target is not found", async () => {
+      render(<CoachMark {...defaultProps} targetSelector="#missing-element" debugMode={true} />);
+
+      await waitFor(() => {
+        expect(screen.getByText("🔍 Debug Information")).toBeInTheDocument();
+        // Check that the target selector is shown
+        const targetText = screen.getByText(/Target:/);
+        expect(targetText.parentElement).toHaveTextContent("#missing-element");
+        // Check that found is "No"
+        expect(screen.getByText(/✗ No/)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("Force Fallback Mode", () => {
+    it("should use fallback modal when forceFallback is true", async () => {
+      // Create a visible element
+      const testElement = document.createElement("div");
+      testElement.id = "visible-target";
+      testElement.style.width = "100px";
+      testElement.style.height = "100px";
+      testElement.style.position = "absolute";
+      testElement.style.top = "100px";
+      testElement.style.left = "100px";
+      document.body.appendChild(testElement);
+
+      vi.spyOn(testElement, "getBoundingClientRect").mockReturnValue({
+        top: 100,
+        left: 100,
+        bottom: 200,
+        right: 200,
+        width: 100,
+        height: 100,
+        x: 100,
+        y: 100,
+        toJSON: () => ({}),
+      });
+
+      render(
+        <CoachMark
+          {...defaultProps}
+          targetSelector="#visible-target"
+          forceFallback={true}
+          debugMode={true}
+        />
+      );
+
+      // Should still use fallback modal even though element exists
+      await waitFor(() => {
+        expect(screen.getByText("🔍 Debug Information")).toBeInTheDocument();
+        expect(screen.getByText(/Force fallback mode enabled/)).toBeInTheDocument();
+      });
+
+      testElement.remove();
+    });
+  });
+
   describe("Anchored Positioning", () => {
     beforeEach(() => {
       // Create a test element in the DOM

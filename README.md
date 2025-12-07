@@ -429,3 +429,59 @@ Dieses Tool dient nur zu Informationszwecken und ersetzt keine professionelle Fi
 ## 📜 Lizenz
 
 MIT License
+
+## 🔍 CoachMark Debug-Modus
+
+Die Onboarding CoachMark-Komponente verfügt über einen Debug-Modus, der bei Problemen mit der Positionierung oder Sichtbarkeit hilft:
+
+### Aktivierung des Debug-Modus
+
+Es gibt drei Möglichkeiten, den Debug-Modus zu aktivieren:
+
+1. **Über Umgebungsvariablen** (empfohlen für Entwicklung):
+
+   ```bash
+   # In .env.local
+   NEXT_PUBLIC_COACHMARK_DEBUG=true
+   ```
+
+2. **Über Props** (für spezifische Komponenten):
+
+   ```tsx
+   <CoachMark debugMode={true} {...otherProps} />
+   ```
+
+3. **Force Fallback Mode** (für Testing):
+   ```bash
+   # In .env.local
+   NEXT_PUBLIC_COACHMARK_FORCE_FALLBACK=true
+   ```
+
+### Debug-Informationen
+
+Im Debug-Modus werden folgende Informationen angezeigt:
+
+- **Target**: Der verwendete CSS-Selektor
+- **Found**: Ob das Zielelement gefunden wurde (✓ Yes / ✗ No)
+- **Partially Visible**: Ob das Element teilweise sichtbar ist
+- **Fully Visible**: Ob das Element vollständig im Viewport ist
+- **Rect**: Bounding-Rechteck (top, left, width, height)
+- **Fallback Reason**: Grund für die Verwendung des Fallback-Modals
+
+### Automatische Fallback-Logik
+
+Die CoachMark-Komponente wechselt automatisch zu einem zentrierten Modal, wenn:
+
+- Das Zielelement nicht gefunden wird
+- Das Element außerhalb des Viewports liegt
+- Das Element verborgen ist (display: none, visibility: hidden)
+- Force-Fallback-Modus aktiviert ist
+
+### Garantien
+
+Die Implementierung stellt sicher:
+
+- ✅ Der "Weiter"-Button ist niemals außerhalb des Bildschirms oder nicht klickbar
+- ✅ Das Onboarding hängt niemals oder blockiert permanent die Benutzeroberfläche
+- ✅ Scroll-Locks, Z-Index-Overlays und Event-Listener werden bei jedem Schritt-Übergang bereinigt
+- ✅ Debug-Informationen unterstützen die Fehlerbehebung
