@@ -43,15 +43,22 @@ export function LoginForm({ onSuccess, onRegisterClick }: LoginFormProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Anmeldung fehlgeschlagen.");
+        // Display specific error message from backend
+        // Backend provides German error messages
+        const errorMessage = data.error || "Anmeldung fehlgeschlagen.";
+        setError(errorMessage);
         setIsLoading(false);
         return;
       }
 
       // Login successful
       onSuccess?.();
-    } catch {
-      setError("Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.");
+    } catch (networkError) {
+      // Network error - could be connection issue, timeout, etc.
+      console.error("Login network error:", networkError);
+      setError(
+        "Netzwerkfehler: Verbindung zum Server fehlgeschlagen. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut."
+      );
     } finally {
       setIsLoading(false);
     }
