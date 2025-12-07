@@ -13,13 +13,27 @@ ImmoCalc is deployed to `immocalc.festas-builds.com` using:
 
 ## Required GitHub Secrets
 
-Configure these secrets in your GitHub repository settings:
+For complete instructions on managing secrets, see [Secrets Management Guide](docs/SECRETS_MANAGEMENT.md).
 
-| Secret           | Description                        |
-| ---------------- | ---------------------------------- |
-| `SERVER_HOST`    | The server IP address or hostname  |
-| `SERVER_USER`    | SSH username for the server        |
-| `SERVER_SSH_KEY` | Private SSH key for authentication |
+Configure these secrets in your GitHub repository settings (`Settings` → `Secrets and variables` → `Actions`):
+
+### Infrastructure Secrets
+
+| Secret            | Description                        | Required |
+| ----------------- | ---------------------------------- | -------- |
+| `SERVER_HOST`     | The server IP address or hostname  | Yes      |
+| `SERVER_USER`     | SSH username for the server        | Yes      |
+| `SSH_PRIVATE_KEY` | Private SSH key for authentication | Yes      |
+| `DOMAIN`          | Base domain for the deployment     | Yes      |
+
+### Application Secrets
+
+| Secret           | Description                         | Required | How to Generate           |
+| ---------------- | ----------------------------------- | -------- | ------------------------- |
+| `JWT_SECRET`     | Secret key for JWT token generation | Yes      | `openssl rand -base64 32` |
+| `SESSION_SECRET` | Secret key for session management   | No       | `openssl rand -base64 32` |
+
+Secrets are automatically injected into the `.env` file on the server during deployment. See the [Secrets Management Guide](docs/SECRETS_MANAGEMENT.md) for detailed setup instructions.
 
 ## Optional Environment Variables
 
@@ -115,6 +129,7 @@ ImmoCalc includes a comprehensive health check endpoint at `/api/health` that mo
 - **Storage Accessibility**: Validates DATA_DIR is readable and writable
 - **Database/User Data**: Checks if user data can be accessed
 - **Environment Configuration**: Reports JWT_SECRET and NODE_ENV status
+- **Secrets Configuration**: Verifies all required and optional secrets are properly configured
 
 ### Health Check Response
 
@@ -138,6 +153,17 @@ ImmoCalc includes a comprehensive health check endpoint at `/api/health` that mo
       "status": "accessible|inaccessible|error",
       "userCount": 5,
       "error": "optional error message"
+    },
+    "secrets": {
+      "status": "complete|partial|missing",
+      "required": {
+        "JWT_SECRET": true
+      },
+      "optional": {
+        "SESSION_SECRET": true,
+        "DOMAIN": true
+      },
+      "warnings": []
     }
   },
   "environment": {
@@ -146,6 +172,14 @@ ImmoCalc includes a comprehensive health check endpoint at `/api/health` that mo
   }
 }
 ```
+
+### Secrets Status
+
+- **`complete`**: All required and optional secrets are configured
+- **`partial`**: Required secrets present, but some optional secrets missing (results in `degraded` overall status)
+- **`missing`**: Required JWT_SECRET not configured (results in `unhealthy` overall status)
+
+For detailed information about secrets management, see [Secrets Management Guide](docs/SECRETS_MANAGEMENT.md).
 
 ### Using the Health Check
 
