@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import { getStorageDir } from "@/lib/auth/storage";
 
 /**
  * Health check endpoint
@@ -32,14 +33,6 @@ interface HealthCheckResult {
     nodeEnv: string;
     hasJwtSecret: boolean;
   };
-}
-
-// Get storage directory path (same logic as auth/storage.ts)
-function getStorageDir(): string {
-  if (process.env.DATA_DIR) {
-    return process.env.DATA_DIR;
-  }
-  return process.env.NODE_ENV === "production" ? "/data/.auth" : path.join(process.cwd(), ".data");
 }
 
 /**
@@ -185,7 +178,13 @@ export async function GET() {
     }
 
     // Return appropriate status code based on health
-    const statusCode = overallStatus === "healthy" ? 200 : overallStatus === "degraded" ? 200 : 503;
+    let statusCode: number;
+    if (overallStatus === "unhealthy") {
+      statusCode = 503;
+    } else {
+      // Both "healthy" and "degraded" return 200
+      statusCode = 200;
+    }
 
     return NextResponse.json(healthCheck, { status: statusCode });
   } catch (error) {
