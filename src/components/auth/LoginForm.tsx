@@ -61,7 +61,9 @@ export function LoginForm({ onSuccess, onRegisterClick }: LoginFormProps) {
       // Try to check if the server is reachable via health check
       let healthCheckMessage = "";
       try {
-        const healthResponse = await fetch("/api/health");
+        const healthResponse = await fetch("/api/health", {
+          signal: AbortSignal.timeout(3000), // 3 second timeout
+        });
         if (!healthResponse.ok) {
           const healthData = await healthResponse.json();
           if (healthData.status === "unhealthy" || healthData.status === "degraded") {
