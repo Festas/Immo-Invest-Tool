@@ -60,8 +60,18 @@ async function saveUsers(users: StoredUser[]): Promise<void> {
  * Find a user by username
  */
 export async function findUserByUsername(username: string): Promise<StoredUser | null> {
-  const users = await loadUsers();
-  return users.find((u) => u.username.toLowerCase() === username.toLowerCase()) || null;
+  try {
+    const users = await loadUsers();
+    return users.find((u) => u.username.toLowerCase() === username.toLowerCase()) || null;
+  } catch (error) {
+    // Re-throw with context
+    console.error("[Storage] Error finding user by username:", {
+      username,
+      error: error instanceof Error ? error.message : String(error),
+      code: (error as NodeJS.ErrnoException).code,
+    });
+    throw error;
+  }
 }
 
 /**
