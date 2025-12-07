@@ -7,8 +7,7 @@ import { GET } from "@/app/api/health/route";
 import { promises as fs } from "fs";
 
 // Mock fs module
-vi.mock("fs", async () => {
-  const { vi } = await import("vitest");
+vi.mock("fs", () => {
   return {
     default: {},
     promises: {

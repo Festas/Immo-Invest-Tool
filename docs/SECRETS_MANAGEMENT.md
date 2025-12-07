@@ -142,7 +142,7 @@ ImmoCalc includes a health check endpoint at `/api/health` that verifies all sec
 
 - **`complete`**: All required and optional secrets are configured
 - **`partial`**: Required secrets are present, but some optional secrets are missing
-- **missing`**: Required secrets (JWT_SECRET) are not configured
+- **`missing`**: Required secrets (JWT_SECRET) are not configured
 
 ### Status Impact
 
