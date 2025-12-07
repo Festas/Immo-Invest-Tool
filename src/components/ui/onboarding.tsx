@@ -276,8 +276,9 @@ export function Onboarding() {
   const [coachMarkStep, setCoachMarkStep] = React.useState(0);
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
-  // Check if should show onboarding on mount - also add debug mode check
-  const isDebugMode = process.env.NODE_ENV === "development";
+  // Check debug mode from environment (consistent with CoachMark)
+  const isDebugMode =
+    process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_ONBOARDING_DEBUG === "true";
 
   // Cleanup function to restore scroll state between transitions
   const restoreScrollState = React.useCallback(() => {

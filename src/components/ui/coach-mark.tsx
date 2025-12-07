@@ -161,6 +161,9 @@ function CoachMarkInternal({
   const shouldForceFallback =
     forceFallback || process.env.NEXT_PUBLIC_COACHMARK_FORCE_FALLBACK === "true";
 
+  // Ref to track if component is mounted (prevents race conditions in timeouts)
+  const isMountedRef = React.useRef(true);
+
   // Lock body scroll when visible
   useBodyScrollLock(isVisible);
 
@@ -186,7 +189,9 @@ function CoachMarkInternal({
 
   // Cleanup effect to ensure all locks and listeners are removed when component unmounts
   React.useEffect(() => {
+    isMountedRef.current = true;
     return () => {
+      isMountedRef.current = false;
       // Ensure body scroll is restored
       document.body.style.overflow = "";
 
@@ -359,10 +364,8 @@ function CoachMarkInternal({
     const timer = setTimeout(updatePosition, 100);
 
     // Safety timeout: Force fallback if not ready after reasonable time
-    // Use a flag to track if component is still mounted
-    let isMounted = true;
     const safetyTimer = setTimeout(() => {
-      if (isMounted) {
+      if (isMountedRef.current) {
         setUseFallbackModal(true);
         setDebugInfo((prev) => ({
           ...prev,
@@ -379,7 +382,6 @@ function CoachMarkInternal({
     window.addEventListener("resize", updatePosition);
 
     return () => {
-      isMounted = false; // Mark as unmounted to prevent race condition
       clearTimeout(timer);
       clearTimeout(safetyTimer);
       window.removeEventListener("resize", updatePosition);
@@ -716,3 +718,6 @@ export function CoachMark(props: CoachMarkProps) {
     </CoachMarkErrorBoundary>
   );
 }
+
+// Set display name for better debugging
+CoachMark.displayName = "CoachMark";
