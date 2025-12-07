@@ -3,6 +3,15 @@ import bcrypt from "bcryptjs";
 import { findUserByUsername } from "@/lib/auth/storage";
 import { createSession, setSessionCookie } from "@/lib/auth/session";
 
+/**
+ * Helper to check if an error has a specific error code
+ */
+function hasErrorCode(error: unknown, code: string): boolean {
+  return (
+    error instanceof Error && "code" in error && (error as NodeJS.ErrnoException).code === code
+  );
+}
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   let username: string | undefined;
@@ -38,11 +47,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Check for specific file system errors
-      if (
-        storageError instanceof Error &&
-        "code" in storageError &&
-        (storageError as NodeJS.ErrnoException).code === "EACCES"
-      ) {
+      if (hasErrorCode(storageError, "EACCES")) {
         return NextResponse.json(
           {
             error:
@@ -53,11 +58,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      if (
-        storageError instanceof Error &&
-        "code" in storageError &&
-        (storageError as NodeJS.ErrnoException).code === "ENOENT"
-      ) {
+      if (hasErrorCode(storageError, "ENOENT")) {
         return NextResponse.json(
           {
             error: "Benutzerdatenbank nicht gefunden. Bitte kontaktieren Sie den Administrator.",
