@@ -71,7 +71,11 @@ export async function POST(request: NextRequest) {
     console.error("Registration error:", error);
 
     // Check for permission errors (EACCES)
-    if (error instanceof Error && "code" in error && error.code === "EACCES") {
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      (error as NodeJS.ErrnoException).code === "EACCES"
+    ) {
       return NextResponse.json(
         {
           error:
