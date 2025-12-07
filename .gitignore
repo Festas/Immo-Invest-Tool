@@ -28,6 +28,7 @@
 
 # user data storage (file-based authentication data for development)
 /.data
+/data
 
 # debug
 npm-debug.log*
