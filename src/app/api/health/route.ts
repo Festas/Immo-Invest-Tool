@@ -28,6 +28,17 @@ interface HealthCheckResult {
       userCount?: number;
       error?: string;
     };
+    secrets: {
+      status: "complete" | "partial" | "missing";
+      required: {
+        JWT_SECRET: boolean;
+      };
+      optional: {
+        SESSION_SECRET: boolean;
+        DOMAIN: boolean;
+      };
+      warnings: string[];
+    };
   };
   environment: {
     nodeEnv: string;
@@ -127,12 +138,63 @@ async function checkDatabase(): Promise<HealthCheckResult["checks"]["database"]>
   }
 }
 
+/**
+ * Check required and optional secrets configuration
+ */
+function checkSecrets(): HealthCheckResult["checks"]["secrets"] {
+  const warnings: string[] = [];
+  const isProduction = process.env.NODE_ENV === "production";
+
+  // Required secrets
+  const hasJwtSecret = !!process.env.JWT_SECRET;
+
+  // Optional secrets
+  const hasSessionSecret = !!process.env.SESSION_SECRET;
+  const hasDomain = !!process.env.DOMAIN;
+
+  // Generate warnings for missing secrets
+  if (!hasJwtSecret && isProduction) {
+    warnings.push("JWT_SECRET is required in production for secure authentication");
+  }
+
+  if (!hasSessionSecret && isProduction) {
+    warnings.push(
+      "SESSION_SECRET is recommended for enhanced security (defaults to JWT_SECRET if not set)"
+    );
+  }
+
+  if (!hasDomain && isProduction) {
+    warnings.push("DOMAIN is recommended for proper production configuration");
+  }
+
+  // Determine overall status
+  let status: "complete" | "partial" | "missing";
+  if (hasJwtSecret) {
+    status = hasSessionSecret && hasDomain ? "complete" : "partial";
+  } else {
+    status = "missing";
+  }
+
+  return {
+    status,
+    required: {
+      JWT_SECRET: hasJwtSecret,
+    },
+    optional: {
+      SESSION_SECRET: hasSessionSecret,
+      DOMAIN: hasDomain,
+    },
+    warnings,
+  };
+}
+
 export async function GET() {
   const startTime = Date.now();
 
   try {
     // Check all components
     const [storageCheck, databaseCheck] = await Promise.all([checkStorage(), checkDatabase()]);
+    const secretsCheck = checkSecrets();
 
     // Determine overall health status
     let overallStatus: HealthCheckResult["status"] = "healthy";
@@ -141,10 +203,15 @@ export async function GET() {
       storageCheck.status === "error" ||
       databaseCheck.status === "error" ||
       !storageCheck.writable ||
-      !storageCheck.readable
+      !storageCheck.readable ||
+      secretsCheck.status === "missing"
     ) {
       overallStatus = "unhealthy";
-    } else if (storageCheck.status === "inaccessible" || databaseCheck.status === "inaccessible") {
+    } else if (
+      storageCheck.status === "inaccessible" ||
+      databaseCheck.status === "inaccessible" ||
+      secretsCheck.status === "partial"
+    ) {
       overallStatus = "degraded";
     }
 
@@ -158,6 +225,7 @@ export async function GET() {
         },
         storage: storageCheck,
         database: databaseCheck,
+        secrets: secretsCheck,
       },
       environment: {
         nodeEnv: process.env.NODE_ENV || "development",
@@ -167,13 +235,19 @@ export async function GET() {
 
     const duration = Date.now() - startTime;
 
-    // Log health check in dev mode or if unhealthy
-    if (process.env.NODE_ENV === "development" || overallStatus !== "healthy") {
+    // Log health check in dev mode, if unhealthy, or if there are warnings
+    if (
+      process.env.NODE_ENV === "development" ||
+      overallStatus !== "healthy" ||
+      secretsCheck.warnings.length > 0
+    ) {
       console.info(`[Health Check] Status: ${overallStatus}, Duration: ${duration}ms`, {
         storage: storageCheck.status,
         database: databaseCheck.status,
+        secrets: secretsCheck.status,
         writable: storageCheck.writable,
         readable: storageCheck.readable,
+        warnings: secretsCheck.warnings.length > 0 ? secretsCheck.warnings : undefined,
       });
     }
 
