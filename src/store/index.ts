@@ -59,9 +59,14 @@ interface ImmoCalcState {
   calculate: () => void;
 
   // Property actions
-  saveProperty: (name: string, address?: string) => void;
+  saveProperty: (name: string, address?: string) => Promise<void>;
   loadProperty: (id: string) => void;
-  deleteProperty: (id: string) => void;
+  deleteProperty: (id: string) => Promise<void>;
+
+  // Server sync actions
+  syncWithServer: () => Promise<void>;
+  isServerSyncEnabled: boolean;
+  setServerSyncEnabled: (enabled: boolean) => void;
 
   // Scenario actions
   addScenario: (name: string) => void;
@@ -89,6 +94,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       activeTab: "calculator",
       preFamilyPurchaseTaxPercent: null,
       preFamilyPurchaseBrokerPercent: null,
+      isServerSyncEnabled: false,
 
       // Update input and recalculate
       updateInput: (updates) => {
@@ -187,7 +193,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       },
 
       // Save current input as a property
-      saveProperty: (name, address) => {
+      saveProperty: async (name, address) => {
         const state = get();
         const output = calculatePropertyKPIs(state.currentInput);
 
@@ -201,10 +207,24 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
           output,
         };
 
+        // Update local state
         set((state) => ({
           properties: [...state.properties, newProperty],
           selectedPropertyId: newProperty.id,
         }));
+
+        // Sync with server if enabled
+        if (state.isServerSyncEnabled) {
+          try {
+            await fetch("/api/portfolio", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ property: newProperty }),
+            });
+          } catch (error) {
+            console.error("Failed to sync property with server:", error);
+          }
+        }
       },
 
       // Load a saved property
@@ -220,11 +240,25 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       },
 
       // Delete a property
-      deleteProperty: (id) => {
+      deleteProperty: async (id) => {
+        const state = get();
+
+        // Update local state
         set((state) => ({
           properties: state.properties.filter((p) => p.id !== id),
           selectedPropertyId: state.selectedPropertyId === id ? null : state.selectedPropertyId,
         }));
+
+        // Sync with server if enabled
+        if (state.isServerSyncEnabled) {
+          try {
+            await fetch(`/api/portfolio/${id}`, {
+              method: "DELETE",
+            });
+          } catch (error) {
+            console.error("Failed to delete property from server:", error);
+          }
+        }
       },
 
       // Add a new scenario for comparison
@@ -318,6 +352,34 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
           totalAnnualCashflow,
           averageYield: yieldSum / properties.length,
         };
+      },
+
+      // Sync portfolio with server
+      syncWithServer: async () => {
+        try {
+          const response = await fetch("/api/portfolio");
+          if (response.ok) {
+            const data = await response.json();
+            set({
+              properties: data.properties,
+              isServerSyncEnabled: true,
+            });
+          } else if (response.status === 401) {
+            // Not authenticated, disable server sync
+            set({ isServerSyncEnabled: false });
+          }
+        } catch (error) {
+          console.error("Failed to sync with server:", error);
+          set({ isServerSyncEnabled: false });
+        }
+      },
+
+      // Enable/disable server sync
+      setServerSyncEnabled: (enabled) => {
+        set({ isServerSyncEnabled: enabled });
+        if (enabled) {
+          get().syncWithServer();
+        }
       },
     }),
     {

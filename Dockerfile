@@ -40,7 +40,7 @@ RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
 # Create data directory for persistent storage with correct permissions
-RUN mkdir -p /data/.auth
+RUN mkdir -p /data/.auth /data/users
 RUN chown -R nextjs:nodejs /data
 
 # Automatically leverage output traces to reduce image size
