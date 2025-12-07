@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { BottomNavigation } from "@/components/ui/bottom-navigation";
@@ -10,6 +11,7 @@ import { Onboarding } from "@/components/ui/onboarding";
 import { PresetButton } from "@/components/ui/preset-selector";
 import { SkipLink } from "@/components/ui/skip-link";
 import { ThemeToggle } from "@/components/theme";
+import { UserMenu } from "@/components/auth/UserMenu";
 import { PropertyCalculatorForm, ResultsPanel, SmartTips } from "@/components";
 import { ChartSkeleton, DashboardSkeleton, CalculatorSkeleton } from "@/components/skeletons";
 import { useImmoCalcStore } from "@/store";
@@ -131,11 +133,16 @@ export default function Home() {
   const { activeTab, setActiveTab, resetInput, clearInput, calculate } = useImmoCalcStore();
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const router = useRouter();
 
   // Initialize calculation on mount
   useEffect(() => {
     calculate();
   }, [calculate]);
+
+  const handleLoginClick = () => {
+    router.push("/auth");
+  };
 
   // Handle header collapse on scroll (mobile only)
   const handleScroll = useCallback(() => {
@@ -232,6 +239,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex items-center gap-2 md:gap-3">
+                <UserMenu onLoginClick={handleLoginClick} />
                 <PresetButton />
                 <ThemeToggle />
                 <Button
