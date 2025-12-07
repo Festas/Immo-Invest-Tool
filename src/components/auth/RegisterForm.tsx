@@ -78,7 +78,14 @@ export function RegisterForm({ onSuccess, onLoginClick }: RegisterFormProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Registrierung fehlgeschlagen.");
+        // Show detailed error message for storage permission errors
+        if (data.code === "STORAGE_ERROR") {
+          setError(
+            "Der Server kann keine Benutzerdaten speichern. Bitte kontaktieren Sie den Administrator oder überprüfen Sie die Serverkonfiguration."
+          );
+        } else {
+          setError(data.error || "Registrierung fehlgeschlagen.");
+        }
         setIsLoading(false);
         return;
       }

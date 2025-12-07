@@ -69,6 +69,19 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Registration error:", error);
+
+    // Check for permission errors (EACCES)
+    if (error instanceof Error && "code" in error && error.code === "EACCES") {
+      return NextResponse.json(
+        {
+          error:
+            "Storage permission error. The server cannot write user data. Please check the DATA_DIR configuration and ensure the directory has write permissions.",
+          code: "STORAGE_ERROR",
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Registration failed" },
       { status: 500 }

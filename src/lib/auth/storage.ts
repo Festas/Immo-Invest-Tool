@@ -14,8 +14,19 @@ export interface StoredUser {
   createdAt: string;
 }
 
+// Storage directory - configurable via environment variable
+// Default: .data for development, /data/.auth for production
+const getStorageDir = () => {
+  if (process.env.DATA_DIR) {
+    return process.env.DATA_DIR;
+  }
+  // In Docker/production, use /data/.auth (writable location)
+  // In development, use .data in project root
+  return process.env.NODE_ENV === "production" ? "/data/.auth" : path.join(process.cwd(), ".data");
+};
+
 // Storage file path - in production this would be a database
-const STORAGE_PATH = path.join(process.cwd(), ".data", "users.json");
+const STORAGE_PATH = path.join(getStorageDir(), "users.json");
 
 // Ensure storage directory exists
 async function ensureStorageDir() {

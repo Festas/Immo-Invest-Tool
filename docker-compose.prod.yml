@@ -8,6 +8,9 @@ services:
     restart: unless-stopped
     expose:
       - "3000"
+    volumes:
+      # Persistent data storage for user authentication
+      - immocalc-data:/data
     environment:
       - NODE_ENV=production
     healthcheck:
@@ -24,6 +27,10 @@ services:
       start_period: 40s
     networks:
       - caddy-network
+
+volumes:
+  immocalc-data:
+    driver: local
 
 networks:
   caddy-network:
