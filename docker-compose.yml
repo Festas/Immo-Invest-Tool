@@ -10,8 +10,12 @@ services:
       dockerfile: Dockerfile
     container_name: immocalc
     restart: unless-stopped
-    expose:
-      - "3000"
+    # Port mapping: Host port 8086 maps to container port 3000
+    # Container internally listens on port 3000 (see Dockerfile EXPOSE 3000)
+    # This makes the app accessible via nginx on host port 8086 (http://127.0.0.1:8086)
+    # Note: Other containers on caddy-network can still access immocalc:3000 directly
+    ports:
+      - "8086:3000"
     volumes:
       # Persistent data storage for user authentication
       - immocalc-data:/data
