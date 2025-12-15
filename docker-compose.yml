@@ -10,6 +10,11 @@ services:
       dockerfile: Dockerfile
     container_name: immocalc
     restart: unless-stopped
+    # Port mapping: Host port 8086 maps to container port 3000
+    # Container internally listens on port 3000 (see Dockerfile EXPOSE 3000)
+    # This makes the app accessible via nginx on host port 8086
+    ports:
+      - "8086:3000"
     expose:
       - "3000"
     volumes:

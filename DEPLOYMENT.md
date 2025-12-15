@@ -112,7 +112,10 @@ docker compose ps
 # View logs
 docker compose logs -f
 
-# Test health endpoint
+# Test health endpoint (via host port 8086 mapped to container port 3000)
+curl http://localhost:8086/api/health
+
+# Alternative: Test container port directly (from within the container network)
 curl http://localhost:3000/api/health
 
 # The health endpoint should return:
@@ -120,6 +123,8 @@ curl http://localhost:3000/api/health
 # - status: "degraded" when some components have issues
 # - status: "unhealthy" when critical systems are down
 ```
+
+**Port Mapping**: The container internally listens on port 3000 (as defined in the Dockerfile). The docker-compose configuration maps host port 8086 to container port 3000, making the application accessible via `http://127.0.0.1:8086` on the host machine. This allows nginx or other services running on the host to access the immocalc container on port 8086.
 
 ## Health Monitoring
 
@@ -423,7 +428,15 @@ If the health check reports storage issues or login fails with permission errors
 Internet ──► immocalc.festas-builds.com ──► caddy-network ──► immocalc:3000
                                     │                                 │
                                     └─────────────────────────────────┘
+
+Host machine (nginx/other services) ──► localhost:8086 ──► immocalc:3000
 ```
+
+### Port Configuration
+- **Container Port**: 3000 (defined in Dockerfile EXPOSE 3000)
+- **Host Port**: 8086 (mapped in docker-compose files)
+- **Internal Network**: immocalc:3000 (accessible to containers on caddy-network)
+- **External Access**: localhost:8086 (accessible to host machine services like nginx)
 
 ## Reference
 
