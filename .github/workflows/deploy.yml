@@ -146,12 +146,14 @@ jobs:
 
             echo "=== Testing port 8086 connectivity ==="
             echo "Container should be accessible on host port 8086 (mapped to container port 3000)"
-            if curl -f -s --connect-timeout 5 http://127.0.0.1:8086 > /dev/null 2>&1; then
-              echo "✅ Port 8086 is accessible - immocalc container responding"
+            echo "Testing health endpoint at http://127.0.0.1:8086/api/health"
+            if curl -f -s --connect-timeout 5 http://127.0.0.1:8086/api/health | grep -q '"status"'; then
+              echo "✅ Port 8086 is accessible - immocalc health endpoint responding correctly"
+              curl -s http://127.0.0.1:8086/api/health | head -5
             else
-              echo "⚠️  Port 8086 connectivity test failed"
-              echo "Attempting to curl http://127.0.0.1:8086 for diagnostics..."
-              curl -v --connect-timeout 5 http://127.0.0.1:8086 || true
+              echo "⚠️  Port 8086 connectivity test failed or health endpoint not responding correctly"
+              echo "Attempting to curl http://127.0.0.1:8086/api/health for diagnostics..."
+              curl -v --connect-timeout 5 http://127.0.0.1:8086/api/health || true
             fi
 
             echo "=== Cleaning up old images ==="
