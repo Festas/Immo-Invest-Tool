@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { WizardLivePreview } from "@/components/WizardLivePreview";
 import { useImmoCalcStore } from "@/store";
 import { GERMAN_STATES, WIZARD_DEFAULTS } from "@/lib/constants/german-states";
-import { AfARates, Bundesland } from "@/types";
+import { AfARates, AfAType, Bundesland } from "@/types";
 import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
