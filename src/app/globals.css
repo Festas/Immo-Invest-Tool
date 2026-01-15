@@ -612,6 +612,149 @@ textarea {
   }
 }
 
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseOnce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes flashGreen {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba(34, 197, 94, 0.15);
+  }
+}
+
+@keyframes flashRed {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba(239, 68, 68, 0.15);
+  }
+}
+
+@keyframes progressBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+@keyframes checkmarkDraw {
+  0% {
+    stroke-dashoffset: 50;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes growCircle {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes drawLine {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes growBar {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes hoverGlow {
+  from {
+    box-shadow: 0 0 0 rgba(79, 70, 229, 0);
+  }
+  to {
+    box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
+  }
+}
+
+@keyframes underlineExpand {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
 /* ============================================
    UTILITY CLASSES
    ============================================ */
@@ -1015,4 +1158,240 @@ textarea {
 
 .animate-slide-up {
   animation: slideUp 0.3s ease-out forwards;
+}
+
+/* ============================================
+   NEW ANIMATION UTILITIES
+   ============================================ */
+
+/* Slide animations */
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.3s ease-out forwards;
+}
+
+.animate-slide-in-down {
+  animation: slideInDown 0.3s ease-out forwards;
+}
+
+/* Pulse and flash */
+.animate-pulse-once {
+  animation: pulseOnce 0.5s ease-out;
+}
+
+.animate-flash-green {
+  animation: flashGreen 0.6s ease-out;
+}
+
+.animate-flash-red {
+  animation: flashRed 0.6s ease-out;
+}
+
+/* Checkmark animation */
+.animate-checkmark {
+  animation: checkmarkDraw 0.3s ease-out forwards;
+}
+
+/* Circle grow (for spotlight) */
+.animate-grow-circle {
+  animation: growCircle 0.5s ease-out forwards;
+}
+
+/* Chart animations */
+.animate-draw-line {
+  animation: drawLine 1.5s ease-out forwards;
+}
+
+.animate-grow-bar {
+  animation: growBar 0.8s ease-out forwards;
+  transform-origin: bottom;
+}
+
+/* Hover effects */
+.hover-glow {
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+  animation: hoverGlow 0.3s ease-out forwards;
+}
+
+.hover-lift {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -4px rgba(100, 116, 139, 0.15);
+}
+
+/* Link underline animation */
+.link-animated {
+  position: relative;
+  text-decoration: none;
+}
+
+.link-animated::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.link-animated:hover::after {
+  transform: scaleX(1);
+}
+
+/* Cursor feedback */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
+}
+
+/* Shimmer effect enhancement */
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 0%,
+    var(--surface-1) 50%,
+    var(--surface-2) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Progress bar animation */
+.animate-progress {
+  animation: progressBar linear forwards;
+}
+
+/* Confetti animation */
+.animate-confetti {
+  animation: confetti 3s ease-out forwards;
+}
+
+/* Focus states for accessibility */
+.focus-ring-gradient {
+  transition: all 0.2s ease;
+}
+
+.focus-ring-gradient:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(79, 70, 229, 0.1),
+    0 0 0 6px rgba(99, 102, 241, 0.2);
+  border-color: var(--primary);
+}
+
+/* Disabled state */
+.disabled-state {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Interactive elements hover */
+button:hover:not(:disabled),
+[role="button"]:hover:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Smooth color transitions */
+.transition-colors-smooth {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* Value change highlight */
+.value-highlight {
+  transition: background-color 0.6s ease;
+}
+
+.value-highlight.increase {
+  background-color: rgba(34, 197, 94, 0.15);
+}
+
+.value-highlight.decrease {
+  background-color: rgba(239, 68, 68, 0.15);
+}
+
+/* Loading state pulse */
+.loading-pulse {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Stagger animation delays for children */
+.stagger-children > * {
+  animation-delay: calc(var(--stagger-index, 0) * 0.1s);
+}
+
+/* ============================================
+   REDUCED MOTION - Extended Support
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-in-right,
+  .animate-slide-in-left,
+  .animate-slide-in-down,
+  .animate-pulse-once,
+  .animate-flash-green,
+  .animate-flash-red,
+  .animate-checkmark,
+  .animate-grow-circle,
+  .animate-draw-line,
+  .animate-grow-bar,
+  .hover-glow:hover,
+  .hover-lift:hover,
+  .animate-shimmer,
+  .animate-progress,
+  .animate-confetti,
+  .loading-pulse,
+  .value-highlight {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .link-animated::after {
+    transition: none !important;
+  }
+
+  /* Ensure content is still visible without animation */
+  .animate-slide-in-right,
+  .animate-slide-in-left,
+  .animate-slide-in-down,
+  .animate-grow-circle,
+  .animate-draw-line,
+  .animate-grow-bar {
+    opacity: 1 !important;
+  }
 }

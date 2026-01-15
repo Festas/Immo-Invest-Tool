@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { WizardLivePreview } from "@/components/WizardLivePreview";
 import { useImmoCalcStore } from "@/store";
 import { GERMAN_STATES, WIZARD_DEFAULTS } from "@/lib/constants/german-states";
-import { AfARates, Bundesland } from "@/types";
+import { AfARates, AfAType, Bundesland } from "@/types";
 import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -52,9 +52,7 @@ export function PropertyWizard() {
   // Calculate if we have minimum required data for preview
   const hasMinimumData = useMemo(() => {
     return (
-      currentInput.purchasePrice > 0 &&
-      currentInput.equity >= 0 &&
-      currentInput.coldRentActual > 0
+      currentInput.purchasePrice > 0 && currentInput.equity >= 0 && currentInput.coldRentActual > 0
     );
   }, [currentInput]);
 
@@ -140,9 +138,7 @@ export function PropertyWizard() {
                   id="purchasePrice"
                   type="number"
                   value={currentInput.purchasePrice || ""}
-                  onChange={(e) =>
-                    updateInput({ purchasePrice: parseFloat(e.target.value) || 0 })
-                  }
+                  onChange={(e) => updateInput({ purchasePrice: parseFloat(e.target.value) || 0 })}
                   placeholder="z.B. 300000"
                   className={cn(
                     "text-lg",
@@ -191,7 +187,9 @@ export function PropertyWizard() {
                   id="yearBuilt"
                   type="number"
                   value={yearBuilt || ""}
-                  onChange={(e) => setYearBuilt(parseInt(e.target.value) || new Date().getFullYear())}
+                  onChange={(e) =>
+                    setYearBuilt(parseInt(e.target.value) || new Date().getFullYear())
+                  }
                   placeholder="z.B. 1990"
                   min="1800"
                   max={new Date().getFullYear()}
@@ -356,7 +354,7 @@ export function PropertyWizard() {
                 <Select
                   id="bundesland"
                   value={currentInput.bundesland || "BAYERN"}
-                  onChange={(e) => handleBundeslandChange(e.target.value)}
+                  onChange={(value) => handleBundeslandChange(value)}
                   options={Object.entries(GERMAN_STATES).map(([key, state]) => ({
                     value: key,
                     label: `${state.name} (${state.taxRate}%)`,
@@ -492,9 +490,7 @@ export function PropertyWizard() {
                   id="coldRentActual"
                   type="number"
                   value={currentInput.coldRentActual || ""}
-                  onChange={(e) =>
-                    updateInput({ coldRentActual: parseFloat(e.target.value) || 0 })
-                  }
+                  onChange={(e) => updateInput({ coldRentActual: parseFloat(e.target.value) || 0 })}
                   placeholder="z.B. 1200"
                   className={cn(
                     "text-lg",
@@ -524,9 +520,7 @@ export function PropertyWizard() {
                   id="coldRentTarget"
                   type="number"
                   value={currentInput.coldRentTarget || ""}
-                  onChange={(e) =>
-                    updateInput({ coldRentTarget: parseFloat(e.target.value) || 0 })
-                  }
+                  onChange={(e) => updateInput({ coldRentTarget: parseFloat(e.target.value) || 0 })}
                   placeholder="Optional - für Potenzialanalyse"
                 />
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -660,7 +654,7 @@ export function PropertyWizard() {
                 <Select
                   id="afaType"
                   value={currentInput.afaType}
-                  onChange={(e) => updateInput({ afaType: e.target.value as any })}
+                  onChange={(value) => updateInput({ afaType: value as AfAType })}
                   options={Object.entries(AfARates).map(([key, data]) => ({
                     value: key,
                     label: data.label,

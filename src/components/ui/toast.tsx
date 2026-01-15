@@ -3,6 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from "lucide-react";
+import { shouldReduceMotion } from "@/lib/animations";
 
 // Toast types
 export type ToastVariant = "success" | "error" | "info" | "warning";
@@ -12,6 +13,10 @@ export interface Toast {
   message: string;
   variant: ToastVariant;
   duration?: number;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
 }
 
 interface ToastContextValue {
@@ -49,9 +54,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   // Clean up timeouts on unmount
   React.useEffect(() => {
+    const timeouts = timeoutsRef.current;
     return () => {
-      timeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
-      timeoutsRef.current.clear();
+      timeouts.forEach((timeout) => clearTimeout(timeout));
+      timeouts.clear();
     };
   }, []);
 
@@ -107,16 +113,44 @@ function ToastContainer({
   toasts: Toast[];
   onDismiss: (id: string) => void;
 }) {
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  // Detect mobile view with proper hydration handling
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Initial check
+    checkMobile();
+
+    // Listen for resize
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   if (toasts.length === 0) return null;
 
   return (
     <div
-      className="fixed bottom-20 left-1/2 z-[100] flex -translate-x-1/2 flex-col gap-2 md:bottom-6"
+      className={cn(
+        "fixed z-[100] flex flex-col-reverse gap-2",
+        // Mobile: bottom center
+        "bottom-20 left-1/2 -translate-x-1/2",
+        // Desktop: bottom right
+        "md:right-6 md:bottom-6 md:left-auto md:translate-x-0"
+      )}
       role="region"
       aria-label="Benachrichtigungen"
     >
-      {toasts.map((toast) => (
-        <ToastItem key={toast.id} toast={toast} onDismiss={onDismiss} />
+      {toasts.map((toast, index) => (
+        <ToastItem
+          key={toast.id}
+          toast={toast}
+          onDismiss={onDismiss}
+          index={index}
+          isMobile={isMobile}
+        />
       ))}
     </div>
   );
@@ -125,7 +159,25 @@ function ToastContainer({
 /**
  * Individual toast item
  */
-function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string) => void }) {
+function ToastItem({
+  toast,
+  onDismiss,
+  index,
+  isMobile,
+}: {
+  toast: Toast;
+  onDismiss: (id: string) => void;
+  index: number;
+  isMobile: boolean;
+}) {
+  const [progress, setProgress] = React.useState(100);
+  const startTimeRef = React.useRef<number>(0);
+
+  // Initialize start time once on mount
+  React.useEffect(() => {
+    startTimeRef.current = Date.now();
+  }, []);
+
   const icons: Record<ToastVariant, React.ReactNode> = {
     success: <CheckCircle className="h-5 w-5 text-green-500" />,
     error: <AlertCircle className="h-5 w-5 text-red-500" />,
@@ -143,23 +195,104 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
       "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/90 dark:text-amber-100",
   };
 
+  const progressColors: Record<ToastVariant, string> = {
+    success: "bg-green-500 dark:bg-green-400",
+    error: "bg-red-500 dark:bg-red-400",
+    info: "bg-blue-500 dark:bg-blue-400",
+    warning: "bg-amber-500 dark:bg-amber-400",
+  };
+
+  // Animation classes for different variants
+  const animationClasses: Record<ToastVariant, string> = {
+    success: shouldReduceMotion() ? "" : "animate-fade-in",
+    error: shouldReduceMotion() ? "" : "animate-fade-in animate-shake",
+    info: shouldReduceMotion() ? "" : "animate-fade-in",
+    warning: shouldReduceMotion() ? "" : "animate-fade-in animate-pulse-once",
+  };
+
+  // Slide-in direction based on device
+  const slideAnimation = shouldReduceMotion()
+    ? ""
+    : isMobile
+      ? "animate-slide-in-down"
+      : "animate-slide-in-left";
+
+  // Update progress bar
+  React.useEffect(() => {
+    if (!toast.duration || toast.duration <= 0 || shouldReduceMotion()) return;
+
+    const duration = toast.duration;
+    const startTime = Date.now(); // Capture start time in effect
+    startTimeRef.current = startTime;
+
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 100 - (elapsed / duration) * 100);
+      setProgress(remaining);
+
+      if (remaining === 0) {
+        clearInterval(interval);
+      }
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [toast.duration]);
+
   return (
     <div
       className={cn(
-        "animate-slide-up flex max-w-[400px] min-w-[280px] items-center gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-sm",
-        variantStyles[toast.variant]
+        "flex max-w-[400px] min-w-[280px] flex-col overflow-hidden rounded-xl border shadow-lg backdrop-blur-sm",
+        variantStyles[toast.variant],
+        slideAnimation,
+        animationClasses[toast.variant]
       )}
       role="alert"
+      style={{
+        // Stacking effect: slightly offset each toast
+        transform: shouldReduceMotion() ? "none" : `translateY(${-index * 4}px)`,
+        zIndex: 100 - index,
+      }}
     >
-      {icons[toast.variant]}
-      <span className="flex-1 text-sm font-medium">{toast.message}</span>
-      <button
-        onClick={() => onDismiss(toast.id)}
-        className="rounded-lg p-1 opacity-60 transition-opacity hover:opacity-100"
-        aria-label="Schließen"
-      >
-        <X className="h-4 w-4" />
-      </button>
+      {/* Content */}
+      <div className="flex items-center gap-3 px-4 py-3">
+        {icons[toast.variant]}
+        <span className="flex-1 text-sm font-medium">{toast.message}</span>
+        <button
+          onClick={() => onDismiss(toast.id)}
+          className="rounded-lg p-1 opacity-60 transition-opacity hover:opacity-100"
+          aria-label="Schließen"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+
+      {/* Action button if provided */}
+      {toast.action && (
+        <div className="border-t border-current/10 px-4 py-2">
+          <button
+            onClick={() => {
+              toast.action?.onClick();
+              onDismiss(toast.id);
+            }}
+            className="text-sm font-semibold opacity-80 hover:opacity-100"
+          >
+            {toast.action.label}
+          </button>
+        </div>
+      )}
+
+      {/* Progress bar */}
+      {toast.duration && toast.duration > 0 && !shouldReduceMotion() && (
+        <div className="h-1 w-full bg-black/10 dark:bg-white/10">
+          <div
+            className={cn(
+              "h-full transition-all duration-100 ease-linear",
+              progressColors[toast.variant]
+            )}
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 }
