@@ -64,6 +64,7 @@ interface ImmoCalcState {
   selectedPropertyId: string | null;
   isCalculating: boolean;
   activeTab: string;
+  wizardMode: boolean;
 
   // Family purchase state - stores previous values when toggling
   preFamilyPurchaseTaxPercent: number | null;
@@ -95,6 +96,7 @@ interface ImmoCalcState {
 
   // UI actions
   setActiveTab: (tab: string) => void;
+  setWizardMode: (enabled: boolean) => void;
 
   // Portfolio
   getPortfolioSummary: () => PortfolioSummary;
@@ -111,6 +113,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       selectedPropertyId: null,
       isCalculating: false,
       activeTab: "calculator",
+      wizardMode: false,
       preFamilyPurchaseTaxPercent: null,
       preFamilyPurchaseBrokerPercent: null,
       isServerSyncEnabled: false,
@@ -338,6 +341,11 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
         set({ activeTab: tab });
       },
 
+      // Set wizard mode
+      setWizardMode: (enabled) => {
+        set({ wizardMode: enabled });
+      },
+
       // Get portfolio summary
       getPortfolioSummary: () => {
         const properties = get().properties;
@@ -431,6 +439,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       partialize: (state) => ({
         properties: state.properties,
         currentInput: state.currentInput,
+        wizardMode: state.wizardMode,
       }),
     }
   )

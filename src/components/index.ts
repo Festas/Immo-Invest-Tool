@@ -1,4 +1,5 @@
 export { PropertyCalculatorForm } from "./PropertyCalculatorForm";
+export { PropertyWizard } from "./PropertyWizard";
 export { ResultsPanel } from "./ResultsPanel";
 export { AmortizationChart, CumulativeCashflowChart } from "./Charts";
 export { ScenarioComparison } from "./ScenarioComparison";
@@ -10,3 +11,4 @@ export { ExitStrategyCalculator } from "./ExitStrategyCalculator";
 export { DueDiligenceChecklist } from "./DueDiligenceChecklist";
 export { LocationAnalysis } from "./LocationAnalysis";
 export { SmartTips } from "./SmartTips";
+export { WizardLivePreview } from "./WizardLivePreview";

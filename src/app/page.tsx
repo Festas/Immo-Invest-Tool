@@ -12,7 +12,7 @@ import { PresetButton } from "@/components/ui/preset-selector";
 import { SkipLink } from "@/components/ui/skip-link";
 import { ThemeToggle } from "@/components/theme";
 import { UserMenu } from "@/components/auth/UserMenu";
-import { PropertyCalculatorForm, ResultsPanel, SmartTips } from "@/components";
+import { PropertyCalculatorForm, PropertyWizard, ResultsPanel, SmartTips } from "@/components";
 import { ChartSkeleton, DashboardSkeleton, CalculatorSkeleton } from "@/components/skeletons";
 import { useImmoCalcStore } from "@/store";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,7 @@ import {
   LogOut,
   ClipboardCheck,
   TrendingUp,
+  Wand2,
 } from "lucide-react";
 
 // Lazy load heavy components for better performance
@@ -130,7 +131,8 @@ const DueDiligenceChecklist = dynamic(
 );
 
 export default function Home() {
-  const { activeTab, setActiveTab, resetInput, clearInput, calculate } = useImmoCalcStore();
+  const { activeTab, setActiveTab, resetInput, clearInput, calculate, wizardMode, setWizardMode } =
+    useImmoCalcStore();
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const router = useRouter();
@@ -355,37 +357,68 @@ export default function Home() {
 
             {/* Calculator Tab */}
             <TabsContent value="calculator">
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
-                {/* Input Form */}
-                <div className="animate-fade-in" data-onboarding="form">
-                  <div className="mb-6 flex items-center gap-3">
-                    <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
-                      <Calculator className="h-5 w-5 text-white" />
-                    </div>
-                    <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                      Eingaben
-                    </h2>
-                  </div>
-                  <PropertyCalculatorForm />
-                  {/* Smart Tips - Show contextual guidance */}
-                  <div className="mt-6">
-                    <SmartTips />
-                  </div>
+              {/* Mode Toggle */}
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                    {wizardMode ? "Wizard-Modus" : "Experten-Modus"}
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {wizardMode
+                      ? "Schritt für Schritt zur Immobilienbewertung"
+                      : "Alle Eingabefelder auf einen Blick"}
+                  </p>
                 </div>
-
-                {/* Results */}
-                <div className="animate-fade-in animate-delay-200" data-onboarding="results">
-                  <div className="mb-6 flex items-center gap-3">
-                    <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
-                      <BarChart3 className="h-5 w-5 text-white" />
-                    </div>
-                    <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                      Ergebnisse
-                    </h2>
-                  </div>
-                  <ResultsPanel />
-                </div>
+                <Button
+                  variant={wizardMode ? "outline" : "default"}
+                  onClick={() => setWizardMode(!wizardMode)}
+                  className="gap-2"
+                  aria-label={
+                    wizardMode ? "Zu Experten-Modus wechseln" : "Zu Wizard-Modus wechseln"
+                  }
+                >
+                  <Wand2 className="h-4 w-4" aria-hidden="true" />
+                  {wizardMode ? "Experten-Modus" : "Wizard-Modus"}
+                </Button>
               </div>
+
+              {wizardMode ? (
+                /* Wizard Mode */
+                <PropertyWizard />
+              ) : (
+                /* Expert Mode - Original Form */
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+                  {/* Input Form */}
+                  <div className="animate-fade-in" data-onboarding="form">
+                    <div className="mb-6 flex items-center gap-3">
+                      <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
+                        <Calculator className="h-5 w-5 text-white" />
+                      </div>
+                      <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        Eingaben
+                      </h2>
+                    </div>
+                    <PropertyCalculatorForm />
+                    {/* Smart Tips - Show contextual guidance */}
+                    <div className="mt-6">
+                      <SmartTips />
+                    </div>
+                  </div>
+
+                  {/* Results */}
+                  <div className="animate-fade-in animate-delay-200" data-onboarding="results">
+                    <div className="mb-6 flex items-center gap-3">
+                      <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
+                        <BarChart3 className="h-5 w-5 text-white" />
+                      </div>
+                      <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        Ergebnisse
+                      </h2>
+                    </div>
+                    <ResultsPanel />
+                  </div>
+                </div>
+              )}
             </TabsContent>
 
             {/* Charts Tab */}
