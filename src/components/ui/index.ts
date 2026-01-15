@@ -19,3 +19,6 @@ export * from "./bottom-navigation";
 export * from "./gauge";
 export * from "./swipeable-cards";
 export * from "./wizard";
+export * from "./sidebar";
+export * from "./breadcrumb";
+export * from "./command-palette";

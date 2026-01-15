@@ -66,6 +66,11 @@ interface ImmoCalcState {
   activeTab: string;
   wizardMode: boolean;
 
+  // Navigation state
+  sidebarCollapsed: boolean;
+  recentTabs: string[];
+  currentCategory: string | null;
+
   // Family purchase state - stores previous values when toggling
   preFamilyPurchaseTaxPercent: number | null;
   preFamilyPurchaseBrokerPercent: number | null;
@@ -98,6 +103,12 @@ interface ImmoCalcState {
   setActiveTab: (tab: string) => void;
   setWizardMode: (enabled: boolean) => void;
 
+  // Navigation actions
+  toggleSidebar: () => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
+  addRecentTab: (tab: string) => void;
+  setCurrentCategory: (category: string | null) => void;
+
   // Portfolio
   getPortfolioSummary: () => PortfolioSummary;
 }
@@ -118,6 +129,11 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       preFamilyPurchaseBrokerPercent: null,
       isServerSyncEnabled: false,
       syncError: null,
+
+      // Navigation state
+      sidebarCollapsed: false,
+      recentTabs: [],
+      currentCategory: null,
 
       // Update input and recalculate
       updateInput: (updates) => {
@@ -339,11 +355,37 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       // Set active tab
       setActiveTab: (tab) => {
         set({ activeTab: tab });
+        get().addRecentTab(tab);
       },
 
       // Set wizard mode
       setWizardMode: (enabled) => {
         set({ wizardMode: enabled });
+      },
+
+      // Toggle sidebar collapsed state
+      toggleSidebar: () => {
+        set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed }));
+      },
+
+      // Set sidebar collapsed state
+      setSidebarCollapsed: (collapsed) => {
+        set({ sidebarCollapsed: collapsed });
+      },
+
+      // Add a tab to recent tabs list (max 5)
+      addRecentTab: (tab) => {
+        set((state) => {
+          const filtered = state.recentTabs.filter((t) => t !== tab);
+          return {
+            recentTabs: [tab, ...filtered].slice(0, 5),
+          };
+        });
+      },
+
+      // Set current category
+      setCurrentCategory: (category) => {
+        set({ currentCategory: category });
       },
 
       // Get portfolio summary
@@ -440,6 +482,8 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
         properties: state.properties,
         currentInput: state.currentInput,
         wizardMode: state.wizardMode,
+        sidebarCollapsed: state.sidebarCollapsed,
+        recentTabs: state.recentTabs,
       }),
     }
   )
