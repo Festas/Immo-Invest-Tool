@@ -3,9 +3,12 @@
 import React, { useEffect, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { BottomNavigation } from "@/components/ui/bottom-navigation";
+import { Sidebar } from "@/components/ui/sidebar";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { CommandPalette } from "@/components/ui/command-palette";
 import { ToastProvider } from "@/components/ui/toast";
 import { Onboarding } from "@/components/ui/onboarding";
 import { PresetButton } from "@/components/ui/preset-selector";
@@ -16,21 +19,8 @@ import { PropertyCalculatorForm, PropertyWizard, ResultsPanel, SmartTips } from 
 import { ChartSkeleton, DashboardSkeleton, CalculatorSkeleton } from "@/components/skeletons";
 import { useImmoCalcStore } from "@/store";
 import { cn } from "@/lib/utils";
-import {
-  Calculator,
-  BarChart3,
-  GitCompare,
-  LayoutDashboard,
-  RotateCcw,
-  Eraser,
-  MapPin,
-  Target,
-  Wrench,
-  LogOut,
-  ClipboardCheck,
-  TrendingUp,
-  Wand2,
-} from "lucide-react";
+import { getCategoryForTab, getNavigationItem } from "@/lib/constants/navigation";
+import { Calculator, BarChart3, RotateCcw, Eraser, Wand2 } from "lucide-react";
 
 // Lazy load heavy components for better performance
 const AmortizationChart = dynamic(
@@ -131,11 +121,39 @@ const DueDiligenceChecklist = dynamic(
 );
 
 export default function Home() {
-  const { activeTab, setActiveTab, resetInput, clearInput, calculate, wizardMode, setWizardMode } =
-    useImmoCalcStore();
+  const {
+    activeTab,
+    setActiveTab,
+    resetInput,
+    clearInput,
+    calculate,
+    wizardMode,
+    setWizardMode,
+    sidebarCollapsed,
+  } = useImmoCalcStore();
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const router = useRouter();
+
+  // Get breadcrumb items based on current tab
+  const breadcrumbItems = React.useMemo(() => {
+    const category = getCategoryForTab(activeTab);
+    const navItem = getNavigationItem(activeTab);
+
+    if (!category || !navItem) return [];
+
+    return [
+      {
+        label: category.label,
+        onClick: () => {
+          /* Could open category sheet on mobile */
+        },
+      },
+      {
+        label: navItem.label,
+      },
+    ];
+  }, [activeTab]);
 
   // Initialize calculation on mount
   useEffect(() => {
@@ -281,80 +299,29 @@ export default function Home() {
           </nav>
         </header>
 
-        {/* Main Content - Add bottom padding on mobile for bottom nav */}
+        {/* Desktop Sidebar Navigation */}
+        <Sidebar />
+
+        {/* Command Palette */}
+        <CommandPalette />
+
+        {/* Main Content Area with Sidebar offset on desktop */}
         <main
           id="main-content"
           tabIndex={-1}
-          className="relative z-10 mx-auto max-w-7xl px-4 py-8 pb-24 sm:px-6 md:pb-8"
+          className={cn(
+            "relative z-10 transition-all duration-300",
+            "px-4 py-8 pb-24 sm:px-6 md:pb-8",
+            // Add left margin on desktop when sidebar is visible
+            sidebarCollapsed ? "md:ml-16" : "md:ml-60"
+          )}
         >
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            {/* Tab Navigation - Hidden on mobile, visible on md and above */}
-            <div className="mb-8 hidden space-y-3 md:block" data-onboarding="tabs">
-              {/* Primary Tabs */}
-              <div className="-mx-4 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6">
-                <TabsList className="inline-flex w-full sm:w-auto" aria-label="Hauptfunktionen">
-                  <TabsTrigger value="calculator" className="flex items-center gap-2 px-4">
-                    <Calculator className="h-4 w-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Rechner</span>
-                    <span className="sr-only sm:hidden">Rechner</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="charts" className="flex items-center gap-2 px-4">
-                    <BarChart3 className="h-4 w-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Charts</span>
-                    <span className="sr-only sm:hidden">Charts</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="comparison" className="flex items-center gap-2 px-4">
-                    <GitCompare className="h-4 w-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Vergleich</span>
-                    <span className="sr-only sm:hidden">Vergleich</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="dashboard" className="flex items-center gap-2 px-4">
-                    <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Dashboard</span>
-                    <span className="sr-only sm:hidden">Dashboard</span>
-                  </TabsTrigger>
-                </TabsList>
-              </div>
-              {/* Secondary Tabs - New Features */}
-              <div className="-mx-4 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6">
-                <TabsList
-                  className="inline-flex w-full bg-slate-100/80 sm:w-auto dark:bg-slate-800/80"
-                  aria-label="Weitere Funktionen"
-                >
-                  <TabsTrigger value="rent-index" className="flex items-center gap-2 px-4">
-                    <TrendingUp className="h-4 w-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Mietspiegel</span>
-                    <span className="sr-only sm:hidden">Mietspiegel</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="break-even" className="flex items-center gap-2 px-4">
-                    <Target className="h-4 w-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Break-Even</span>
-                    <span className="sr-only sm:hidden">Break-Even</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="renovation" className="flex items-center gap-2 px-4">
-                    <Wrench className="h-4 w-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Renovierung</span>
-                    <span className="sr-only sm:hidden">Renovierung</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="exit-strategy" className="flex items-center gap-2 px-4">
-                    <LogOut className="h-4 w-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Exit</span>
-                    <span className="sr-only sm:hidden">Exit</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="location" className="flex items-center gap-2 px-4">
-                    <MapPin className="h-4 w-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Standort</span>
-                    <span className="sr-only sm:hidden">Standort</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="checklist" className="flex items-center gap-2 px-4">
-                    <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Checkliste</span>
-                    <span className="sr-only sm:hidden">Checkliste</span>
-                  </TabsTrigger>
-                </TabsList>
-              </div>
-            </div>
+          {/* Breadcrumb Navigation - Visible on desktop only */}
+          <div className="mb-6 hidden md:block">
+            <Breadcrumb items={breadcrumbItems} />
+          </div>
 
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
             {/* Calculator Tab */}
             <TabsContent value="calculator">
               {/* Mode Toggle */}
@@ -471,9 +438,14 @@ export default function Home() {
           </Tabs>
         </main>
 
-        {/* Footer - Add extra bottom margin on mobile to account for bottom nav */}
-        <footer className="relative z-10 mt-auto mb-[70px] border-t border-indigo-100/50 bg-gradient-to-b from-white/70 to-indigo-50/30 backdrop-blur-xl transition-all duration-300 md:mb-0 dark:border-indigo-900/30 dark:from-slate-900/70 dark:to-indigo-950/20">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+        {/* Footer - Add sidebar offset on desktop */}
+        <footer
+          className={cn(
+            "relative z-10 mt-auto mb-[70px] border-t border-indigo-100/50 bg-gradient-to-b from-white/70 to-indigo-50/30 backdrop-blur-xl transition-all duration-300 md:mb-0 dark:border-indigo-900/30 dark:from-slate-900/70 dark:to-indigo-950/20",
+            sidebarCollapsed ? "md:ml-16" : "md:ml-60"
+          )}
+        >
+          <div className="px-4 py-6 sm:px-6">
             <div className="space-y-3 text-center">
               <p className="flex flex-wrap items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                 <span className="inline-flex items-center gap-1 rounded-full bg-amber-100/80 px-3 py-1 text-xs font-medium text-amber-700 backdrop-blur-sm transition-all hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50">
