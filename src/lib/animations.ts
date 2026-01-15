@@ -126,21 +126,33 @@ export const staggerChildrenFast = {
   },
 };
 
-// Spring configurations
+// Spring configurations for smooth animations
+/**
+ * Standard spring configuration for general UI elements
+ * Provides smooth, natural motion without being too bouncy
+ */
 export const springConfig = {
-  type: "spring",
+  type: "spring" as const,
   stiffness: 300,
   damping: 30,
 };
 
+/**
+ * Soft spring configuration for subtle animations
+ * Less stiff, more gentle motion
+ */
 export const softSpringConfig = {
-  type: "spring",
+  type: "spring" as const,
   stiffness: 200,
   damping: 25,
 };
 
+/**
+ * Bouncy spring configuration for attention-grabbing animations
+ * More pronounced bounce effect for celebrations or emphasis
+ */
 export const bouncySpringConfig = {
-  type: "spring",
+  type: "spring" as const,
   stiffness: 400,
   damping: 20,
 };

@@ -113,10 +113,23 @@ function ToastContainer({
   toasts: Toast[];
   onDismiss: (id: string) => void;
 }) {
-  if (toasts.length === 0) return null;
+  const [isMobile, setIsMobile] = React.useState(false);
 
-  // Determine if mobile view
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  // Detect mobile view with proper hydration handling
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Initial check
+    checkMobile();
+
+    // Listen for resize
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  if (toasts.length === 0) return null;
 
   return (
     <div

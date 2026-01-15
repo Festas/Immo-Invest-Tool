@@ -127,9 +127,11 @@ export function CrossfadeTransition({
       const timeout = setTimeout(() => {
         setDisplayedContent(show ? children : fallback);
         // Small delay to ensure DOM update before fading in
-        requestAnimationFrame(() => {
+        const innerTimeout = setTimeout(() => {
           setIsVisible(true);
-        });
+        }, 10);
+
+        return () => clearTimeout(innerTimeout);
       }, duration);
 
       return () => clearTimeout(timeout);
