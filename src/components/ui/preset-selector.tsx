@@ -77,8 +77,8 @@ export const PRESETS: Preset[] = [
       fixedInterestPeriod: 10,
 
       // Mieteinnahmen
-      coldRentActual: 900,
-      coldRentTarget: 900,
+      coldRentActual: 1000,
+      coldRentTarget: 1000,
       nonRecoverableCosts: 69,
       maintenanceReserve: 95,
       vacancyRiskPercent: 2,
