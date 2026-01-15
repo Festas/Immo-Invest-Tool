@@ -150,13 +150,13 @@ export function Sidebar({ className }: SidebarProps) {
                   </div>
                 )}
 
-                {/* Collapsed state - show items on hover */}
+                {/* Collapsed state - show items on hover/focus */}
                 {sidebarCollapsed && (
-                  <div className="group relative">
+                  <div className="group/category relative">
                     <div
                       className={cn(
-                        "invisible absolute top-0 left-full z-50 ml-2 w-48 rounded-lg border border-indigo-100/50 bg-white p-2 opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100 dark:border-indigo-900/30 dark:bg-slate-900",
-                        "pointer-events-none group-hover:pointer-events-auto"
+                        "invisible absolute top-0 left-full z-50 ml-2 w-48 rounded-lg border border-indigo-100/50 bg-white p-2 opacity-0 shadow-lg transition-all duration-200 group-focus-within/category:visible group-focus-within/category:opacity-100 group-hover/category:visible group-hover/category:opacity-100 dark:border-indigo-900/30 dark:bg-slate-900",
+                        "pointer-events-none group-focus-within/category:pointer-events-auto group-hover/category:pointer-events-auto"
                       )}
                     >
                       <div className="mb-2 px-3 py-1 text-xs font-semibold text-slate-500 dark:text-slate-400">

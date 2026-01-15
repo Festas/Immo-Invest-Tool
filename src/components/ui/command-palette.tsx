@@ -12,14 +12,34 @@ import { Search, ArrowUp, Clock } from "lucide-react";
 
 interface CommandPaletteProps {
   className?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function CommandPalette({ className }: CommandPaletteProps) {
+export function CommandPalette({
+  className,
+  open: controlledOpen,
+  onOpenChange,
+}: CommandPaletteProps) {
   const { setActiveTab, recentTabs } = useImmoCalcStore();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [internalOpen, setInternalOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Use controlled or internal state
+  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setIsOpen = React.useCallback(
+    (value: boolean | ((prev: boolean) => boolean)) => {
+      const newValue = typeof value === "function" ? value(isOpen) : value;
+      if (onOpenChange) {
+        onOpenChange(newValue);
+      } else {
+        setInternalOpen(newValue);
+      }
+    },
+    [isOpen, onOpenChange]
+  );
 
   // Handler for selecting an item
   const handleSelectItem = React.useCallback(
@@ -29,7 +49,7 @@ export function CommandPalette({ className }: CommandPaletteProps) {
       setSearchQuery("");
       setSelectedIndex(0);
     },
-    [setActiveTab]
+    [setActiveTab, setIsOpen]
   );
 
   // Fuzzy search function
@@ -78,7 +98,7 @@ export function CommandPalette({ className }: CommandPaletteProps) {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [setIsOpen]);
 
   // Handle navigation within the palette
   React.useEffect(() => {
@@ -124,7 +144,7 @@ export function CommandPalette({ className }: CommandPaletteProps) {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
 
   if (!isOpen) return null;
 
@@ -339,6 +359,5 @@ export function useCommandPalette() {
     open,
     close,
     toggle,
-    CommandPalette: () => <CommandPalette />,
   };
 }

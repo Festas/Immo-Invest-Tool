@@ -145,15 +145,14 @@ export default function Home() {
     return [
       {
         label: category.label,
-        onClick: () => {
-          /* Could open category sheet on mobile */
-        },
+        // Category breadcrumb navigates to first item in that category
+        onClick: () => setActiveTab(category.items[0].value),
       },
       {
         label: navItem.label,
       },
     ];
-  }, [activeTab]);
+  }, [activeTab, setActiveTab]);
 
   // Initialize calculation on mount
   useEffect(() => {
