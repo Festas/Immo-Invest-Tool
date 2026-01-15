@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { shouldReduceMotion, VALUE_CHANGE_FLASH_DURATION } from "@/lib/animations";
 
 interface AnimatedNumberProps {
   value: number;
@@ -10,19 +11,24 @@ interface AnimatedNumberProps {
   className?: string;
   prefix?: string;
   suffix?: string;
+  decimals?: number;
+  showColorFlash?: boolean; // Enable color flash on value change
 }
 
 function AnimatedNumber({
   value,
   format,
-  duration = 1000,
+  duration = 800,
   className,
   prefix = "",
   suffix = "",
+  decimals = 0,
+  showColorFlash = true,
 }: AnimatedNumberProps) {
-  const [displayValue, setDisplayValue] = React.useState(0);
+  const [displayValue, setDisplayValue] = React.useState(value);
   const [isAnimating, setIsAnimating] = React.useState(false);
-  const previousValue = React.useRef(0);
+  const [colorFlash, setColorFlash] = React.useState<"increase" | "decrease" | null>(null);
+  const previousValue = React.useRef(value);
   const animationRef = React.useRef<number | null>(null);
 
   React.useEffect(() => {
@@ -30,8 +36,19 @@ function AnimatedNumber({
     const endValue = value;
     const startTime = performance.now();
 
+    // Skip if value hasn't changed
+    if (startValue === endValue) {
+      return;
+    }
+
+    // Determine if value increased or decreased for color flash
+    if (showColorFlash) {
+      setColorFlash(endValue > startValue ? "increase" : "decrease");
+      setTimeout(() => setColorFlash(null), VALUE_CHANGE_FLASH_DURATION);
+    }
+
     // Check for reduced motion preference
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReducedMotion = shouldReduceMotion();
 
     if (prefersReducedMotion) {
       setDisplayValue(endValue);
@@ -45,7 +62,7 @@ function AnimatedNumber({
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Easing function (ease-out-cubic)
+      // Easing function (ease-out-cubic) for smooth deceleration
       const easeOutCubic = 1 - Math.pow(1 - progress, 3);
 
       const currentValue = startValue + (endValue - startValue) * easeOutCubic;
@@ -67,13 +84,28 @@ function AnimatedNumber({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [value, duration]);
+  }, [value, duration, showColorFlash]);
 
-  const formattedValue = format ? format(displayValue) : displayValue.toFixed(0);
+  // Format value with thousand separators (German format: 1.234.567,89)
+  const formatWithSeparators = (val: number, decimalPlaces: number = decimals): string => {
+    const [integerPart, decimalPart] = val.toFixed(decimalPlaces).split(".");
+    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return decimalPart ? `${formattedInteger},${decimalPart}` : formattedInteger;
+  };
+
+  const formattedValue = format
+    ? format(displayValue)
+    : formatWithSeparators(displayValue, decimals);
 
   return (
     <span
-      className={cn("tabular-nums transition-colors", isAnimating && "text-opacity-90", className)}
+      className={cn(
+        "tabular-nums transition-all duration-300",
+        isAnimating && "text-opacity-90",
+        colorFlash === "increase" && "animate-flash-green",
+        colorFlash === "decrease" && "animate-flash-red",
+        className
+      )}
     >
       {prefix}
       {formattedValue}
@@ -88,14 +120,16 @@ interface AnimatedPercentageProps {
   duration?: number;
   className?: string;
   showSign?: boolean;
+  showColorFlash?: boolean;
 }
 
 function AnimatedPercentage({
   value,
   decimals = 2,
-  duration = 1000,
+  duration = 800,
   className,
   showSign = false,
+  showColorFlash = true,
 }: AnimatedPercentageProps) {
   const formatPercent = (val: number) => {
     const sign = showSign && val > 0 ? "+" : "";
@@ -108,6 +142,8 @@ function AnimatedPercentage({
       format={formatPercent}
       duration={duration}
       className={className}
+      decimals={decimals}
+      showColorFlash={showColorFlash}
     />
   );
 }
@@ -118,21 +154,25 @@ interface AnimatedCurrencyProps {
   currency?: string;
   duration?: number;
   className?: string;
+  decimals?: number;
+  showColorFlash?: boolean;
 }
 
 function AnimatedCurrency({
   value,
   locale = "de-DE",
   currency = "EUR",
-  duration = 1000,
+  duration = 800,
   className,
+  decimals = 0,
+  showColorFlash = true,
 }: AnimatedCurrencyProps) {
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat(locale, {
       style: "currency",
       currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
     }).format(val);
   };
 
@@ -142,6 +182,8 @@ function AnimatedCurrency({
       format={formatCurrency}
       duration={duration}
       className={className}
+      decimals={decimals}
+      showColorFlash={showColorFlash}
     />
   );
 }

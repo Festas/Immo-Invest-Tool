@@ -64,16 +64,20 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "text-[var(--foreground)]",
               "placeholder:text-slate-400 dark:placeholder:text-slate-400",
               "ring-offset-[var(--background)]",
-              "focus-visible:border-indigo-500 focus-visible:outline-none dark:focus-visible:border-indigo-400",
-              "focus-visible:ring-4 focus-visible:ring-indigo-500/10 dark:focus-visible:ring-indigo-400/20",
+              "focus-visible:border-transparent focus-visible:outline-none",
+              "focus-visible:ring-4 focus-visible:ring-offset-0",
+              "focus-visible:ring-[length:4px] focus-visible:ring-indigo-500/20 dark:focus-visible:ring-indigo-400/30",
+              "focus-visible:shadow-[0_0_0_2px_rgb(99_102_241)] dark:focus-visible:shadow-[0_0_0_2px_rgb(129_140_248)]",
               "hover:border-[var(--border-hover)]",
               "transition-all duration-200",
               "disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-50 dark:disabled:bg-slate-700",
               prefix && "pl-10",
               suffix && "pr-14",
+              (success || error) && "pr-10",
               error &&
-                "animate-shake border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/10",
-              success && "border-green-500 focus-visible:border-green-500",
+                "animate-shake border-red-500 focus-visible:shadow-[0_0_0_2px_rgb(239_68_68)] focus-visible:ring-red-500/20",
+              success &&
+                "border-green-500 focus-visible:shadow-[0_0_0_2px_rgb(34_197_94)] focus-visible:ring-green-500/20",
               className
             )}
             ref={ref}
