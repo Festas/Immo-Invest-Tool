@@ -1,0 +1,548 @@
+{
+  "MUENCHEN": {
+    "city": "München",
+    "avgRentPerSqm": 19.5,
+    "minRent": 14.0,
+    "maxRent": 28.0,
+    "population": 1488000
+  },
+  "FRANKFURT": {
+    "city": "Frankfurt am Main",
+    "avgRentPerSqm": 16.5,
+    "minRent": 12.0,
+    "maxRent": 24.0,
+    "population": 759000
+  },
+  "STUTTGART": {
+    "city": "Stuttgart",
+    "avgRentPerSqm": 15.0,
+    "minRent": 11.0,
+    "maxRent": 22.0,
+    "population": 635000
+  },
+  "BERLIN": {
+    "city": "Berlin",
+    "avgRentPerSqm": 14.0,
+    "minRent": 9.0,
+    "maxRent": 20.0,
+    "population": 3670000
+  },
+  "HAMBURG": {
+    "city": "Hamburg",
+    "avgRentPerSqm": 14.5,
+    "minRent": 10.0,
+    "maxRent": 21.0,
+    "population": 1900000
+  },
+  "DUESSELDORF": {
+    "city": "Düsseldorf",
+    "avgRentPerSqm": 13.5,
+    "minRent": 10.0,
+    "maxRent": 19.0,
+    "population": 620000
+  },
+  "KOELN": {
+    "city": "Köln",
+    "avgRentPerSqm": 13.0,
+    "minRent": 9.5,
+    "maxRent": 18.0,
+    "population": 1085000
+  },
+  "NUERNBERG": {
+    "city": "Nürnberg",
+    "avgRentPerSqm": 11.5,
+    "minRent": 8.5,
+    "maxRent": 16.0,
+    "population": 518000
+  },
+  "HANNOVER": {
+    "city": "Hannover",
+    "avgRentPerSqm": 10.5,
+    "minRent": 7.5,
+    "maxRent": 15.0,
+    "population": 534000
+  },
+  "LEIPZIG": {
+    "city": "Leipzig",
+    "avgRentPerSqm": 8.5,
+    "minRent": 6.0,
+    "maxRent": 12.0,
+    "population": 597000
+  },
+  "DRESDEN": {
+    "city": "Dresden",
+    "avgRentPerSqm": 9.0,
+    "minRent": 6.5,
+    "maxRent": 13.0,
+    "population": 556000
+  },
+  "DORTMUND": {
+    "city": "Dortmund",
+    "avgRentPerSqm": 9.0,
+    "minRent": 6.5,
+    "maxRent": 13.0,
+    "population": 587000
+  },
+  "ESSEN": {
+    "city": "Essen",
+    "avgRentPerSqm": 8.5,
+    "minRent": 6.0,
+    "maxRent": 12.0,
+    "population": 582000
+  },
+  "FREIBURG": {
+    "city": "Freiburg im Breisgau",
+    "avgRentPerSqm": 14.5,
+    "minRent": 10.5,
+    "maxRent": 20.0,
+    "population": 231000
+  },
+  "HEIDELBERG": {
+    "city": "Heidelberg",
+    "avgRentPerSqm": 14.0,
+    "minRent": 10.0,
+    "maxRent": 19.0,
+    "population": 160000
+  },
+  "REGENSBURG": {
+    "city": "Regensburg",
+    "avgRentPerSqm": 13.5,
+    "minRent": 9.5,
+    "maxRent": 18.0,
+    "population": 153000
+  },
+  "AUGSBURG": {
+    "city": "Augsburg",
+    "avgRentPerSqm": 12.5,
+    "minRent": 9.0,
+    "maxRent": 17.0,
+    "population": 300000
+  },
+  "WUERZBURG": {
+    "city": "Würzburg",
+    "avgRentPerSqm": 12.0,
+    "minRent": 8.5,
+    "maxRent": 16.0,
+    "population": 128000
+  },
+  "MAINZ": {
+    "city": "Mainz",
+    "avgRentPerSqm": 13.5,
+    "minRent": 10.0,
+    "maxRent": 18.0,
+    "population": 220000
+  },
+  "WIESBADEN": {
+    "city": "Wiesbaden",
+    "avgRentPerSqm": 13.0,
+    "minRent": 9.5,
+    "maxRent": 17.5,
+    "population": 280000
+  },
+  "KARLSRUHE": {
+    "city": "Karlsruhe",
+    "avgRentPerSqm": 12.5,
+    "minRent": 9.0,
+    "maxRent": 17.0,
+    "population": 310000
+  },
+  "MANNHEIM": {
+    "city": "Mannheim",
+    "avgRentPerSqm": 12.0,
+    "minRent": 8.5,
+    "maxRent": 16.0,
+    "population": 310000
+  },
+  "BONN": {
+    "city": "Bonn",
+    "avgRentPerSqm": 12.5,
+    "minRent": 9.0,
+    "maxRent": 17.0,
+    "population": 330000
+  },
+  "MUENSTER": {
+    "city": "Münster",
+    "avgRentPerSqm": 12.0,
+    "minRent": 8.5,
+    "maxRent": 16.0,
+    "population": 315000
+  },
+  "AACHEN": {
+    "city": "Aachen",
+    "avgRentPerSqm": 11.0,
+    "minRent": 8.0,
+    "maxRent": 15.0,
+    "population": 250000
+  },
+  "KIEL": {
+    "city": "Kiel",
+    "avgRentPerSqm": 10.5,
+    "minRent": 7.5,
+    "maxRent": 14.0,
+    "population": 247000
+  },
+  "LUEBECK": {
+    "city": "Lübeck",
+    "avgRentPerSqm": 10.0,
+    "minRent": 7.0,
+    "maxRent": 13.5,
+    "population": 217000
+  },
+  "ROSTOCK": {
+    "city": "Rostock",
+    "avgRentPerSqm": 9.5,
+    "minRent": 7.0,
+    "maxRent": 13.0,
+    "population": 209000
+  },
+  "POTSDAM": {
+    "city": "Potsdam",
+    "avgRentPerSqm": 12.0,
+    "minRent": 8.5,
+    "maxRent": 16.0,
+    "population": 183000
+  },
+  "ERFURT": {
+    "city": "Erfurt",
+    "avgRentPerSqm": 8.5,
+    "minRent": 6.0,
+    "maxRent": 12.0,
+    "population": 214000
+  },
+  "MAGDEBURG": {
+    "city": "Magdeburg",
+    "avgRentPerSqm": 7.5,
+    "minRent": 5.5,
+    "maxRent": 10.5,
+    "population": 238000
+  },
+  "HALLE": {
+    "city": "Halle (Saale)",
+    "avgRentPerSqm": 7.0,
+    "minRent": 5.0,
+    "maxRent": 10.0,
+    "population": 239000
+  },
+  "CHEMNITZ": {
+    "city": "Chemnitz",
+    "avgRentPerSqm": 6.5,
+    "minRent": 4.5,
+    "maxRent": 9.0,
+    "population": 247000
+  },
+  "BRAUNSCHWEIG": {
+    "city": "Braunschweig",
+    "avgRentPerSqm": 10.0,
+    "minRent": 7.0,
+    "maxRent": 13.5,
+    "population": 249000
+  },
+  "BIELEFELD": {
+    "city": "Bielefeld",
+    "avgRentPerSqm": 9.0,
+    "minRent": 6.5,
+    "maxRent": 12.5,
+    "population": 334000
+  },
+  "BOCHUM": {
+    "city": "Bochum",
+    "avgRentPerSqm": 8.5,
+    "minRent": 6.0,
+    "maxRent": 12.0,
+    "population": 365000
+  },
+  "WUPPERTAL": {
+    "city": "Wuppertal",
+    "avgRentPerSqm": 8.0,
+    "minRent": 5.5,
+    "maxRent": 11.0,
+    "population": 355000
+  },
+  "DUISBURG": {
+    "city": "Duisburg",
+    "avgRentPerSqm": 7.5,
+    "minRent": 5.0,
+    "maxRent": 10.5,
+    "population": 499000
+  },
+  "GELSENKIRCHEN": {
+    "city": "Gelsenkirchen",
+    "avgRentPerSqm": 7.0,
+    "minRent": 4.5,
+    "maxRent": 9.5,
+    "population": 260000
+  },
+  "OBERHAUSEN": {
+    "city": "Oberhausen",
+    "avgRentPerSqm": 7.5,
+    "minRent": 5.0,
+    "maxRent": 10.0,
+    "population": 210000
+  },
+  "KREFELD": {
+    "city": "Krefeld",
+    "avgRentPerSqm": 8.5,
+    "minRent": 6.0,
+    "maxRent": 11.5,
+    "population": 228000
+  },
+  "MOENCHENGLADBACH": {
+    "city": "Mönchengladbach",
+    "avgRentPerSqm": 8.5,
+    "minRent": 6.0,
+    "maxRent": 11.5,
+    "population": 262000
+  },
+  "BREMEN": {
+    "city": "Bremen",
+    "avgRentPerSqm": 9.5,
+    "minRent": 7.0,
+    "maxRent": 13.0,
+    "population": 569000
+  },
+  "INGOLSTADT": {
+    "city": "Ingolstadt",
+    "avgRentPerSqm": 13.0,
+    "minRent": 9.5,
+    "maxRent": 17.5,
+    "population": 139000
+  },
+  "ULM": {
+    "city": "Ulm",
+    "avgRentPerSqm": 12.0,
+    "minRent": 8.5,
+    "maxRent": 16.0,
+    "population": 126000
+  },
+  "ERLANGEN": {
+    "city": "Erlangen",
+    "avgRentPerSqm": 12.5,
+    "minRent": 9.0,
+    "maxRent": 17.0,
+    "population": 113000
+  },
+  "FUERTH": {
+    "city": "Fürth",
+    "avgRentPerSqm": 10.5,
+    "minRent": 7.5,
+    "maxRent": 14.5,
+    "population": 129000
+  },
+  "DARMSTADT": {
+    "city": "Darmstadt",
+    "avgRentPerSqm": 13.0,
+    "minRent": 9.5,
+    "maxRent": 17.5,
+    "population": 159000
+  },
+  "OFFENBACH": {
+    "city": "Offenbach am Main",
+    "avgRentPerSqm": 12.0,
+    "minRent": 8.5,
+    "maxRent": 16.0,
+    "population": 130000
+  },
+  "LUDWIGSHAFEN": {
+    "city": "Ludwigshafen",
+    "avgRentPerSqm": 9.5,
+    "minRent": 7.0,
+    "maxRent": 13.0,
+    "population": 172000
+  },
+  "TRIER": {
+    "city": "Trier",
+    "avgRentPerSqm": 9.5,
+    "minRent": 7.0,
+    "maxRent": 13.0,
+    "population": 110000
+  },
+  "BAMBERG": {
+    "city": "Bamberg",
+    "avgRentPerSqm": 11.0,
+    "minRent": 8.0,
+    "maxRent": 15.0,
+    "population": 77000
+  },
+  "KONSTANZ": {
+    "city": "Konstanz",
+    "avgRentPerSqm": 14.0,
+    "minRent": 10.0,
+    "maxRent": 19.0,
+    "population": 85000
+  },
+  "TUEBINGEN": {
+    "city": "Tübingen",
+    "avgRentPerSqm": 13.5,
+    "minRent": 10.0,
+    "maxRent": 18.0,
+    "population": 91000
+  },
+  "JENA": {
+    "city": "Jena",
+    "avgRentPerSqm": 9.0,
+    "minRent": 6.5,
+    "maxRent": 12.5,
+    "population": 111000
+  },
+  "OLDENBURG": {
+    "city": "Oldenburg",
+    "avgRentPerSqm": 9.5,
+    "minRent": 7.0,
+    "maxRent": 13.0,
+    "population": 169000
+  },
+  "OSNABRUECK": {
+    "city": "Osnabrück",
+    "avgRentPerSqm": 9.0,
+    "minRent": 6.5,
+    "maxRent": 12.5,
+    "population": 165000
+  },
+  "PADERBORN": {
+    "city": "Paderborn",
+    "avgRentPerSqm": 9.5,
+    "minRent": 7.0,
+    "maxRent": 13.0,
+    "population": 152000
+  },
+  "REUTLINGEN": {
+    "city": "Reutlingen",
+    "avgRentPerSqm": 11.5,
+    "minRent": 8.5,
+    "maxRent": 15.5,
+    "population": 116000
+  },
+  "GOETTINGEN": {
+    "city": "Göttingen",
+    "avgRentPerSqm": 9.5,
+    "minRent": 7.0,
+    "maxRent": 13.0,
+    "population": 118000
+  },
+  "HILDESHEIM": {
+    "city": "Hildesheim",
+    "avgRentPerSqm": 8.5,
+    "minRent": 6.0,
+    "maxRent": 12.0,
+    "population": 101000
+  },
+  "WOLFSBURG": {
+    "city": "Wolfsburg",
+    "avgRentPerSqm": 9.0,
+    "minRent": 6.5,
+    "maxRent": 12.5,
+    "population": 124000
+  },
+  "SALZGITTER": {
+    "city": "Salzgitter",
+    "avgRentPerSqm": 7.5,
+    "minRent": 5.5,
+    "maxRent": 10.5,
+    "population": 104000
+  },
+  "REMSCHEID": {
+    "city": "Remscheid",
+    "avgRentPerSqm": 7.5,
+    "minRent": 5.5,
+    "maxRent": 10.5,
+    "population": 111000
+  },
+  "SOLINGEN": {
+    "city": "Solingen",
+    "avgRentPerSqm": 8.0,
+    "minRent": 6.0,
+    "maxRent": 11.0,
+    "population": 159000
+  },
+  "NEUSS": {
+    "city": "Neuss",
+    "avgRentPerSqm": 9.5,
+    "minRent": 7.0,
+    "maxRent": 13.0,
+    "population": 153000
+  },
+  "BERGISCH_GLADBACH": {
+    "city": "Bergisch Gladbach",
+    "avgRentPerSqm": 10.0,
+    "minRent": 7.5,
+    "maxRent": 13.5,
+    "population": 111000
+  },
+  "BOTTROP": {
+    "city": "Bottrop",
+    "avgRentPerSqm": 7.5,
+    "minRent": 5.5,
+    "maxRent": 10.5,
+    "population": 117000
+  },
+  "RECKLINGHAUSEN": {
+    "city": "Recklinghausen",
+    "avgRentPerSqm": 7.5,
+    "minRent": 5.5,
+    "maxRent": 10.5,
+    "population": 111000
+  },
+  "HERNE": {
+    "city": "Herne",
+    "avgRentPerSqm": 7.0,
+    "minRent": 5.0,
+    "maxRent": 10.0,
+    "population": 157000
+  },
+  "HAMM": {
+    "city": "Hamm",
+    "avgRentPerSqm": 7.5,
+    "minRent": 5.5,
+    "maxRent": 10.5,
+    "population": 179000
+  },
+  "HAGEN": {
+    "city": "Hagen",
+    "avgRentPerSqm": 7.5,
+    "minRent": 5.5,
+    "maxRent": 10.5,
+    "population": 188000
+  },
+  "MUELHEIM": {
+    "city": "Mülheim an der Ruhr",
+    "avgRentPerSqm": 8.0,
+    "minRent": 6.0,
+    "maxRent": 11.0,
+    "population": 170000
+  },
+  "SCHWERIN": {
+    "city": "Schwerin",
+    "avgRentPerSqm": 7.5,
+    "minRent": 5.5,
+    "maxRent": 10.5,
+    "population": 96000
+  },
+  "COTTBUS": {
+    "city": "Cottbus",
+    "avgRentPerSqm": 6.5,
+    "minRent": 4.5,
+    "maxRent": 9.0,
+    "population": 99000
+  },
+  "GERA": {
+    "city": "Gera",
+    "avgRentPerSqm": 6.0,
+    "minRent": 4.0,
+    "maxRent": 8.5,
+    "population": 93000
+  },
+  "ZWICKAU": {
+    "city": "Zwickau",
+    "avgRentPerSqm": 6.0,
+    "minRent": 4.0,
+    "maxRent": 8.5,
+    "population": 88000
+  },
+  "SONSTIGE": {
+    "city": "Sonstige / Ländlich",
+    "avgRentPerSqm": 7.5,
+    "minRent": 5.0,
+    "maxRent": 11.0,
+    "population": 0
+  }
+}
