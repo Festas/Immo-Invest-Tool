@@ -55,8 +55,9 @@ function MapMarkers({
   useEffect(() => {
     // Import Leaflet and create icons only on client side
     import("leaflet").then((L) => {
-      // Fix Leaflet default marker icons
-      // @ts-expect-error - Deleting prototype property for icon fix
+      // Fix Leaflet default marker icons for Next.js/Webpack
+      // Leaflet expects marker icons to be in a relative path which doesn't work with bundlers
+      // @ts-expect-error - Deleting _getIconUrl prototype method to override default behavior
       delete L.Icon.Default.prototype._getIconUrl;
 
       L.Icon.Default.mergeOptions({
@@ -64,6 +65,28 @@ function MapMarkers({
         iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
         shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
       });
+
+      // Helper function to create POI icons with consistent styling
+      const createPOIIcon = (color: string, emoji: string): DivIcon => {
+        return L.divIcon({
+          className: "custom-poi-marker",
+          html: `<div style="
+            background-color: ${color};
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          ">${emoji}</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+          popupAnchor: [0, -14],
+        });
+      };
 
       // Create main location marker icon
       const mainIcon = L.divIcon({
@@ -85,94 +108,12 @@ function MapMarkers({
         popupAnchor: [0, -32],
       });
 
-      // Create POI icons
-      const colors = {
-        school: "#8b5cf6",
-        transit: "#3b82f6",
-        supermarket: "#f97316",
-        hospital: "#ef4444",
-      };
-
-      const emojis = {
-        school: "🎓",
-        transit: "🚇",
-        supermarket: "🛒",
-        hospital: "🏥",
-      };
-
+      // Create POI icons using helper function
       const poiIcons: Record<POI["type"], DivIcon> = {
-        school: L.divIcon({
-          className: "custom-poi-marker",
-          html: `<div style="
-            background-color: ${colors.school};
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-          ">${emojis.school}</div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-          popupAnchor: [0, -14],
-        }),
-        transit: L.divIcon({
-          className: "custom-poi-marker",
-          html: `<div style="
-            background-color: ${colors.transit};
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-          ">${emojis.transit}</div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-          popupAnchor: [0, -14],
-        }),
-        supermarket: L.divIcon({
-          className: "custom-poi-marker",
-          html: `<div style="
-            background-color: ${colors.supermarket};
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-          ">${emojis.supermarket}</div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-          popupAnchor: [0, -14],
-        }),
-        hospital: L.divIcon({
-          className: "custom-poi-marker",
-          html: `<div style="
-            background-color: ${colors.hospital};
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-          ">${emojis.hospital}</div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-          popupAnchor: [0, -14],
-        }),
+        school: createPOIIcon("#8b5cf6", "🎓"),
+        transit: createPOIIcon("#3b82f6", "🚇"),
+        supermarket: createPOIIcon("#f97316", "🛒"),
+        hospital: createPOIIcon("#ef4444", "🏥"),
       };
 
       setIcons({ mainIcon, poiIcons });
