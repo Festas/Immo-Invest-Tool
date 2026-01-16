@@ -20,6 +20,9 @@ import {
   AfARates,
 } from "@/types";
 
+// Constants
+const OPERATING_COSTS_INFLATION_RATE = 0.02; // 2% annual inflation for operating costs
+
 // Reusable currency formatter for German locale
 const currencyFormatter = new Intl.NumberFormat("de-DE", {
   style: "currency",
@@ -495,7 +498,7 @@ export function calculateExtendedCashflowProjection(
   if (amortizationSchedule.length === 0) return [];
 
   const points: ExtendedCashflowPoint[] = [];
-  const inflationRate = 0.02; // 2% annual inflation for operating costs
+  const inflationRate = OPERATING_COSTS_INFLATION_RATE;
   const rentIncreaseRate = input.expectedRentIncreasePercent / 100;
   const appreciationRate = input.expectedAppreciationPercent / 100;
 
@@ -1015,4 +1018,24 @@ export function calculateLocationAnalysis(input: LocationAnalysisInput): Locatio
     weaknesses,
     riskLevel,
   };
+}
+
+// ============================================
+// Utility Functions for Charts
+// ============================================
+
+/**
+ * Calculate loan amount from investment volume and equity
+ */
+export function calculateLoanAmount(totalInvestment: number, equity: number): number {
+  return totalInvestment - equity;
+}
+
+/**
+ * Determine optimal chart interval based on total years
+ */
+export function getChartInterval(totalYears: number): number {
+  if (totalYears > 30) return 5;
+  if (totalYears > 15) return 3;
+  return 2;
 }

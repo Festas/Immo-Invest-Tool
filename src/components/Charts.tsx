@@ -9,6 +9,8 @@ import {
   calculateYearsToFullRepayment,
   generateFullAmortizationSchedule,
   calculateExtendedCashflowProjection,
+  calculateLoanAmount,
+  getChartInterval,
 } from "@/lib/calculations";
 import { formatCurrency } from "@/lib/utils";
 import {
@@ -70,7 +72,10 @@ export function AmortizationChart() {
   const [showFullRepayment, setShowFullRepayment] = React.useState(false);
 
   // Calculate loan amount
-  const loanAmount = output.investmentVolume.totalInvestment - currentInput.equity;
+  const loanAmount = calculateLoanAmount(
+    output.investmentVolume.totalInvestment,
+    currentInput.equity
+  );
 
   // Get appropriate schedule based on toggle
   const schedule = showFullRepayment
@@ -94,7 +99,7 @@ export function AmortizationChart() {
 
   // Determine interval based on total years
   const totalYears = schedule.length;
-  const interval = totalYears > 30 ? 5 : totalYears > 15 ? 3 : 2;
+  const interval = getChartInterval(totalYears);
 
   // Select key years for chart
   const chartData = schedule
@@ -379,7 +384,10 @@ export function CashflowDevelopmentChart() {
   const isDark = resolvedTheme === "dark";
 
   // Calculate loan amount
-  const loanAmount = output.investmentVolume.totalInvestment - currentInput.equity;
+  const loanAmount = calculateLoanAmount(
+    output.investmentVolume.totalInvestment,
+    currentInput.equity
+  );
 
   // Generate full amortization schedule
   const fullSchedule = generateFullAmortizationSchedule(
@@ -402,7 +410,7 @@ export function CashflowDevelopmentChart() {
   const referenceLineColor = isDark ? "#64748b" : "#94a3b8";
 
   // Prepare chart data - sample every few years for readability
-  const interval = cashflowProjection.length > 30 ? 5 : cashflowProjection.length > 15 ? 3 : 2;
+  const interval = getChartInterval(cashflowProjection.length);
   const chartData = cashflowProjection
     .filter(
       (_, index) => index % interval === 0 || index === cashflowProjection.length - 1 || index === 0
@@ -538,7 +546,10 @@ export function InterestPrincipalChart() {
   const isDark = resolvedTheme === "dark";
 
   // Calculate loan amount
-  const loanAmount = output.investmentVolume.totalInvestment - currentInput.equity;
+  const loanAmount = calculateLoanAmount(
+    output.investmentVolume.totalInvestment,
+    currentInput.equity
+  );
 
   // Generate full amortization schedule
   const fullSchedule = generateFullAmortizationSchedule(
@@ -553,7 +564,7 @@ export function InterestPrincipalChart() {
   const axisColor = isDark ? "#94a3b8" : "#64748b";
 
   // Prepare chart data - sample every few years for readability
-  const interval = fullSchedule.length > 30 ? 5 : fullSchedule.length > 15 ? 3 : 2;
+  const interval = getChartInterval(fullSchedule.length);
   const chartData = fullSchedule
     .filter(
       (_, index) => index % interval === 0 || index === fullSchedule.length - 1 || index === 0
@@ -666,7 +677,10 @@ export function EquityBuildupChart() {
   const isDark = resolvedTheme === "dark";
 
   // Calculate loan amount
-  const loanAmount = output.investmentVolume.totalInvestment - currentInput.equity;
+  const loanAmount = calculateLoanAmount(
+    output.investmentVolume.totalInvestment,
+    currentInput.equity
+  );
 
   // Generate full amortization schedule
   const fullSchedule = generateFullAmortizationSchedule(
@@ -688,7 +702,7 @@ export function EquityBuildupChart() {
   const axisColor = isDark ? "#94a3b8" : "#64748b";
 
   // Prepare chart data
-  const interval = cashflowProjection.length > 30 ? 5 : cashflowProjection.length > 15 ? 3 : 2;
+  const interval = getChartInterval(cashflowProjection.length);
   const chartData = React.useMemo(() => {
     const filtered = cashflowProjection.filter(
       (_, index) => index % interval === 0 || index === cashflowProjection.length - 1 || index === 0
