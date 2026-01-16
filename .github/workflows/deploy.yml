@@ -160,20 +160,8 @@ jobs:
             docker compose down --remove-orphans || true
             docker compose up -d
 
-            echo "Waiting for containers to be ready..."
-            # Wait for database health check (depends_on handles this, but give it a moment)
-            for i in {1..30}; do
-                if docker compose exec -T db pg_isready -U immo_user -d immo_invest > /dev/null 2>&1; then
-                    echo "✅ Database is ready."
-                    break
-                fi
-                if [ $i -eq 30 ]; then
-                    echo "❌ Database did not become ready in time."
-                    docker logs immocalc-db --tail 30
-                    exit 1
-                fi
-                sleep 1
-            done
+            echo "Waiting for containers to start..."
+            sleep 3
 
             # Kurzer Check ob die Container laufen
             if [ "$(docker inspect -f '{{.State.Running}}' immocalc 2>/dev/null)" = "true" ]; then
@@ -194,14 +182,21 @@ jobs:
 
             echo "[5/5] Running database migrations..."
             # Run Prisma migrations
-            docker compose exec -T immocalc npx prisma migrate deploy || {
-                echo "⚠️ Migration failed. Attempting to push schema to database..."
-                docker compose exec -T immocalc npx prisma db push || {
-                    echo "❌ Database setup failed!"
+            if ! docker compose exec -T immocalc npx prisma migrate deploy 2>&1; then
+                echo "⚠️ Migration deployment failed. This might be the first deployment."
+                echo "Attempting to initialize database schema with db push..."
+                if ! docker compose exec -T immocalc npx prisma db push 2>&1; then
+                    echo "❌ Database setup failed! Showing logs:"
+                    echo "=== App Container Logs ==="
                     docker logs immocalc --tail 50
+                    echo "=== Database Container Logs ==="
+                    docker logs immocalc-db --tail 30
                     exit 1
-                }
-            }
+                fi
+                echo "✅ Database schema initialized successfully."
+            else
+                echo "✅ Migrations applied successfully."
+            fi
 
             echo "✅ Deployment finished successfully!"
 
