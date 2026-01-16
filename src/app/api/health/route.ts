@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
-import { getStorageDir } from "@/lib/auth/storage";
+import prisma from "@/lib/db/prisma";
 
 /**
  * Health check endpoint
- * Checks backend server, database/storage, and file system accessibility
+ * Checks backend server, database connectivity, and configuration
  */
 
 interface HealthCheckResult {
@@ -16,13 +14,6 @@ interface HealthCheckResult {
       status: "up";
       uptime: number;
     };
-    storage: {
-      status: "accessible" | "inaccessible" | "error";
-      path: string;
-      writable: boolean;
-      readable: boolean;
-      error?: string;
-    };
     database: {
       status: "accessible" | "inaccessible" | "error";
       userCount?: number;
@@ -32,6 +23,7 @@ interface HealthCheckResult {
       status: "complete" | "partial" | "missing";
       required: {
         JWT_SECRET: boolean;
+        DATABASE_URL: boolean;
       };
       optional: {
         SESSION_SECRET: boolean;
@@ -43,93 +35,21 @@ interface HealthCheckResult {
   environment: {
     nodeEnv: string;
     hasJwtSecret: boolean;
+    hasDatabaseUrl: boolean;
   };
 }
 
 /**
- * Check storage accessibility
- */
-async function checkStorage(): Promise<HealthCheckResult["checks"]["storage"]> {
-  const storagePath = getStorageDir();
-
-  try {
-    // Check if directory exists
-    try {
-      await fs.access(storagePath);
-    } catch {
-      // Directory doesn't exist, try to create it
-      await fs.mkdir(storagePath, { recursive: true });
-    }
-
-    // Check if directory is readable
-    let readable = false;
-    try {
-      await fs.access(storagePath, fs.constants.R_OK);
-      readable = true;
-    } catch {
-      readable = false;
-    }
-
-    // Check if directory is writable
-    let writable = false;
-    try {
-      await fs.access(storagePath, fs.constants.W_OK);
-      writable = true;
-    } catch {
-      writable = false;
-    }
-
-    // Determine overall status
-    const status = readable && writable ? "accessible" : "inaccessible";
-
-    return {
-      status,
-      path: storagePath,
-      readable,
-      writable,
-    };
-  } catch (error) {
-    return {
-      status: "error",
-      path: storagePath,
-      readable: false,
-      writable: false,
-      error: error instanceof Error ? error.message : String(error),
-    };
-  }
-}
-
-/**
- * Check database/user data accessibility
+ * Check database connectivity and accessibility
  */
 async function checkDatabase(): Promise<HealthCheckResult["checks"]["database"]> {
-  const storagePath = getStorageDir();
-  const usersFilePath = path.join(storagePath, "users.json");
-
   try {
-    // Try to read users file
-    try {
-      const data = await fs.readFile(usersFilePath, "utf-8");
-      const users = JSON.parse(data);
-      return {
-        status: "accessible",
-        userCount: Array.isArray(users) ? users.length : 0,
-      };
-    } catch (error) {
-      // File doesn't exist yet (no users registered) - this is OK
-      if (
-        error instanceof Error &&
-        "code" in error &&
-        (error as NodeJS.ErrnoException).code === "ENOENT"
-      ) {
-        return {
-          status: "accessible",
-          userCount: 0,
-        };
-      }
-      // Other errors (permission, corruption, etc.)
-      throw error;
-    }
+    // Try to count users (simple query to test database connection)
+    const userCount = await prisma.user.count();
+    return {
+      status: "accessible",
+      userCount,
+    };
   } catch (error) {
     return {
       status: "error",
@@ -147,6 +67,7 @@ function checkSecrets(): HealthCheckResult["checks"]["secrets"] {
 
   // Required secrets
   const hasJwtSecret = !!process.env.JWT_SECRET;
+  const hasDatabaseUrl = !!process.env.DATABASE_URL;
 
   // Optional secrets
   const hasSessionSecret = !!process.env.SESSION_SECRET;
@@ -155,6 +76,10 @@ function checkSecrets(): HealthCheckResult["checks"]["secrets"] {
   // Generate warnings for missing secrets
   if (!hasJwtSecret && isProduction) {
     warnings.push("JWT_SECRET is required in production for secure authentication");
+  }
+
+  if (!hasDatabaseUrl) {
+    warnings.push("DATABASE_URL is required for database connectivity");
   }
 
   if (!hasSessionSecret && isProduction) {
@@ -169,7 +94,7 @@ function checkSecrets(): HealthCheckResult["checks"]["secrets"] {
 
   // Determine overall status
   let status: "complete" | "partial" | "missing";
-  if (hasJwtSecret) {
+  if (hasJwtSecret && hasDatabaseUrl) {
     status = hasSessionSecret && hasDomain ? "complete" : "partial";
   } else {
     status = "missing";
@@ -179,6 +104,7 @@ function checkSecrets(): HealthCheckResult["checks"]["secrets"] {
     status,
     required: {
       JWT_SECRET: hasJwtSecret,
+      DATABASE_URL: hasDatabaseUrl,
     },
     optional: {
       SESSION_SECRET: hasSessionSecret,
@@ -193,25 +119,15 @@ export async function GET() {
 
   try {
     // Check all components
-    const [storageCheck, databaseCheck] = await Promise.all([checkStorage(), checkDatabase()]);
+    const databaseCheck = await checkDatabase();
     const secretsCheck = checkSecrets();
 
     // Determine overall health status
     let overallStatus: HealthCheckResult["status"] = "healthy";
 
-    if (
-      storageCheck.status === "error" ||
-      databaseCheck.status === "error" ||
-      !storageCheck.writable ||
-      !storageCheck.readable ||
-      secretsCheck.status === "missing"
-    ) {
+    if (databaseCheck.status === "error" || secretsCheck.status === "missing") {
       overallStatus = "unhealthy";
-    } else if (
-      storageCheck.status === "inaccessible" ||
-      databaseCheck.status === "inaccessible" ||
-      secretsCheck.status === "partial"
-    ) {
+    } else if (databaseCheck.status === "inaccessible" || secretsCheck.status === "partial") {
       overallStatus = "degraded";
     }
 
@@ -223,13 +139,13 @@ export async function GET() {
           status: "up",
           uptime: process.uptime(),
         },
-        storage: storageCheck,
         database: databaseCheck,
         secrets: secretsCheck,
       },
       environment: {
         nodeEnv: process.env.NODE_ENV || "development",
         hasJwtSecret: !!process.env.JWT_SECRET,
+        hasDatabaseUrl: !!process.env.DATABASE_URL,
       },
     };
 
@@ -242,11 +158,8 @@ export async function GET() {
       secretsCheck.warnings.length > 0
     ) {
       console.info(`[Health Check] Status: ${overallStatus}, Duration: ${duration}ms`, {
-        storage: storageCheck.status,
         database: databaseCheck.status,
         secrets: secretsCheck.status,
-        writable: storageCheck.writable,
-        readable: storageCheck.readable,
         warnings: secretsCheck.warnings.length > 0 ? secretsCheck.warnings : undefined,
       });
     }

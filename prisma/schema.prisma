@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String     @id @default(uuid())
+  username            String     @unique
+  email               String?    @unique
+  passwordHash        String
+  
+  // Profile
+  displayName         String?
+  
+  // Security
+  isActive            Boolean    @default(true)
+  failedLoginAttempts Int        @default(0)
+  lockedUntil         DateTime?
+  lastLoginAt         DateTime?
+  
+  // Timestamps
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  
+  // Relations
+  properties          Property[]
+  scenarios           Scenario[]
+  
+  @@index([username])
+  @@index([email])
+}
+
+model Property {
+  id          String    @id @default(uuid())
+  userId      String
+  
+  // Metadata
+  name        String
+  address     String?
+  postalCode  String?
+  
+  // All property input data stored as JSON for flexibility
+  // This matches the existing PropertyInput interface
+  inputData   Json
+  
+  // Calculated output data (optional, can be recalculated)
+  outputData  Json?
+  
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scenarios   Scenario[]
+  
+  @@index([userId])
+  @@index([postalCode])
+}
+
+model Scenario {
+  id         String    @id @default(uuid())
+  userId     String
+  propertyId String?
+  
+  name       String
+  inputData  Json
+  outputData Json?
+  
+  createdAt  DateTime  @default(now())
+  
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([propertyId])
+}
