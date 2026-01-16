@@ -507,7 +507,9 @@ export function calculateExtendedCashflowProjection(
 
   const years = Math.min(yearsToProject, amortizationSchedule.length);
 
-  // Calculate AfA (depreciation) - same for all years
+  // Calculate AfA (depreciation) - constant for simplified calculation
+  // Note: Real estate AfA typically depends on building age, usage period, and type
+  // This implementation uses a constant annual rate for simplicity
   const buildingValue = (input.purchasePrice * input.buildingSharePercent) / 100;
   const afaRate = AfARates[input.afaType].rate;
   const afaAmount = (buildingValue * afaRate) / 100;
@@ -1080,4 +1082,21 @@ export function getChartInterval(totalYears: number): number {
   if (totalYears > 30) return 5;
   if (totalYears > 15) return 3;
   return 2;
+}
+
+/**
+ * Transform cashflow projection to include cumulative cashflow
+ * Useful for charting cumulative cashflow over time
+ */
+export function addCumulativeCashflow(
+  cashflowProjection: ExtendedCashflowPoint[]
+): Array<ExtendedCashflowPoint & { cumulativeCashflow: number }> {
+  let cumulative = 0;
+  return cashflowProjection.map((point) => {
+    cumulative += point.cashflowAfterTax;
+    return {
+      ...point,
+      cumulativeCashflow: cumulative,
+    };
+  });
 }

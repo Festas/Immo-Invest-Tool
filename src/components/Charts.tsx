@@ -11,6 +11,7 @@ import {
   calculateExtendedCashflowProjection,
   calculateLoanAmount,
   getChartInterval,
+  addCumulativeCashflow,
 } from "@/lib/calculations";
 import { formatCurrency } from "@/lib/utils";
 import {
@@ -261,17 +262,17 @@ export function CumulativeCashflowChart() {
   const referenceLineColor = isDark ? "#64748b" : "#94a3b8";
 
   // Calculate cumulative cashflow from dynamic projection
-  const chartData = cashflowProjection.map((point, index) => {
-    const cumulativeCashflow = cashflowProjection
-      .slice(0, index + 1)
-      .reduce((sum, p) => sum + p.cashflowAfterTax, 0);
-    return {
-      year: `Jahr ${point.year}`,
-      Cashflow: Math.round(cumulativeCashflow),
-      Nettovermögen: Math.round(point.equityValue + cumulativeCashflow),
-      Immobilienwert: Math.round(point.propertyValue),
-    };
-  });
+  const projectionsWithCumulative = React.useMemo(
+    () => addCumulativeCashflow(cashflowProjection),
+    [cashflowProjection]
+  );
+
+  const chartData = projectionsWithCumulative.map((point) => ({
+    year: `Jahr ${point.year}`,
+    Cashflow: Math.round(point.cumulativeCashflow),
+    Nettovermögen: Math.round(point.equityValue + point.cumulativeCashflow),
+    Immobilienwert: Math.round(point.propertyValue),
+  }));
 
   const finalCashflow = chartData[chartData.length - 1]?.Cashflow || 0;
   const finalNetWorth = chartData[chartData.length - 1]?.Nettovermögen || 0;
