@@ -22,6 +22,7 @@ import {
 
 // Constants
 const OPERATING_COSTS_INFLATION_RATE = 0.02; // 2% annual inflation for operating costs
+const DEBT_FREE_YEARS_TO_ADD = 1; // Number of debt-free years to show after complete repayment
 
 // Reusable currency formatter for German locale
 const currencyFormatter = new Intl.NumberFormat("de-DE", {
@@ -334,15 +335,12 @@ export function calculatePropertyKPIs(input: PropertyInput): PropertyOutput {
     input.fixedInterestPeriod
   );
 
-  // 5. Calculate average interest for tax calculation
-  const averageAnnualInterest =
-    amortizationSchedule.length > 0
-      ? amortizationSchedule.reduce((sum, year) => sum + year.interestPayment, 0) /
-        amortizationSchedule.length
-      : 0;
+  // 5. Use Year 1 interest for tax calculation (consistent with KPI display and charts)
+  const year1Interest =
+    amortizationSchedule.length > 0 ? amortizationSchedule[0].interestPayment : 0;
 
   // 6. Calculate tax effects
-  const tax = calculateTax(input, averageAnnualInterest);
+  const tax = calculateTax(input, year1Interest);
 
   // 7. Calculate cashflow
   const cashflow = calculateCashflow(input, financing, tax);
@@ -509,6 +507,13 @@ export function calculateExtendedCashflowProjection(
 
   const years = Math.min(yearsToProject, amortizationSchedule.length);
 
+  // Calculate AfA (depreciation) - constant for simplified calculation
+  // Note: Real estate AfA typically depends on building age, usage period, and type
+  // This implementation uses a constant annual rate for simplicity
+  const buildingValue = (input.purchasePrice * input.buildingSharePercent) / 100;
+  const afaRate = AfARates[input.afaType].rate;
+  const afaAmount = (buildingValue * afaRate) / 100;
+
   for (let i = 0; i < years; i++) {
     const yearData = amortizationSchedule[i];
 
@@ -527,11 +532,6 @@ export function calculateExtendedCashflowProjection(
     const interestPayment = yearData.interestPayment;
     const principalPayment = yearData.principalPayment;
     const remainingDebt = yearData.endingBalance;
-
-    // Calculate AfA (depreciation)
-    const buildingValue = (input.purchasePrice * input.buildingSharePercent) / 100;
-    const afaRate = AfARates[input.afaType].rate;
-    const afaAmount = (buildingValue * afaRate) / 100;
 
     // Calculate tax deductions
     const totalDeductions = afaAmount + interestPayment + currentOperatingCosts;
@@ -563,6 +563,50 @@ export function calculateExtendedCashflowProjection(
       equityValue,
       afaEffect: afaAmount,
       totalTaxEffect: taxEffect,
+      isDebtFree: false,
+    });
+  }
+
+  // Add debt-free years after complete repayment
+  for (let extraYear = 1; extraYear <= DEBT_FREE_YEARS_TO_ADD; extraYear++) {
+    const year = amortizationSchedule.length + extraYear;
+
+    // Continue to apply annual increases
+    currentRent *= 1 + rentIncreaseRate;
+    currentOperatingCosts *= 1 + inflationRate;
+    propertyValue *= 1 + appreciationRate;
+
+    const vacancyDeduction = (currentRent * input.vacancyRiskPercent) / 100;
+    const netRent = currentRent - vacancyDeduction;
+
+    // Calculate tax deductions (only AfA and operating costs, no interest)
+    const totalDeductions = afaAmount + currentOperatingCosts;
+    const rentalIncomeAfterDeductions = currentRent - totalDeductions;
+
+    // Tax effect: negative income = tax benefit, positive income = tax liability
+    const taxEffect = -(rentalIncomeAfterDeductions * input.personalTaxRate) / 100;
+
+    // Cashflow without debt service
+    const cashflowBeforeTax = netRent - currentOperatingCosts; // No debt service!
+    const cashflowAfterTax = cashflowBeforeTax + taxEffect;
+    const monthlyCashflowAfterTax = cashflowAfterTax / 12;
+
+    points.push({
+      year,
+      grossRent: currentRent,
+      netRent,
+      interestPayment: 0, // No interest payment when debt-free
+      principalPayment: 0, // No principal payment when debt-free
+      operatingCosts: currentOperatingCosts,
+      cashflowBeforeTax,
+      cashflowAfterTax,
+      monthlyCashflowAfterTax,
+      remainingDebt: 0, // No remaining debt when debt-free
+      propertyValue,
+      equityValue: propertyValue, // Full property value = equity when debt-free
+      afaEffect: afaAmount,
+      totalTaxEffect: taxEffect,
+      isDebtFree: true,
     });
   }
 
@@ -1038,4 +1082,21 @@ export function getChartInterval(totalYears: number): number {
   if (totalYears > 30) return 5;
   if (totalYears > 15) return 3;
   return 2;
+}
+
+/**
+ * Transform cashflow projection to include cumulative cashflow
+ * Useful for charting cumulative cashflow over time
+ */
+export function addCumulativeCashflow(
+  cashflowProjection: ExtendedCashflowPoint[]
+): Array<ExtendedCashflowPoint & { cumulativeCashflow: number }> {
+  let cumulative = 0;
+  return cashflowProjection.map((point) => {
+    cumulative += point.cashflowAfterTax;
+    return {
+      ...point,
+      cumulativeCashflow: cumulative,
+    };
+  });
 }

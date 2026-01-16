@@ -653,6 +653,30 @@ describe("calculatePropertyKPIs", () => {
     expect(output.financing.loanAmount).toBeGreaterThan(input.purchasePrice);
     expect(output.yields.returnOnEquity).toBe(0); // No equity
   });
+
+  it("should use Year 1 interest for tax calculation instead of average", () => {
+    const input = createStandardInput();
+    input.purchasePrice = 300000;
+    input.interestRate = 4.0;
+    input.repaymentRate = 2.0;
+    input.fixedInterestPeriod = 10;
+
+    const output = calculatePropertyKPIs(input);
+
+    // Calculate expected Year 1 interest
+    const loanAmount = output.investmentVolume.totalInvestment - input.equity;
+    const expectedYear1Interest = loanAmount * (input.interestRate / 100);
+
+    // Tax should be based on Year 1 interest
+    expect(output.amortizationSchedule[0].interestPayment).toBeCloseTo(expectedYear1Interest, 0);
+    expect(output.tax.deductibleInterest).toBeCloseTo(expectedYear1Interest, 0);
+
+    // Verify that Year 1 interest is different from the average
+    const averageInterest =
+      output.amortizationSchedule.reduce((sum, year) => sum + year.interestPayment, 0) /
+      output.amortizationSchedule.length;
+    expect(output.amortizationSchedule[0].interestPayment).toBeGreaterThan(averageInterest);
+  });
 });
 
 // ===========================================
@@ -1644,9 +1668,15 @@ describe("calculateExtendedCashflowProjection", () => {
     const amortizationSchedule = generateAmortizationSchedule(200000, 3.5, 2.0, 10);
     const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 10);
 
-    expect(projection.length).toBe(10);
+    // Should include 10 years from schedule + 1 debt-free year
+    expect(projection.length).toBe(11);
     // Rent should increase over time
     expect(projection[9].grossRent).toBeGreaterThan(projection[0].grossRent);
+    // Last year should be marked as debt-free
+    expect(projection[10].isDebtFree).toBe(true);
+    expect(projection[10].remainingDebt).toBe(0);
+    expect(projection[10].interestPayment).toBe(0);
+    expect(projection[10].principalPayment).toBe(0);
   });
 
   it("should show decreasing interest payments over time", () => {
@@ -1725,5 +1755,36 @@ describe("calculateExtendedCashflowProjection", () => {
     expect(projection[14].monthlyCashflowAfterTax).toBeGreaterThan(
       projection[0].monthlyCashflowAfterTax
     );
+  });
+
+  it("should add debt-free year after complete repayment", () => {
+    const input = createStandardInput();
+    input.coldRentActual = 1000;
+    input.expectedRentIncreasePercent = 2.0;
+
+    const amortizationSchedule = generateAmortizationSchedule(100000, 3.5, 2.0, 10);
+    const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 10);
+
+    // Should have amortization years + 1 debt-free year
+    expect(projection.length).toBe(11);
+
+    // Last year should be debt-free
+    const lastYear = projection[projection.length - 1];
+    expect(lastYear.isDebtFree).toBe(true);
+    expect(lastYear.remainingDebt).toBe(0);
+    expect(lastYear.interestPayment).toBe(0);
+    expect(lastYear.principalPayment).toBe(0);
+
+    // Debt-free year should have higher cashflow (no debt service)
+    const lastDebtYear = projection[projection.length - 2];
+    expect(lastYear.cashflowAfterTax).toBeGreaterThan(lastDebtYear.cashflowAfterTax);
+
+    // Equity should equal property value when debt-free
+    expect(lastYear.equityValue).toBe(lastYear.propertyValue);
+
+    // Years before last should NOT be marked as debt-free
+    for (let i = 0; i < projection.length - 1; i++) {
+      expect(projection[i].isDebtFree).toBe(false);
+    }
   });
 });
