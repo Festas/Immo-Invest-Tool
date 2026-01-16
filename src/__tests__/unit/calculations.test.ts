@@ -1368,6 +1368,7 @@ describe("Edge Cases", () => {
         notaryPercent: 0,
         propertyTransferTaxPercent: 0,
         renovationCosts: 0,
+        isFamilyPurchase: false,
         equity: 0,
         loanAmount: 0,
         interestRate: 0,
@@ -1381,6 +1382,8 @@ describe("Edge Cases", () => {
         personalTaxRate: 0,
         buildingSharePercent: 0,
         afaType: "ALTBAU_AB_1925",
+        expectedAppreciationPercent: 0,
+        expectedRentIncreasePercent: 0,
       };
 
       const output = calculatePropertyKPIs(input);
