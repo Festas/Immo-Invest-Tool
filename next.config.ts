@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
               default-src 'self';
               img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com;
               style-src 'self' 'unsafe-inline';
-              script-src 'self' 'unsafe-eval' 'unsafe-inline';
+              script-src 'self';
               connect-src 'self' https://openplzapi.org https://overpass-api.de https://*.tile.openstreetmap.org;
             `
               .replace(/\n/g, " ")

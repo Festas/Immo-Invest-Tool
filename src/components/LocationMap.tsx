@@ -2,6 +2,74 @@
 
 import React, { useEffect, useState } from "react";
 import { POI } from "@/lib/api/overpass";
+import type { DivIcon } from "leaflet";
+
+// Type definitions for dynamically loaded components
+interface MapContainerProps {
+  center: [number, number];
+  zoom: number;
+  className: string;
+  scrollWheelZoom: boolean;
+  style: React.CSSProperties;
+  children: React.ReactNode;
+}
+
+interface TileLayerProps {
+  attribution: string;
+  url: string;
+  maxZoom: number;
+  tileSize: number;
+  zoomOffset: number;
+}
+
+interface MarkerProps {
+  position: [number, number];
+  icon: DivIcon;
+  children: React.ReactNode;
+}
+
+interface PopupProps {
+  children: React.ReactNode;
+}
+
+interface CircleProps {
+  center: [number, number];
+  radius: number;
+  pathOptions: {
+    color: string;
+    fillColor: string;
+    fillOpacity: number;
+    weight: number;
+  };
+}
+
+interface LeafletComponents {
+  MapContainer: React.ComponentType<MapContainerProps>;
+  TileLayer: React.ComponentType<TileLayerProps>;
+  Marker: React.ComponentType<MarkerProps>;
+  Popup: React.ComponentType<PopupProps>;
+  Circle: React.ComponentType<CircleProps>;
+}
+
+interface LeafletLib {
+  divIcon: (options: {
+    className: string;
+    html: string;
+    iconSize: [number, number];
+    iconAnchor: [number, number];
+    popupAnchor: [number, number];
+  }) => DivIcon;
+  Icon: {
+    Default: {
+      prototype: { _getIconUrl?: () => void };
+      mergeOptions: (options: {
+        iconUrl: string;
+        iconRetinaUrl: string;
+        shadowUrl: string;
+      }) => void;
+    };
+  };
+}
 
 interface LocationMapProps {
   latitude: number;
@@ -34,19 +102,17 @@ export function LocationMap({
   radiusMeters = 1000,
   className = "h-[300px] w-full rounded-lg overflow-hidden",
 }: LocationMapProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [MapComponents, setMapComponents] = useState<any>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [L, setL] = useState<any>(null);
+  const [MapComponents, setMapComponents] = useState<LeafletComponents | null>(null);
+  const [L, setL] = useState<LeafletLib | null>(null);
 
   // Load Leaflet and react-leaflet on client side only
   useEffect(() => {
     const loadMap = async () => {
       // Import Leaflet
-      const leaflet = await import("leaflet");
+      const leaflet = (await import("leaflet")) as unknown as LeafletLib;
 
-      // Fix default marker icons
-      // @ts-expect-error - Deleting _getIconUrl prototype method to override default behavior
+      // Fix default marker icons by deleting _getIconUrl from the prototype
+      // This is necessary because Leaflet expects marker icons in a relative path which doesn't work with bundlers
       delete leaflet.Icon.Default.prototype._getIconUrl;
       leaflet.Icon.Default.mergeOptions({
         iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -57,10 +123,9 @@ export function LocationMap({
       setL(leaflet);
 
       // Import react-leaflet components
-      const { MapContainer, TileLayer, Marker, Popup, Circle, useMap } =
-        await import("react-leaflet");
+      const { MapContainer, TileLayer, Marker, Popup, Circle } = await import("react-leaflet");
 
-      setMapComponents({ MapContainer, TileLayer, Marker, Popup, Circle, useMap });
+      setMapComponents({ MapContainer, TileLayer, Marker, Popup, Circle });
     };
 
     loadMap();
