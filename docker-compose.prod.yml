@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: immo_user
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD environment variable is required}
       POSTGRES_DB: immo_invest
     volumes:
       - postgres-data:/var/lib/postgresql/data
@@ -31,7 +31,7 @@ services:
       - .env
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://immo_user:${DB_PASSWORD}@db:5432/immo_invest?schema=public
+      - DATABASE_URL=postgresql://immo_user:${DB_PASSWORD:?DB_PASSWORD environment variable is required}@db:5432/immo_invest?schema=public
     depends_on:
       db:
         condition: service_healthy

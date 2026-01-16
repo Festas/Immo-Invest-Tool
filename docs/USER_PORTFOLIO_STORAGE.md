@@ -335,7 +335,7 @@ docker compose exec web npx prisma db push
 **Backup the database:**
 
 ```bash
-docker compose exec db pg_dump -U immo_user immo_invest > backup_$(date +%Y%m%d_%H%M%S).sql
+docker compose exec -T db pg_dump -U immo_user immo_invest > backup_$(date +%Y%m%d_%H%M%S).sql
 ```
 
 **Restore from backup:**

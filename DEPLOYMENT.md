@@ -240,10 +240,10 @@ Create regular backups of the PostgreSQL database:
 
 ```bash
 # Backup with timestamp
-docker compose exec db pg_dump -U immo_user immo_invest > backup_$(date +%Y%m%d_%H%M%S).sql
+docker compose exec -T db pg_dump -U immo_user immo_invest > backup_$(date +%Y%m%d_%H%M%S).sql
 
 # Backup with custom name
-docker compose exec db pg_dump -U immo_user immo_invest > backup.sql
+docker compose exec -T db pg_dump -U immo_user immo_invest > backup.sql
 ```
 
 ### Database Restore
