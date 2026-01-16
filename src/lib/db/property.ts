@@ -17,8 +17,8 @@ function toPrismaProperty(prismaProperty: PrismaProperty): Property {
     postalCode: prismaProperty.postalCode || undefined,
     createdAt: prismaProperty.createdAt,
     updatedAt: prismaProperty.updatedAt,
-    input: prismaProperty.inputData as PropertyInput,
-    output: prismaProperty.outputData as PropertyOutput | undefined,
+    input: prismaProperty.inputData as unknown as PropertyInput,
+    output: prismaProperty.outputData as unknown as PropertyOutput | undefined,
   };
 }
 
@@ -33,8 +33,8 @@ export async function createProperty(userId: string, data: Property): Promise<Pr
       name: data.name,
       address: data.address,
       postalCode: data.postalCode,
-      inputData: data.input,
-      outputData: data.output || null,
+      inputData: data.input as object,
+      outputData: data.output ? (data.output as object) : undefined,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     },
