@@ -232,6 +232,36 @@ Hinweis: Alle Berechnungen basieren auf dem tatsächlichen Kaufpreis.`,
 
 💡 Mieterhöhungen sind gesetzlich begrenzt (Kappungsgrenze).
 Orientierung: Inflationsrate + lokale Nachfrage.`,
+
+  movableAssets: `Bewegliche Güter - Separate Abschreibung
+
+📍 Typische Beispiele:
+• Einbauküche (häufigster Fall)
+• Markisen, Jalousien
+• Einbaumöbel
+• Sauna, Whirlpool
+
+💡 Voraussetzungen:
+• Separat erworben oder im Kaufvertrag ausgewiesen
+• Nicht fest mit Gebäude verbunden
+• Nachweis durch separate Rechnung empfohlen
+
+📊 Steuerlicher Vorteil:
+Kürzere Abschreibung (10 Jahre) statt Gebäude-AfA (40-50 Jahre)
+→ Höhere jährliche Steuerersparnis
+
+Beispiel: 5.000€ Küche = 500€/Jahr zusätzliche AfA`,
+
+  movableAssetsYears: `Abschreibungsdauer für bewegliche Güter.
+
+📍 Typische Nutzungsdauern (AfA-Tabelle):
+• Einbauküche: 10 Jahre
+• Markisen: 10-12 Jahre  
+• Möbel: 10-13 Jahre
+
+💡 Bei gebrauchten Gütern kann die Restnutzungsdauer angesetzt werden.
+
+Standard: 10 Jahre (empfohlen für Einbauküchen)`,
 };
 
 export function PropertyCalculatorForm() {
@@ -552,6 +582,34 @@ export function PropertyCalculatorForm() {
                 onChange={(value) => updateInput({ personalTaxRate: value })}
                 formatValue={(v) => `${v}%`}
                 helpText={helpTexts.taxRate}
+              />
+
+              <Input
+                label="Bewegliche Güter (z.B. Einbauküche)"
+                type="number"
+                value={currentInput.movableAssetsValue ?? 0}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                  updateInput({ movableAssetsValue: isNaN(value) ? 0 : value });
+                }}
+                suffix="€"
+                min={0}
+                step={500}
+                helpText={helpTexts.movableAssets}
+              />
+
+              <Input
+                label="Abschreibungsdauer"
+                type="number"
+                value={currentInput.movableAssetsDepreciationYears ?? 10}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  updateInput({ movableAssetsDepreciationYears: isNaN(value) ? 10 : value });
+                }}
+                suffix="Jahre"
+                min={1}
+                max={15}
+                helpText={helpTexts.movableAssetsYears}
               />
             </CardContent>
           </AccordionContent>
