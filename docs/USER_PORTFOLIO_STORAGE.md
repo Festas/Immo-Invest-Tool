@@ -2,99 +2,144 @@
 
 ## Overview
 
-ImmoCalc Pro implements per-user portfolio storage where each authenticated user has their own completely separate, private database file. This ensures data privacy and allows multiple users to use the application without seeing each other's portfolios.
+ImmoCalc Pro implements per-user portfolio storage using PostgreSQL database with Prisma ORM. Each authenticated user has their own completely separate, private data isolated at the database level. This ensures data privacy, scalability, and proper relational data management.
 
 ## Architecture
 
-### Storage Structure
+### Database Schema
 
-```
-/data/
-├── .auth/
-│   └── users.json                    # User authentication data
-└── users/
-    ├── <userId-1>/
-    │   └── portfolio.json           # User 1's private portfolio
-    ├── <userId-2>/
-    │   └── portfolio.json           # User 2's private portfolio
-    └── ...
-```
+The application uses PostgreSQL with the following schema:
 
-Each user's portfolio is stored in a separate JSON file under `/data/users/<userId>/portfolio.json` in production, or `.data/users/<userId>/portfolio.json` in development.
+```prisma
+model User {
+  id                  String     @id @default(uuid())
+  username            String     @unique
+  email               String?    @unique
+  passwordHash        String
 
-### Portfolio File Format
+  // Profile
+  displayName         String?
 
-Each portfolio file contains:
+  // Security
+  isActive            Boolean    @default(true)
+  failedLoginAttempts Int        @default(0)
+  lockedUntil         DateTime?
+  lastLoginAt         DateTime?
 
-```json
-{
-  "userId": "user-id-123",
-  "properties": [
-    {
-      "id": "property-id-1",
-      "name": "Property Name",
-      "address": "Property Address",
-      "createdAt": "2024-01-01T00:00:00.000Z",
-      "updatedAt": "2024-01-01T00:00:00.000Z",
-      "input": {
-        /* PropertyInput object */
-      },
-      "output": {
-        /* PropertyOutput object */
-      }
-    }
-  ],
-  "updatedAt": "2024-01-01T00:00:00.000Z"
+  // Timestamps
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  // Relations
+  properties          Property[]
+  scenarios           Scenario[]
+}
+
+model Property {
+  id          String    @id @default(uuid())
+  userId      String
+
+  // Metadata
+  name        String
+  address     String?
+  postalCode  String?
+
+  // All property input data stored as JSON for flexibility
+  inputData   Json
+
+  // Calculated output data (optional, can be recalculated)
+  outputData  Json?
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scenarios   Scenario[]
 }
 ```
 
+### Data Storage Strategy
+
+- **User Data**: Stored in the `User` table with authentication and security fields
+- **Property Data**: Stored in the `Property` table with JSON fields for flexibility
+- **Property Input**: The `PropertyInput` TypeScript interface is serialized to JSON in the `inputData` column
+- **Property Output**: Calculation results are stored in the `outputData` JSON column
+- **User Isolation**: Foreign key constraints and cascade deletes ensure data isolation
+
 ## Components
 
-### 1. Storage Module (`src/lib/storage/user-portfolio.ts`)
+### 1. Database Layer (`src/lib/db/`)
 
-Core functions for managing user portfolios:
+Core Prisma-based functions for database operations:
 
-- `loadUserPortfolio(userId)` - Load user's properties
-- `saveUserPortfolio(userId, properties)` - Save user's properties
-- `addPropertyToPortfolio(userId, property)` - Add a property
-- `updatePropertyInPortfolio(userId, propertyId, updates)` - Update a property
-- `deletePropertyFromPortfolio(userId, propertyId)` - Delete a property
-- `getPropertyFromPortfolio(userId, propertyId)` - Get a single property
+#### User Operations (`src/lib/db/user.ts`):
 
-### 2. API Routes
+- `createUser(username, passwordHash, email?)` - Create new user
+- `findUserByUsername(username)` - Find by username (case-insensitive)
+- `findUserById(id)` - Find by ID
+- `updateUser(id, data)` - Update user fields
+- `updateLastLogin(id)` - Update lastLoginAt timestamp
+- `incrementFailedLogins(id)` - For security tracking
+- `resetFailedLogins(id)` - Reset after successful login
+
+#### Property Operations (`src/lib/db/property.ts`):
+
+- `createProperty(userId, data)` - Create new property
+- `getPropertiesByUserId(userId)` - Get all user properties
+- `getPropertyById(id, userId)` - Get single property (with ownership check)
+- `updateProperty(id, userId, data)` - Update property
+- `deleteProperty(id, userId)` - Delete property
+
+### 2. Storage Adapters
+
+#### Auth Storage (`src/lib/auth/storage.ts`)
+
+Maintains backward compatibility with existing authentication code while using Prisma under the hood:
+
+- Implements the same `StoredUser` interface
+- Wraps database operations with compatibility layer
+- Maintains existing error handling patterns
+
+#### Portfolio Storage (`src/lib/storage/user-portfolio.ts`)
+
+Maintains backward compatibility with existing portfolio code:
+
+- Wraps Prisma property operations
+- Maintains existing function signatures
+- Handles data transformation between database and application formats
+
+### 3. API Routes
+
+API routes remain unchanged as they use the storage layer functions:
+
+#### `/api/auth/register` (POST)
+
+- Creates user in database
+- Validates username uniqueness
+- Hashes password with bcrypt
+
+#### `/api/auth/login` (POST)
+
+- Authenticates against database
+- Creates JWT session token
+- Updates lastLoginAt timestamp
 
 #### `/api/portfolio` (GET, POST)
 
-- **GET** - Retrieve all properties for the authenticated user
+- **GET** - Retrieve all properties for authenticated user
 - **POST** - Create a new property
-
-```typescript
-// Example: Create a new property
-const response = await fetch("/api/portfolio", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ property }),
-});
-```
 
 #### `/api/portfolio/[id]` (GET, PUT, DELETE)
 
-- **GET** - Retrieve a specific property
-- **PUT** - Update a property
-- **DELETE** - Delete a property
+- **GET** - Retrieve a specific property (with ownership check)
+- **PUT** - Update a property (with ownership check)
+- **DELETE** - Delete a property (with ownership check)
 
-```typescript
-// Example: Update a property
-const response = await fetch(`/api/portfolio/${propertyId}`, {
-  method: "PUT",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ updates: { name: "New Name" } }),
-});
-```
+### 4. Zustand Store Integration
 
-### 3. Zustand Store Integration
-
-The Zustand store has been enhanced with server sync capabilities:
+The Zustand store continues to work with server sync capabilities:
 
 - `isServerSyncEnabled` - Whether server sync is active
 - `syncWithServer()` - Sync portfolio from server
@@ -103,27 +148,13 @@ The Zustand store has been enhanced with server sync capabilities:
 When a user is authenticated:
 
 1. The store automatically enables server sync
-2. Properties are loaded from the server
-3. All property operations (save, update, delete) are synced to the server
+2. Properties are loaded from the database via API
+3. All property operations sync to the database
 
 When a user is not authenticated:
 
 1. Server sync is disabled
 2. Properties are stored in localStorage only
-3. Properties persist across sessions in the browser
-
-### 4. Authentication Integration
-
-All portfolio API routes are protected by authentication:
-
-```typescript
-const session = await getSession();
-if (!session) {
-  return NextResponse.json({ error: "Nicht authentifiziert" }, { status: 401 });
-}
-```
-
-Only the authenticated user can access their own portfolio data.
 
 ## Usage
 
@@ -132,16 +163,62 @@ Only the authenticated user can access their own portfolio data.
 1. **Without Authentication**
    - Properties are stored in browser localStorage
    - Data is private to the browser
-   - Data persists across sessions
    - Limited to single device
 
 2. **With Authentication**
-   - Properties are stored on the server
+   - Properties are stored in PostgreSQL database
    - Data is accessible from any device
    - Data is private to the user account
    - Automatic sync across devices
+   - Better data integrity and reliability
 
 ### For Developers
+
+#### Setting up the Database
+
+1. **Install Dependencies**
+
+```bash
+npm install
+```
+
+2. **Configure Database Connection**
+
+```bash
+# .env.local
+DATABASE_URL="postgresql://user:password@localhost:5432/immo_invest?schema=public"
+```
+
+3. **Generate Prisma Client**
+
+```bash
+npm run db:generate
+```
+
+4. **Push Schema to Database** (for development)
+
+```bash
+npm run db:push
+```
+
+5. **Or Create Migrations** (for production)
+
+```bash
+npm run db:migrate
+```
+
+#### Using Database Management Scripts
+
+```json
+{
+  "scripts": {
+    "db:generate": "prisma generate", // Generate Prisma Client
+    "db:push": "prisma db push", // Push schema changes (dev)
+    "db:migrate": "prisma migrate dev", // Create migrations
+    "db:studio": "prisma studio" // Open database GUI
+  }
+}
+```
 
 #### Using the Portfolio Sync Hook
 
@@ -180,8 +257,11 @@ function MyComponent() {
 ### Environment Variables
 
 ```bash
-# Optional: Override default storage location
-DATA_DIR=/custom/data/path
+# Required: PostgreSQL connection string
+DATABASE_URL="postgresql://user:password@localhost:5432/immo_invest?schema=public"
+
+# Alternative: SQLite for development/testing
+# DATABASE_URL="file:./dev.db"
 
 # Required in production: JWT secret for session tokens
 JWT_SECRET=your-secure-random-secret-here
@@ -189,72 +269,111 @@ JWT_SECRET=your-secure-random-secret-here
 
 ### Docker Configuration
 
-The Dockerfile automatically creates the necessary directories:
-
-```dockerfile
-# Create data directory for persistent storage with correct permissions
-RUN mkdir -p /data/.auth /data/users
-RUN chown -R nextjs:nodejs /data
-```
-
-Docker Compose should mount a volume:
+The database should be configured as a separate service or use an external PostgreSQL instance:
 
 ```yaml
+services:
+  web:
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+
+  # Optional: Include PostgreSQL service
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=immo_invest
+      - POSTGRES_USER=immo_user
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
 volumes:
-  - immocalc-data:/data
+  postgres-data:
 ```
+
+**Note**: The `/data` volume mounts for JSON file storage are no longer needed as all data is stored in PostgreSQL.
 
 ## Security
 
 ### Privacy Guarantees
 
-1. **User Isolation**: Each user's portfolio is stored in a separate file
-2. **Authentication Required**: All API routes check authentication before accessing data
-3. **User-Scoped Access**: Users can only access their own portfolio data
-4. **No Cross-User Access**: There's no way for one user to access another user's data
+1. **Database-Level Isolation**: Each user's data is isolated by userId foreign keys
+2. **Cascade Deletes**: When a user is deleted, all their properties are automatically deleted
+3. **Ownership Checks**: All property operations verify userId ownership
+4. **Authentication Required**: All API routes check authentication before accessing data
+5. **No Cross-User Access**: Database queries are always filtered by userId
 
 ### Best Practices
 
 1. Always use HTTPS in production
-2. Set a strong JWT_SECRET
-3. Regularly backup the `/data` directory
-4. Monitor file permissions on the server
-5. Consider encrypting the data directory
+2. Set a strong `JWT_SECRET` (minimum 32 bytes)
+3. Use a secure PostgreSQL password
+4. Regularly backup the PostgreSQL database
+5. Enable PostgreSQL SSL connections in production
+6. Monitor database access logs
+7. Keep Prisma and dependencies updated
 
 ## Testing
 
-Run the portfolio storage tests:
+### Run Portfolio Storage Tests
 
 ```bash
 npm run test:run -- src/__tests__/unit/user-portfolio-storage.test.ts
 ```
 
-The test suite includes:
+### Run Auth Storage Tests
 
-- User isolation tests
-- CRUD operation tests
-- Error handling tests
-- Data persistence tests
+```bash
+npm run test:run -- src/__tests__/unit/auth-login.test.ts
+```
+
+**Note**: Tests may need to be updated to mock Prisma client instead of file system operations.
 
 ## Migration
 
-### Migrating from localStorage to Server Storage
+### Migrating from JSON File Storage
 
-When a user creates an account:
+For existing deployments with JSON file storage:
 
-1. Their existing localStorage data remains in the browser
-2. They can manually import properties from localStorage
-3. Once synced to server, data is accessible from any device
+1. **Export Existing Data**
+   - Read user data from `.data/users.json` or `/data/.auth/users.json`
+   - Read portfolio data from `/data/users/{userId}/portfolio.json`
 
-### Future Improvements
+2. **Set Up PostgreSQL Database**
+   - Install PostgreSQL
+   - Create database
+   - Run `npm run db:push` to create tables
 
-For production at scale, consider:
+3. **Import Data**
+   - Create migration script to read JSON files
+   - Insert users into User table
+   - Insert properties into Property table with proper userId references
 
-- Migrating to PostgreSQL or MongoDB
-- Implementing real-time sync with WebSockets
-- Adding conflict resolution for multi-device edits
-- Implementing data versioning and history
-- Adding backup and restore functionality
+4. **Verify Migration**
+   - Test user login
+   - Test property loading
+   - Verify data integrity
+
+5. **Clean Up**
+   - Archive JSON files as backup
+   - Update environment variables
+   - Remove file system dependencies
+
+### Database Migrations
+
+For schema changes in production:
+
+```bash
+# Create a new migration
+npm run db:migrate
+
+# This will:
+# 1. Prompt for migration name
+# 2. Generate SQL migration files
+# 3. Apply migration to database
+# 4. Update Prisma Client
+```
 
 ## Troubleshooting
 
@@ -263,33 +382,51 @@ For production at scale, consider:
 **Check:**
 
 1. User is authenticated: `/api/auth/session`
-2. Server sync is enabled: Check `isServerSyncEnabled` in store
-3. Network connectivity
-4. Browser console for errors
+2. DATABASE_URL is configured correctly
+3. Database is accessible and tables exist
+4. Network connectivity
+5. Browser console for errors
 
-### Permission errors
+### Database connection errors
 
 **Check:**
 
-1. `/data/users` directory exists
-2. Directory has write permissions
-3. Docker volume is mounted correctly
-4. File ownership is correct (`nextjs:nodejs`)
+1. PostgreSQL is running
+2. DATABASE_URL format is correct
+3. Database user has proper permissions
+4. Firewall allows database connections
+5. SSL settings if required
 
 ### Data not persisting
 
 **Check:**
 
-1. Docker volume is configured
-2. Environment variables are set correctly
-3. File write operations succeed (check logs)
+1. Database tables exist (run `npm run db:push`)
+2. Prisma Client is generated (run `npm run db:generate`)
+3. No database transaction errors in logs
 4. Disk space is available
+5. Database user has write permissions
+
+### Migration errors
+
+**Check:**
+
+1. Database is accessible
+2. No active connections blocking schema changes
+3. Migration files are in correct order
+4. Backup database before attempting fixes
 
 ## Related Files
 
-- `src/lib/storage/user-portfolio.ts` - Core storage implementation
+- `prisma/schema.prisma` - Database schema definition
+- `src/lib/db/prisma.ts` - Prisma client singleton
+- `src/lib/db/user.ts` - User database operations
+- `src/lib/db/property.ts` - Property database operations
+- `src/lib/auth/storage.ts` - Auth storage adapter (Prisma-backed)
+- `src/lib/storage/user-portfolio.ts` - Portfolio storage adapter (Prisma-backed)
+- `src/app/api/auth/register/route.ts` - Registration endpoint
+- `src/app/api/auth/login/route.ts` - Login endpoint
 - `src/app/api/portfolio/route.ts` - List and create APIs
 - `src/app/api/portfolio/[id]/route.ts` - Get, update, delete APIs
 - `src/store/index.ts` - Zustand store with server sync
 - `src/lib/hooks/usePortfolioSync.ts` - Auto-sync hook
-- `src/__tests__/unit/user-portfolio-storage.test.ts` - Test suite
