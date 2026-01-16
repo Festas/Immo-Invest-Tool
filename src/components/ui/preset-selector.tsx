@@ -111,7 +111,7 @@ export const PRESETS: Preset[] = [
   {
     id: "warning-duesseldorf",
     name: "⚠️ Die Warnung",
-    description: "Düsseldorf: Schick, aber viel zu teuer – Faktor 42, negativer Cashflow",
+    description: "Düsseldorf: Schick, aber viel zu teuer – Faktor 50, negativer Cashflow",
     icon: "⚠️",
     bundesland: "Nordrhein-Westfalen",
     values: {
@@ -120,7 +120,7 @@ export const PRESETS: Preset[] = [
 
       // Kaufpreis - Overpriced: 420,000€ for only 700€ rent = Faktor 50!
       purchasePrice: 420000,
-      marketValue: 400000, // Even above market value - overpaying!
+      marketValue: 400000, // Paying 5% above market value - overpaying!
       isFamilyPurchase: false,
       propertyTransferTaxPercent: 6.5, // NRW has highest rate
       brokerPercent: 3.57, // Full broker commission
@@ -290,8 +290,8 @@ export const PRESETS: Preset[] = [
       repaymentRate: 3.0, // Aggressive payoff
       fixedInterestPeriod: 10,
 
-      // Mieteinnahmen - Great ratio!
-      coldRentActual: 470, // 470€ for 75k = Faktor 13.3 = excellent!
+      // Mieteinnahmen - Great ratio! (Kaufpreisfaktor = Kaufpreis / Jahresmiete)
+      coldRentActual: 470, // 75k / (470 * 12) = Faktor 13.3 = excellent!
       coldRentTarget: 500,
       nonRecoverableCosts: 55,
       maintenanceReserve: 75, // Older building needs reserves
