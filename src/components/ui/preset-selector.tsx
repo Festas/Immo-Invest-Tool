@@ -60,44 +60,49 @@ export const PRESETS: Preset[] = [
     id: "family-schwerin",
     name: "🏠 Der Familien-Deal",
     description:
-      "Schwerin: Wohnung von Großeltern kaufen – 0% GrESt, 0% Makler, 33% unter Marktwert",
+      "Schwerin Zentrum: Wohnung von Oma kaufen – 0% GrESt, 0% Makler, 33% unter Marktwert, Verkäuferdarlehen",
     icon: "🏠",
     bundesland: "Mecklenburg-Vorpommern",
     values: {
       // Bundesland
       bundesland: "MECKLENBURG_VORPOMMERN",
 
-      // Kaufpreis & Nebenkosten - deutlich unter Marktwert (33% Discount)
-      purchasePrice: 120000,
-      marketValue: 180000,
+      // Kaufpreis & Nebenkosten - 33% unter Marktwert
+      purchasePrice: 160000,
+      marketValue: 240000,
       isFamilyPurchase: true,
-      propertyTransferTaxPercent: 0, // Family exemption
-      brokerPercent: 0, // No broker for family deals
-      notaryPercent: 1.5, // Only notary costs
-      renovationCosts: 2000, // Minor cosmetic refresh
+      propertyTransferTaxPercent: 0, // Familienbefreiung
+      brokerPercent: 0, // Kein Makler bei Familienkauf
+      notaryPercent: 2.5, // Nur Notarkosten (ergibt ~4000€)
+      renovationCosts: 0,
 
-      // Finanzierung - Conservative with good equity ratio
-      // Side costs: 120000 * 1.5% + 2000 = 3,800€
-      // Total: 120000 + 3800 = 123,800€
-      equity: 25000, // ~20% of total
-      loanAmount: 98800, // 123,800 - 25,000
-      interestRate: 3.2,
-      repaymentRate: 2.5, // Good repayment for faster payoff
-      fixedInterestPeriod: 15,
+      // Finanzierung - Verkäuferdarlehen von Oma
+      // Kaufnebenkosten: 160000 * 2.5% = 4000€
+      // Eigenkapital deckt nur Nebenkosten
+      // Darlehen: 160000€ (100% Kaufpreisfinanzierung)
+      equity: 4000,
+      loanAmount: 160000,
+      interestRate: 3.0, // Familienzins fix bis Ende
+      repaymentRate: 2.25,
+      fixedInterestPeriod: 30, // Zinsbindung bis Ende
 
-      // Mieteinnahmen - realistic for 65m² in Schwerin
-      coldRentActual: 520,
-      coldRentTarget: 520,
-      nonRecoverableCosts: 45,
-      maintenanceReserve: 65,
-      vacancyRiskPercent: 2, // Low risk due to affordable rent
+      // Mieteinnahmen - 95m² Wohnung
+      coldRentActual: 1000, // 10,53€/m² bei 95m²
+      coldRentTarget: 1000,
+      nonRecoverableCosts: 69, // Hausgeld (Verwalter, Kontoführung, WEG-Rücklage)
+      maintenanceReserve: 100, // Eigene Sicherheitsrücklage
+      vacancyRiskPercent: 2, // Niedriges Risiko durch günstige Miete
 
       // Steuern
       personalTaxRate: 42,
-      buildingSharePercent: 85,
-      afaType: "ALTBAU_AB_1925" as AfAType,
+      buildingSharePercent: 95,
+      afaType: "ALTBAU_VOR_1925" as AfAType, // 2,5% AfA
 
-      // Prognose - Conservative for MV
+      // Bewegliche Güter (Küchen-AfA Feature)
+      movableAssetsValue: 5000, // Einbauküche
+      movableAssetsDepreciationYears: 10, // 10 Jahre Abschreibung
+
+      // Prognose - Konservativ für MV
       expectedAppreciationPercent: 1.0,
       expectedRentIncreasePercent: 1.0,
     },
