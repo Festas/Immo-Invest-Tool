@@ -1,7 +1,13 @@
 export { PropertyCalculatorForm } from "./PropertyCalculatorForm";
 export { PropertyWizard } from "./PropertyWizard";
 export { ResultsPanel } from "./ResultsPanel";
-export { AmortizationChart, CumulativeCashflowChart } from "./Charts";
+export {
+  AmortizationChart,
+  CumulativeCashflowChart,
+  CashflowDevelopmentChart,
+  InterestPrincipalChart,
+  EquityBuildupChart,
+} from "./Charts";
 export { ScenarioComparison } from "./ScenarioComparison";
 export { PortfolioDashboard } from "./PortfolioDashboard";
 export { RentIndexCalculator } from "./RentIndexCalculator";
