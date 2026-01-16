@@ -112,48 +112,54 @@ export const PRESETS: Preset[] = [
   // 2. DIE "WARNUNG" (Negativ-Beispiel)
   // ============================================
   // Logic: Looks nice on paper but terrible ROI
-  // Characteristics: Faktor > 35, negative cashflow, bad energy efficiency implied by high costs
+  // Characteristics: Faktor 37, negative cashflow, bad energy efficiency implied by high costs
   {
     id: "warning-duesseldorf",
     name: "⚠️ Die Warnung",
-    description: "Düsseldorf: Schick, aber viel zu teuer – Faktor 50, negativer Cashflow",
+    description:
+      "Düsseldorf Oberkassel: Schick, aber Faktor 37 – massiv negativer Cashflow trotz guter Lage",
     icon: "⚠️",
     bundesland: "Nordrhein-Westfalen",
     values: {
       // Bundesland
       bundesland: "NORDRHEIN_WESTFALEN",
 
-      // Kaufpreis - Overpriced: 420,000€ for only 700€ rent = Faktor 50!
-      purchasePrice: 420000,
-      marketValue: 400000, // Paying 5% above market value - overpaying!
+      // Kaufpreis - Overpriced: 380.000€ für 60m² = viel zu teuer
+      // Kaufpreisfaktor: 380.000 / (850 * 12) = 37 (schlecht!)
+      purchasePrice: 380000,
+      marketValue: 360000, // 5% über Marktwert - überteuert!
       isFamilyPurchase: false,
-      propertyTransferTaxPercent: 6.5, // NRW has highest rate
-      brokerPercent: 3.57, // Full broker commission
+      propertyTransferTaxPercent: 6.5, // NRW höchster Satz
+      brokerPercent: 3.57, // Volle Maklercourtage
       notaryPercent: 2.0,
-      renovationCosts: 0, // "Move-in ready" they said...
+      renovationCosts: 0, // "Bezugsfertig" - keine Renovierung eingeplant
 
       // Finanzierung
-      // Side costs: 420000 * (6.5% + 3.57% + 2%) = 50,694€
-      // Total: 420000 + 50,694 = 470,694€
-      equity: 50000, // Low equity ratio
-      loanAmount: 420694, // High leverage
-      interestRate: 3.8, // Higher rate due to risk profile
-      repaymentRate: 1.5, // Low repayment stretches loan
+      // Nebenkosten: 380.000 * (6.5% + 3.57% + 2%) = 45.866€
+      // Gesamtinvestition: 380.000 + 45.866 = 425.866€
+      // Eigenkapital: 50.000€ (nur ~12% - sehr wenig!)
+      // Darlehen: 375.866€
+      equity: 50000,
+      loanAmount: 375866,
+      interestRate: 4.0, // Höherer Zins wegen Risikoprofil
+      repaymentRate: 1.5, // Niedrige Tilgung
       fixedInterestPeriod: 10,
+      // Rate: 375.866 * 5.5% / 12 = ~1.723€/Monat
 
-      // Mieteinnahmen - Way too low for price
-      coldRentActual: 700, // Only 700€ for 420k purchase = terrible ratio
-      coldRentTarget: 750,
-      nonRecoverableCosts: 180, // High Hausgeld, bad energy efficiency
-      maintenanceReserve: 120,
+      // Mieteinnahmen - 60m² Wohnung
+      coldRentActual: 850, // 14,17€/m² - marktüblich für Düsseldorf
+      coldRentTarget: 900,
+      nonRecoverableCosts: 150, // Hohes Hausgeld, Altbau
+      maintenanceReserve: 100,
       vacancyRiskPercent: 3,
+      // Cashflow: 850 - 1.723 - 150 - 100 = ~ -1.123€ (stark negativ!)
 
       // Steuern
       personalTaxRate: 42,
-      buildingSharePercent: 70, // Lower building share
+      buildingSharePercent: 70,
       afaType: "ALTBAU_AB_1925" as AfAType,
 
-      // Prognose - Even optimistic assumptions can't save this
+      // Prognose - selbst optimistische Annahmen retten das nicht
       expectedAppreciationPercent: 2.0,
       expectedRentIncreasePercent: 1.5,
     },
@@ -167,46 +173,51 @@ export const PRESETS: Preset[] = [
   {
     id: "appreciation-munich",
     name: "📈 Das Wertsteigerungs-Play",
-    description: "München Schwabing: Negative Cashflow, aber Premium-Lage für steuerfreien Verkauf",
+    description:
+      "München Schwabing: Leicht negativer Cashflow, aber Premium-Lage für steuerfreien Verkauf nach 10 Jahren",
     icon: "📈",
     bundesland: "Bayern",
     values: {
       // Bundesland
       bundesland: "BAYERN",
 
-      // Kaufpreis - High price but strong location
-      purchasePrice: 650000,
-      marketValue: 680000, // Buying slightly under market
+      // Kaufpreis - 50m² in Schwabing, Premium-Lage
+      purchasePrice: 450000,
+      marketValue: 470000, // Leicht unter Marktwert gekauft
       isFamilyPurchase: false,
-      propertyTransferTaxPercent: 3.5, // Bayern lowest rate!
-      brokerPercent: 3.0, // Standard Munich
+      propertyTransferTaxPercent: 3.5, // Bayern niedrigster Satz!
+      brokerPercent: 3.0,
       notaryPercent: 1.5,
-      renovationCosts: 0, // Top condition
+      renovationCosts: 0, // Top-Zustand
 
-      // Finanzierung
-      // Side costs: 650000 * (3.5% + 3% + 1.5%) = 52,000€
-      // Total: 650000 + 52,000 = 702,000€
-      equity: 150000, // Solid equity
-      loanAmount: 552000,
-      interestRate: 3.4,
-      repaymentRate: 1.5, // Low repayment to manage cashflow
+      // Finanzierung - wohlhabender Investor mit viel Eigenkapital
+      // Nebenkosten: 450.000 * (3.5% + 3% + 1.5%) = 36.000€
+      // Gesamtinvestition: 450.000 + 36.000 = 486.000€
+      // Eigenkapital: 180.000€ (~37% - solide!)
+      // Darlehen: 306.000€
+      equity: 180000,
+      loanAmount: 306000,
+      interestRate: 3.5,
+      repaymentRate: 2.0,
       fixedInterestPeriod: 15,
+      // Rate: 306.000 * 5.5% / 12 = ~1.403€/Monat
 
-      // Mieteinnahmen - Low yield typical for Munich
-      coldRentActual: 1650, // Good rent but still low yield for price
-      coldRentTarget: 1800,
-      nonRecoverableCosts: 120,
-      maintenanceReserve: 80, // Modern building, low maintenance
-      vacancyRiskPercent: 1, // Minimal vacancy in Munich
+      // Mieteinnahmen - 50m² Premium
+      coldRentActual: 1250, // 25€/m² - München Premium
+      coldRentTarget: 1400,
+      nonRecoverableCosts: 100,
+      maintenanceReserve: 80, // Neuwertiger Zustand
+      vacancyRiskPercent: 1, // Minimales Leerstandsrisiko in München
+      // Cashflow: 1.250 - 1.403 - 100 - 80 = ~ -333€ (leicht negativ, tragbar)
 
       // Steuern
       personalTaxRate: 42,
       buildingSharePercent: 75,
-      afaType: "ALTBAU_AB_1925" as AfAType,
+      afaType: "NEUBAU_AB_2023" as AfAType, // Neubau = 3% AfA
 
-      // Prognose - The bet: high appreciation
-      expectedAppreciationPercent: 3.5, // Munich premium
-      expectedRentIncreasePercent: 2.5, // Strong rental growth
+      // Prognose - Die Wette: hohe Wertsteigerung
+      expectedAppreciationPercent: 3.5, // München Premium
+      expectedRentIncreasePercent: 2.5, // Starkes Mietwachstum
     },
   },
 
@@ -218,45 +229,51 @@ export const PRESETS: Preset[] = [
   {
     id: "turnaround-leipzig",
     name: "🔧 Der Turnaround",
-    description: "Leipzig Lindenau: Unter Marktmiete vermietet – Potenzial durch Mietanpassung",
+    description:
+      "Leipzig Lindenau: Aktuell unter Marktmiete – von -150€ auf +100€ Cashflow durch Mietanpassung",
     icon: "🔧",
     bundesland: "Sachsen",
     values: {
       // Bundesland
       bundesland: "SACHSEN",
 
-      // Kaufpreis - Reasonable for the location
-      purchasePrice: 195000,
-      marketValue: 210000, // Fair deal
+      // Kaufpreis - 70m² Altbau, günstiger Einstieg
+      purchasePrice: 140000,
+      marketValue: 155000, // Unter Marktwert
       isFamilyPurchase: false,
       propertyTransferTaxPercent: 5.5,
       brokerPercent: 3.57,
       notaryPercent: 1.5,
-      renovationCosts: 25000, // Key: Renovation budget for value-add
+      renovationCosts: 10000, // Kosmetische Renovierung
 
       // Finanzierung
-      // Side costs: 195000 * (5.5% + 3.57% + 1.5%) + 25000 = 45,600€
-      // Total: 195000 + 45,600 = 240,600€
-      equity: 60000,
-      loanAmount: 180600,
-      interestRate: 3.5,
+      // Nebenkosten: 140.000 * (5.5% + 3.57% + 1.5%) + 10.000 = 24.798€
+      // Gesamtinvestition: 140.000 + 24.798 = 164.798€
+      // Eigenkapital: 45.000€ (~27%)
+      // Darlehen: 119.798€
+      equity: 45000,
+      loanAmount: 119798,
+      interestRate: 3.8,
       repaymentRate: 2.0,
       fixedInterestPeriod: 10,
+      // Rate: 119.798 * 5.8% / 12 = ~579€/Monat
 
-      // Mieteinnahmen - KEY: Currently under-rented!
-      coldRentActual: 480, // Old tenant, way below market
-      coldRentTarget: 750, // Market potential after renovation/new tenant
-      nonRecoverableCosts: 80,
-      maintenanceReserve: 100,
-      vacancyRiskPercent: 5, // Account for renovation vacancy
+      // Mieteinnahmen - KEY: Aktuell unter Marktmiete!
+      coldRentActual: 490, // Altmieter zahlt nur 7€/m² (70m²)
+      coldRentTarget: 700, // Marktmiete wäre 10€/m² (70m²)
+      nonRecoverableCosts: 70,
+      maintenanceReserve: 80,
+      vacancyRiskPercent: 4,
+      // Cashflow aktuell: 490 - 579 - 70 - 80 = ~ -239€ (negativ)
+      // Cashflow nach Mietanpassung: 700 - 579 - 70 - 80 = ~ -29€ → mit Steuereffekt leicht positiv!
 
       // Steuern
-      personalTaxRate: 35, // Mid-income investor
+      personalTaxRate: 35, // Mittelverdiener
       buildingSharePercent: 80,
       afaType: "ALTBAU_AB_1925" as AfAType,
 
       // Prognose
-      expectedAppreciationPercent: 2.5, // Leipzig growing
+      expectedAppreciationPercent: 2.5, // Leipzig wächst
       expectedRentIncreasePercent: 2.0,
     },
   },
@@ -269,46 +286,50 @@ export const PRESETS: Preset[] = [
   {
     id: "cashflow-halle",
     name: "💰 Der Cashflow-No-Brainer",
-    description:
-      "Halle (Saale): Kaufpreis 75.000€, 7,5% Brutto-Rendite – positiver Cashflow ab Tag 1",
+    description: "Halle (Saale): 65.000€ Kaufpreis, Faktor 12 – positiver Cashflow ab Tag 1!",
     icon: "💰",
     bundesland: "Sachsen-Anhalt",
     values: {
       // Bundesland
       bundesland: "SACHSEN_ANHALT",
 
-      // Kaufpreis - Very affordable
-      purchasePrice: 75000,
-      marketValue: 80000,
+      // Kaufpreis - Sehr günstig! 45m² für 65.000€
+      // Kaufpreisfaktor: 65.000 / (450 * 12) = 12 (exzellent!)
+      purchasePrice: 65000,
+      marketValue: 70000, // Leicht unter Marktwert
       isFamilyPurchase: false,
       propertyTransferTaxPercent: 5.0,
-      brokerPercent: 3.0, // Lower broker for cheap properties
+      brokerPercent: 3.0, // Günstiger Makler
       notaryPercent: 1.5,
-      renovationCosts: 5000, // Minor refresh
+      renovationCosts: 0, // Bezugsfertig
 
       // Finanzierung
-      // Side costs: 75000 * (5% + 3% + 1.5%) + 5000 = 12,125€
-      // Total: 75000 + 12,125 = 87,125€
-      equity: 20000, // Manageable entry point
-      loanAmount: 67125,
-      interestRate: 4.0, // Slightly higher for smaller loan
-      repaymentRate: 3.0, // Aggressive payoff
+      // Nebenkosten: 65.000 * (5% + 3% + 1.5%) = 6.175€
+      // Gesamtinvestition: 65.000 + 6.175 = 71.175€
+      // Eigenkapital: 25.000€ (~35% - solide!)
+      // Darlehen: 46.175€
+      equity: 25000,
+      loanAmount: 46175,
+      interestRate: 4.2, // Etwas höher für kleine Summe
+      repaymentRate: 2.5,
       fixedInterestPeriod: 10,
+      // Rate: 46.175 * 6.7% / 12 = ~258€/Monat
 
-      // Mieteinnahmen - Great ratio! (Kaufpreisfaktor = Kaufpreis / Jahresmiete)
-      coldRentActual: 470, // 75k / (470 * 12) = Faktor 13.3 = excellent!
-      coldRentTarget: 500,
-      nonRecoverableCosts: 55,
-      maintenanceReserve: 75, // Older building needs reserves
-      vacancyRiskPercent: 4, // C-location risk
+      // Mieteinnahmen - Gutes Verhältnis!
+      coldRentActual: 450, // 10€/m² bei 45m² - realistisch für Halle
+      coldRentTarget: 480,
+      nonRecoverableCosts: 45, // Günstiges Hausgeld
+      maintenanceReserve: 60, // Rücklage für Altbau
+      vacancyRiskPercent: 5, // C-Lage Risiko
+      // Cashflow: 450 - 258 - 45 - 60 = +87€ (POSITIV!)
 
       // Steuern
       personalTaxRate: 35,
       buildingSharePercent: 80,
       afaType: "ALTBAU_AB_1925" as AfAType,
 
-      // Prognose - Conservative, focus is on cashflow not appreciation
-      expectedAppreciationPercent: 0.5, // C-location, minimal growth
+      // Prognose - Konservativ, Fokus ist Cashflow nicht Wertsteigerung
+      expectedAppreciationPercent: 0.5, // C-Lage, minimales Wachstum
       expectedRentIncreasePercent: 1.0,
     },
   },
