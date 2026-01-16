@@ -7,29 +7,9 @@ const nextConfig: NextConfig = {
     // Use timestamp to ensure unique build ID on each deployment
     return `build-${Date.now()}`;
   },
-  // CSP headers to allow OpenStreetMap tiles and Leaflet assets
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "Content-Security-Policy",
-            value: `
-              default-src 'self';
-              img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com;
-              style-src 'self' 'unsafe-inline';
-              script-src 'self';
-              connect-src 'self' https://openplzapi.org https://overpass-api.de https://*.tile.openstreetmap.org;
-            `
-              .replace(/\n/g, " ")
-              .replace(/\s+/g, " ")
-              .trim(),
-          },
-        ],
-      },
-    ];
-  },
+  // TODO: CSP headers temporarily removed to restore Next.js client-side functionality
+  // The previous CSP configuration was blocking Next.js dynamic scripts (hydration, navigation, etc.)
+  // CSP should be reconfigured later with proper Next.js compatibility (e.g., using nonces or 'unsafe-inline' for scripts)
 };
 
 export default nextConfig;
