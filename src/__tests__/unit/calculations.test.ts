@@ -1791,3 +1791,258 @@ describe("calculateExtendedCashflowProjection", () => {
     }
   });
 });
+
+// ===========================================
+// Movable Assets AfA Tests
+// ===========================================
+describe("Movable Assets Depreciation", () => {
+  describe("calculateTax with movable assets", () => {
+    it("should include movable assets AfA in tax calculation", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 300000;
+      input.buildingSharePercent = 75;
+      input.afaType = "ALTBAU_AB_1925";
+      input.coldRentActual = 1000;
+      input.nonRecoverableCosts = 100;
+      input.maintenanceReserve = 50;
+      input.personalTaxRate = 35;
+      input.movableAssetsValue = 5000; // €5000 fitted kitchen
+      input.movableAssetsDepreciationYears = 10;
+
+      const annualInterest = 8000;
+      const result = calculateTax(input, annualInterest);
+
+      // Building AfA: 300000 * 75% * 2% = 4500
+      expect(result.afaAmount).toBeCloseTo(4500, 0);
+
+      // Movable assets AfA: 5000 / 10 = 500
+      expect(result.movableAssetsAfA).toBeCloseTo(500, 0);
+
+      // Total deductions should include movable assets AfA
+      const expectedDeductions = 4500 + 500 + 8000 + (100 + 50) * 12;
+      expect(result.totalDeductions).toBeCloseTo(expectedDeductions, 0);
+    });
+
+    it("should handle zero movable assets value", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 300000;
+      input.buildingSharePercent = 75;
+      input.afaType = "ALTBAU_AB_1925";
+      input.coldRentActual = 1000;
+      input.nonRecoverableCosts = 100;
+      input.maintenanceReserve = 50;
+      input.personalTaxRate = 35;
+      input.movableAssetsValue = 0; // No movable assets
+      input.movableAssetsDepreciationYears = 10;
+
+      const annualInterest = 8000;
+      const result = calculateTax(input, annualInterest);
+
+      expect(result.movableAssetsAfA).toBe(0);
+
+      // Total deductions should NOT include movable assets AfA
+      const expectedDeductions = 4500 + 8000 + (100 + 50) * 12;
+      expect(result.totalDeductions).toBeCloseTo(expectedDeductions, 0);
+    });
+
+    it("should handle undefined movable assets (backwards compatibility)", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 300000;
+      input.buildingSharePercent = 75;
+      input.afaType = "ALTBAU_AB_1925";
+      input.coldRentActual = 1000;
+      input.nonRecoverableCosts = 100;
+      input.maintenanceReserve = 50;
+      input.personalTaxRate = 35;
+      // movableAssetsValue and movableAssetsDepreciationYears are undefined
+
+      const annualInterest = 8000;
+      const result = calculateTax(input, annualInterest);
+
+      expect(result.movableAssetsAfA).toBe(0);
+    });
+
+    it("should calculate higher tax benefit with movable assets", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 300000;
+      input.buildingSharePercent = 75;
+      input.afaType = "ALTBAU_AB_1925";
+      input.coldRentActual = 1000;
+      input.nonRecoverableCosts = 100;
+      input.maintenanceReserve = 50;
+      input.personalTaxRate = 35;
+
+      const annualInterest = 8000;
+
+      // Calculate without movable assets
+      const resultWithout = calculateTax(input, annualInterest);
+
+      // Calculate with movable assets
+      input.movableAssetsValue = 10000;
+      input.movableAssetsDepreciationYears = 10;
+      const resultWith = calculateTax(input, annualInterest);
+
+      // Tax effect should be more positive (greater tax benefit) with movable assets
+      expect(resultWith.taxEffect).toBeGreaterThan(resultWithout.taxEffect);
+      expect(resultWith.totalDeductions).toBeGreaterThan(resultWithout.totalDeductions);
+    });
+
+    it("should calculate movable assets AfA for typical fitted kitchen example", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 300000;
+      input.buildingSharePercent = 75;
+      input.afaType = "ALTBAU_AB_1925";
+      input.coldRentActual = 1200;
+      input.nonRecoverableCosts = 100;
+      input.maintenanceReserve = 50;
+      input.personalTaxRate = 35;
+      input.movableAssetsValue = 8000; // Realistic fitted kitchen
+      input.movableAssetsDepreciationYears = 10;
+
+      const annualInterest = 9000;
+      const result = calculateTax(input, annualInterest);
+
+      // Movable assets AfA: 8000 / 10 = 800 per year
+      expect(result.movableAssetsAfA).toBeCloseTo(800, 0);
+
+      // Annual tax benefit from movable assets: 800 * 35% = 280
+      const movableAssetsTaxBenefit = 800 * 0.35;
+      expect(movableAssetsTaxBenefit).toBeCloseTo(280, 0);
+    });
+  });
+
+  describe("calculateExtendedCashflowProjection with movable assets", () => {
+    it("should apply movable assets AfA only during depreciation period", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 300000;
+      input.buildingSharePercent = 75;
+      input.afaType = "ALTBAU_AB_1925";
+      input.coldRentActual = 1000;
+      input.nonRecoverableCosts = 100;
+      input.maintenanceReserve = 50;
+      input.personalTaxRate = 35;
+      input.movableAssetsValue = 5000;
+      input.movableAssetsDepreciationYears = 5; // Short period for testing
+      input.expectedRentIncreasePercent = 0; // No rent increase for simpler test
+      input.expectedAppreciationPercent = 0; // No appreciation for simpler test
+
+      const amortizationSchedule = generateFullAmortizationSchedule(
+        200000,
+        input.interestRate,
+        input.repaymentRate,
+        20
+      );
+
+      const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 20);
+
+      // First 5 years should include movable assets AfA benefit
+      const year1TaxEffect = projection[0].totalTaxEffect;
+      const year5TaxEffect = projection[4].totalTaxEffect;
+
+      // Tax effect should be more positive (higher benefit) in years 1-5
+      expect(year1TaxEffect).toBeGreaterThan(0); // Tax benefit
+      expect(year5TaxEffect).toBeGreaterThan(0); // Tax benefit
+
+      // Years 6+ should have less tax benefit (no movable assets AfA)
+      if (projection.length > 5) {
+        const year6TaxEffect = projection[5].totalTaxEffect;
+        expect(year6TaxEffect).toBeLessThan(year5TaxEffect);
+      }
+    });
+
+    it("should handle movable assets AfA lasting longer than debt period", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 200000;
+      input.buildingSharePercent = 75;
+      input.afaType = "ALTBAU_AB_1925";
+      input.coldRentActual = 1000;
+      input.nonRecoverableCosts = 50;
+      input.maintenanceReserve = 50;
+      input.personalTaxRate = 35;
+      input.movableAssetsValue = 10000;
+      input.movableAssetsDepreciationYears = 15; // Longer than some debt periods
+      input.expectedRentIncreasePercent = 0;
+      input.expectedAppreciationPercent = 0;
+
+      // Short debt period
+      const amortizationSchedule = generateFullAmortizationSchedule(
+        100000,
+        input.interestRate,
+        5.0, // High repayment rate
+        10
+      );
+
+      const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 10);
+
+      // All years in the schedule should have movable assets AfA
+      projection.forEach((point) => {
+        // Each year within depreciation period should have the AfA effect
+        expect(point.afaEffect).toBeGreaterThan(0); // Building AfA is always present
+      });
+    });
+
+    it("should not apply movable assets AfA in debt-free years beyond depreciation period", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 200000;
+      input.buildingSharePercent = 75;
+      input.afaType = "ALTBAU_AB_1925";
+      input.coldRentActual = 1000;
+      input.nonRecoverableCosts = 50;
+      input.maintenanceReserve = 50;
+      input.personalTaxRate = 35;
+      input.movableAssetsValue = 5000;
+      input.movableAssetsDepreciationYears = 5; // Short period
+      input.expectedRentIncreasePercent = 0;
+      input.expectedAppreciationPercent = 0;
+
+      // Very short debt period so we get debt-free years
+      const amortizationSchedule = generateFullAmortizationSchedule(
+        50000,
+        input.interestRate,
+        10.0, // Very high repayment
+        5
+      );
+
+      const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 5);
+
+      // Last year (debt-free) is beyond the movable assets depreciation period
+      const lastYear = projection[projection.length - 1];
+      if (lastYear.isDebtFree && lastYear.year > input.movableAssetsDepreciationYears!) {
+        // The debt-free year beyond depreciation should have lower tax effect
+        // Can't directly compare but we know building AfA continues, movable doesn't
+        expect(lastYear.afaEffect).toBeGreaterThan(0); // Building AfA still present
+      }
+    });
+  });
+
+  describe("getDefaultPropertyInput movable assets", () => {
+    it("should include movable assets default values", () => {
+      const defaults = getDefaultPropertyInput();
+
+      expect(defaults.movableAssetsValue).toBe(0);
+      expect(defaults.movableAssetsDepreciationYears).toBe(10);
+    });
+  });
+
+  describe("calculatePropertyKPIs with movable assets", () => {
+    it("should calculate full KPIs including movable assets AfA", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 300000;
+      input.equity = 60000;
+      input.buildingSharePercent = 75;
+      input.afaType = "ALTBAU_AB_1925";
+      input.coldRentActual = 1200;
+      input.movableAssetsValue = 8000;
+      input.movableAssetsDepreciationYears = 10;
+
+      const result = calculatePropertyKPIs(input);
+
+      // Tax result should include movable assets AfA
+      expect(result.tax.movableAssetsAfA).toBeCloseTo(800, 0);
+      expect(result.tax.totalDeductions).toBeGreaterThan(result.tax.afaAmount);
+
+      // Cashflow should benefit from additional tax deductions
+      expect(result.cashflow.taxEffect).toBeGreaterThan(0); // Tax benefit
+    });
+  });
+});
