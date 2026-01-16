@@ -234,22 +234,46 @@ export function CumulativeCashflowChart() {
   const output = calculatePropertyKPIs(currentInput);
   const isDark = resolvedTheme === "dark";
 
+  // Calculate loan amount
+  const loanAmount = calculateLoanAmount(
+    output.investmentVolume.totalInvestment,
+    currentInput.equity
+  );
+
+  // Generate full amortization schedule
+  const fullSchedule = generateFullAmortizationSchedule(
+    loanAmount,
+    currentInput.interestRate,
+    currentInput.repaymentRate,
+    50
+  );
+
+  // Calculate extended cashflow projection with dynamic factors
+  const cashflowProjection = calculateExtendedCashflowProjection(
+    currentInput,
+    fullSchedule,
+    fullSchedule.length
+  );
+
   // Theme-aware colors
   const gridColor = isDark ? "#334155" : "#e2e8f0";
   const axisColor = isDark ? "#94a3b8" : "#64748b";
   const referenceLineColor = isDark ? "#64748b" : "#94a3b8";
 
-  const chartData = output.cumulativeCashflow.map((point) => ({
-    year: `Jahr ${point.year}`,
-    Cashflow: Math.round(point.cumulativeCashflow),
-    Nettovermögen: Math.round(point.netWorth),
-    Immobilienwert: Math.round(point.propertyValue),
-  }));
+  // Calculate cumulative cashflow from dynamic projection
+  let cumulativeCashflow = 0;
+  const chartData = cashflowProjection.map((point) => {
+    cumulativeCashflow += point.cashflowAfterTax;
+    return {
+      year: `Jahr ${point.year}`,
+      Cashflow: Math.round(cumulativeCashflow),
+      Nettovermögen: Math.round(point.equityValue + cumulativeCashflow),
+      Immobilienwert: Math.round(point.propertyValue),
+    };
+  });
 
-  const finalCashflow =
-    output.cumulativeCashflow[output.cumulativeCashflow.length - 1]?.cumulativeCashflow || 0;
-  const finalNetWorth =
-    output.cumulativeCashflow[output.cumulativeCashflow.length - 1]?.netWorth || 0;
+  const finalCashflow = chartData[chartData.length - 1]?.Cashflow || 0;
+  const finalNetWorth = chartData[chartData.length - 1]?.Nettovermögen || 0;
 
   return (
     <Card className="overflow-hidden" animate>
@@ -345,7 +369,7 @@ export function CumulativeCashflowChart() {
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
           <div className="group rounded-lg border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/50 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/50 dark:to-slate-800/30">
             <p className="mb-2 font-medium text-slate-600 dark:text-slate-400">
-              Cashflow nach {currentInput.fixedInterestPeriod} Jahren
+              Cashflow nach {cashflowProjection.length} Jahren
             </p>
             <p
               className={`text-2xl font-bold tabular-nums ${
@@ -361,7 +385,7 @@ export function CumulativeCashflowChart() {
             <div className="mb-2 flex items-center justify-center gap-2">
               <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
               <p className="font-medium text-green-600 dark:text-green-400">
-                Nettovermögen nach {currentInput.fixedInterestPeriod} Jahren
+                Nettovermögen nach {cashflowProjection.length} Jahren
               </p>
             </div>
             <p className="text-2xl font-bold text-green-700 tabular-nums dark:text-green-300">
@@ -424,6 +448,11 @@ export function CashflowDevelopmentChart() {
   const lastCashflow =
     cashflowProjection[cashflowProjection.length - 1]?.monthlyCashflowAfterTax || 0;
   const maxCashflow = Math.max(...cashflowProjection.map((p) => p.monthlyCashflowAfterTax));
+
+  // Find the debt-free year and cashflow
+  const debtFreePoint = cashflowProjection.find((p) => p.isDebtFree);
+  const debtFreeYear = debtFreePoint?.year || 0;
+  const debtFreeCashflow = debtFreePoint?.monthlyCashflowAfterTax || 0;
 
   return (
     <Card className="overflow-hidden" animate>
@@ -497,7 +526,7 @@ export function CashflowDevelopmentChart() {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-        <div className="mt-6 grid grid-cols-3 gap-4 text-sm">
+        <div className="mt-6 grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
           <div className="rounded-lg border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/50 p-4 text-center dark:border-slate-700 dark:from-slate-800/50 dark:to-slate-800/30">
             <p className="mb-2 text-xs font-medium text-slate-600 dark:text-slate-400">Jahr 1</p>
             <p
@@ -516,6 +545,17 @@ export function CashflowDevelopmentChart() {
               {formatCurrency(maxCashflow)}
             </p>
           </div>
+          {debtFreePoint && (
+            <div className="rounded-lg border border-emerald-100 bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-4 text-center dark:border-emerald-800 dark:from-emerald-900/30 dark:to-emerald-900/20">
+              <p className="mb-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                Nach Tilgung (Jahr {debtFreeYear})
+              </p>
+              <p className="text-xl font-bold text-emerald-700 tabular-nums dark:text-emerald-300">
+                {formatCurrency(debtFreeCashflow)}
+              </p>
+              <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">Kein Schuldendienst</p>
+            </div>
+          )}
           <div className="rounded-lg border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/50 p-4 text-center dark:border-slate-700 dark:from-slate-800/50 dark:to-slate-800/30">
             <p className="mb-2 text-xs font-medium text-slate-600 dark:text-slate-400">
               Jahr {cashflowProjection.length}

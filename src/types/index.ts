@@ -219,6 +219,9 @@ export interface ExtendedCashflowPoint {
   // Tax
   afaEffect: number;
   totalTaxEffect: number;
+
+  // Debt status
+  isDebtFree?: boolean;
 }
 
 /**
