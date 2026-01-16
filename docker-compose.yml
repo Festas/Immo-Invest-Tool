@@ -1,8 +1,27 @@
 # ImmoCalc - Docker Compose für Produktion
-# Verwendet externes caddy-network (verwaltet vom Link-in-Bio Repository)
-# Der Caddy Reverse Proxy läuft zentral im Link-in-Bio Repository
+# Mit PostgreSQL Datenbank
 
 services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: immocalc-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: immo_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme_in_production}
+      POSTGRES_DB: immo_invest
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U immo_user -d immo_invest"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - caddy-network
+    # No external port - only accessible internally!
+
   # ImmoCalc Next.js Application
   web:
     build:
@@ -10,24 +29,18 @@ services:
       dockerfile: Dockerfile
     container_name: immocalc
     restart: unless-stopped
-    # Port mapping: Host port 8086 maps to container port 3000
-    # Container internally listens on port 3000 (see Dockerfile EXPOSE 3000)
-    # This makes the app accessible via nginx on host port 8086 (http://127.0.0.1:8086)
-    # Note: Other containers on caddy-network can still access immocalc:3000 directly
     ports:
       - "8086:3000"
-    volumes:
-      # Persistent data storage for user authentication
-      - immocalc-data:/data
     environment:
       - NODE_ENV=production
-      # Supabase Configuration (optional - for cloud sync)
-      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
-      # AI Integration (optional)
+      - DATABASE_URL=postgresql://immo_user:${DB_PASSWORD:-changeme_in_production}@db:5432/immo_invest?schema=public
+      - JWT_SECRET=${JWT_SECRET}
+      # Optional: AI Integration
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      # Maps Integration (optional)
       - NEXT_PUBLIC_GOOGLE_MAPS_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
     healthcheck:
       test:
         [
@@ -44,7 +57,7 @@ services:
       - caddy-network
 
 volumes:
-  immocalc-data:
+  postgres-data:
     driver: local
 
 networks:
