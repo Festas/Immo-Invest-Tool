@@ -1,0 +1,52 @@
+# Configuration for Excel to XML Converter
+# Optimized for ESSI-2025 container data processing
+
+# Fixed file paths for network drive (Z:\)
+file_paths:
+  aktivitaeten_file: "Z:\\KKK\\Fachbereiche\\TKW\\Allgemein\\ESSI-2025\\Aktivitäten\\ESSI_Aktivitäten_Container.xlsx"
+  container_file: "Z:\\KKK\\Fachbereiche\\TKW\\Allgemein\\ESSI-2025\\ReVS\\Container\\Container-Übersicht_ESSI2025.xlsx"
+
+# Pattern matching for data detection
+patterns:
+  # KKKU container number patterns: KKKU 011913-0, KKKU011913-0, KKKU-011913-0
+  container: "KKKU[\\s\\-]?\\d{6}[\\-\\.]?\\d"
+  # Seal (Plomben) V-number patterns: V367011, V 367011
+  seal: "V\\s?\\d{6,7}"
+  # PFP group patterns: PFP 5.1 Transportlos, PFP 5.2, etc.
+  pfp_group: "PFP\\s*\\d+\\.\\d+(?:\\s+\\w+)?"
+
+# Sheet configurations
+sheets:
+  container_overview:
+    target_sheet: "Plomben"
+    fallback_sheets:
+      - "Container"
+      - "Übersicht"
+  aktivitaeten:
+    target_sheet: "Aktivitäten"
+    fallback_sheets:
+      - "Activities"
+      - "Sheet1"
+
+# Network access settings
+network:
+  max_retries: 3
+  retry_delay_seconds: 2
+  timeout_seconds: 30
+
+# Output settings
+output:
+  default_filename: "container_data.xml"
+  encoding: "utf-8"
+  indent: 2
+
+# Column detection settings
+detection:
+  min_match_threshold: 0.1 # Minimum percentage of cells matching pattern to identify column
+  max_header_rows: 5 # Maximum rows to search for headers
+  min_data_rows: 3 # Minimum rows to consider valid data
+
+# Caching settings
+cache:
+  enabled: true
+  ttl_seconds: 300 # Cache time-to-live

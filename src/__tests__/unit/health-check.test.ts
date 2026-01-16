@@ -36,7 +36,7 @@ describe("Health Check API Route", () => {
     consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     // Set default NODE_ENV to development for tests
-    process.env.NODE_ENV = "development";
+    (process.env as Record<string, string | undefined>).NODE_ENV = "development";
     // Clean up all secret-related env vars
     delete process.env.JWT_SECRET;
     delete process.env.SESSION_SECRET;
@@ -104,7 +104,7 @@ describe("Health Check API Route", () => {
     });
 
     it("should report correct NODE_ENV", async () => {
-      process.env.NODE_ENV = "production";
+      (process.env as Record<string, string | undefined>).NODE_ENV = "production";
       process.env.JWT_SECRET = "test-secret"; // Set JWT_SECRET to avoid unhealthy status
       vi.mocked(fs.access).mockResolvedValue(undefined);
       vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
@@ -170,7 +170,7 @@ describe("Health Check API Route", () => {
     });
 
     it("should include warnings in production when secrets are missing", async () => {
-      process.env.NODE_ENV = "production";
+      (process.env as Record<string, string | undefined>).NODE_ENV = "production";
       delete process.env.JWT_SECRET;
       delete process.env.SESSION_SECRET;
       delete process.env.DOMAIN;
@@ -220,7 +220,7 @@ describe("Health Check API Route", () => {
 
   describe("Logging", () => {
     it("should log health check in development mode", async () => {
-      process.env.NODE_ENV = "development";
+      (process.env as Record<string, string | undefined>).NODE_ENV = "development";
       delete process.env.JWT_SECRET; // Will trigger warning
       vi.mocked(fs.access).mockResolvedValue(undefined);
       vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
@@ -234,7 +234,7 @@ describe("Health Check API Route", () => {
     });
 
     it("should log health check when there are warnings", async () => {
-      process.env.NODE_ENV = "production";
+      (process.env as Record<string, string | undefined>).NODE_ENV = "production";
       process.env.JWT_SECRET = "test-secret";
       delete process.env.SESSION_SECRET;
       delete process.env.DOMAIN;

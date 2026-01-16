@@ -53,13 +53,13 @@ describe("Per-User Portfolio Storage", () => {
 
     it("should return production path in production mode", () => {
       delete process.env.DATA_DIR;
-      process.env.NODE_ENV = "production";
+      (process.env as Record<string, string | undefined>).NODE_ENV = "production";
       expect(getUserDataDir()).toBe("/data/users");
     });
 
     it("should return development path in development mode", () => {
       delete process.env.DATA_DIR;
-      process.env.NODE_ENV = "development";
+      (process.env as Record<string, string | undefined>).NODE_ENV = "development";
       expect(getUserDataDir()).toContain(".data/users");
     });
   });

@@ -383,7 +383,7 @@ describe("Login API Route - Error Handling", () => {
         json: async () => {
           throw new SyntaxError("Unexpected token in JSON");
         },
-      } as NextRequest;
+      } as unknown as NextRequest;
 
       const response = await POST(request);
       const data = await response.json();
