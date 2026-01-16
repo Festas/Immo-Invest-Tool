@@ -115,7 +115,7 @@ jobs:
             services:
               # PostgreSQL Database
               db:
-                image: postgres:16-alpine
+                image: postgres:16.6-alpine
                 container_name: immocalc-db
                 restart: unless-stopped
                 environment:
@@ -159,9 +159,6 @@ jobs:
             echo "[4/5] Restarting Containers..."
             docker compose down --remove-orphans || true
             docker compose up -d
-
-            echo "Waiting for containers to start..."
-            sleep 3
 
             # Kurzer Check ob die Container laufen
             if [ "$(docker inspect -f '{{.State.Running}}' immocalc 2>/dev/null)" = "true" ]; then
