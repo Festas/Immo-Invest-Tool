@@ -62,10 +62,10 @@ export function LocationSearch({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setSelectedIndex((prev) => Math.min(prev + 1, results.length - 1));
+      setSelectedIndex((prev) => (prev < results.length - 1 ? prev + 1 : prev));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setSelectedIndex((prev) => Math.max(prev - 1, 0));
+      setSelectedIndex((prev) => (prev > -1 ? prev - 1 : -1));
     } else if (e.key === "Enter" && selectedIndex >= 0) {
       e.preventDefault();
       handleSelect(results[selectedIndex]);

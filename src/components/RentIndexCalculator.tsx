@@ -102,22 +102,29 @@ export function RentIndexCalculator() {
   const [selectedLocation, setSelectedLocation] = useState<PLZResult | null>(null);
   const [dataSource, setDataSource] = useState<string>("München");
 
+  // Create city lookup map once for better performance
+  const cityLookupMap = React.useMemo(() => {
+    const map = new Map<string, string>();
+    Object.entries(rentIndexData as Record<string, CityRentData>).forEach(([key, data]) => {
+      // Store lowercase city name as key for fast lookup
+      map.set(data.city.toLowerCase(), key);
+    });
+    return map;
+  }, []);
+
   const findCityInDatabase = (cityName: string): string => {
-    // Try to find exact match first
-    const exactMatch = Object.keys(rentIndexData).find(
-      (key) =>
-        (rentIndexData as Record<string, CityRentData>)[key].city.toLowerCase() ===
-        cityName.toLowerCase()
-    );
+    const lowerCityName = cityName.toLowerCase();
+
+    // Try exact match first
+    const exactMatch = cityLookupMap.get(lowerCityName);
     if (exactMatch) return exactMatch;
 
-    // Try partial match
-    const partialMatch = Object.keys(rentIndexData).find((key) =>
-      (rentIndexData as Record<string, CityRentData>)[key].city
-        .toLowerCase()
-        .includes(cityName.toLowerCase())
-    );
-    if (partialMatch) return partialMatch;
+    // Try partial match - find first city that includes the search term
+    for (const [cityKey, dbKey] of cityLookupMap.entries()) {
+      if (cityKey.includes(lowerCityName)) {
+        return dbKey;
+      }
+    }
 
     // Default to SONSTIGE
     return "SONSTIGE";

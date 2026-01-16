@@ -75,47 +75,60 @@ function parsePOIResponse(elements: Array<Record<string, unknown>>): POIStats {
   let hospitals = 0;
 
   for (const el of elements) {
-    const lat = (el.lat as number) || (el.center as Record<string, unknown>)?.lat;
-    const lon = (el.lon as number) || (el.center as Record<string, unknown>)?.lon;
-    if (!lat || !lon) continue;
+    // Type guards for coordinates
+    const centerObj = el.center as Record<string, unknown> | undefined;
+    const lat =
+      typeof el.lat === "number"
+        ? el.lat
+        : typeof centerObj?.lat === "number"
+          ? centerObj.lat
+          : null;
+    const lon =
+      typeof el.lon === "number"
+        ? el.lon
+        : typeof centerObj?.lon === "number"
+          ? centerObj.lon
+          : null;
+
+    if (lat === null || lon === null || typeof el.id !== "number") continue;
 
     const tags = (el.tags as Record<string, string>) || {};
 
     if (tags.amenity === "school") {
       schools++;
       pois.push({
-        id: el.id as number,
+        id: el.id,
         type: "school",
         name: tags.name || "Schule",
-        lat: lat as number,
-        lon: lon as number,
+        lat,
+        lon,
       });
     } else if (tags.public_transport || tags.highway === "bus_stop" || tags.railway) {
       transitStops++;
       pois.push({
-        id: el.id as number,
+        id: el.id,
         type: "transit",
         name: tags.name || "Haltestelle",
-        lat: lat as number,
-        lon: lon as number,
+        lat,
+        lon,
       });
     } else if (tags.shop === "supermarket") {
       supermarkets++;
       pois.push({
-        id: el.id as number,
+        id: el.id,
         type: "supermarket",
         name: tags.name || "Supermarkt",
-        lat: lat as number,
-        lon: lon as number,
+        lat,
+        lon,
       });
     } else if (tags.amenity === "hospital") {
       hospitals++;
       pois.push({
-        id: el.id as number,
+        id: el.id,
         type: "hospital",
         name: tags.name || "Krankenhaus",
-        lat: lat as number,
-        lon: lon as number,
+        lat,
+        lon,
       });
     }
   }

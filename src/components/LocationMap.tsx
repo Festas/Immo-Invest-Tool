@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import dynamic from "next/dynamic";
 import { POI } from "@/lib/api/overpass";
 
@@ -32,15 +32,10 @@ export function LocationMap({
   radiusMeters = 1000,
   className = "h-[300px] w-full rounded-lg",
 }: LocationMapProps) {
-  const [isMounted, setIsMounted] = useState(false);
+  // Check if we're on the client side
+  const isClient = typeof window !== "undefined";
 
-  useEffect(() => {
-    // Using a timeout to avoid synchronous setState in effect
-    const timer = setTimeout(() => setIsMounted(true), 0);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!isMounted) {
+  if (!isClient) {
     return (
       <div
         className={`${className} flex animate-pulse items-center justify-center bg-slate-100 dark:bg-slate-800`}
