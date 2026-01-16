@@ -261,9 +261,10 @@ export function CumulativeCashflowChart() {
   const referenceLineColor = isDark ? "#64748b" : "#94a3b8";
 
   // Calculate cumulative cashflow from dynamic projection
-  let cumulativeCashflow = 0;
-  const chartData = cashflowProjection.map((point) => {
-    cumulativeCashflow += point.cashflowAfterTax;
+  const chartData = cashflowProjection.map((point, index) => {
+    const cumulativeCashflow = cashflowProjection
+      .slice(0, index + 1)
+      .reduce((sum, p) => sum + p.cashflowAfterTax, 0);
     return {
       year: `Jahr ${point.year}`,
       Cashflow: Math.round(cumulativeCashflow),
@@ -526,7 +527,11 @@ export function CashflowDevelopmentChart() {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-        <div className="mt-6 grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
+        <div
+          className={`mt-6 grid gap-4 text-sm ${
+            debtFreePoint ? "grid-cols-2 md:grid-cols-4" : "grid-cols-3"
+          }`}
+        >
           <div className="rounded-lg border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/50 p-4 text-center dark:border-slate-700 dark:from-slate-800/50 dark:to-slate-800/30">
             <p className="mb-2 text-xs font-medium text-slate-600 dark:text-slate-400">Jahr 1</p>
             <p
@@ -553,7 +558,9 @@ export function CashflowDevelopmentChart() {
               <p className="text-xl font-bold text-emerald-700 tabular-nums dark:text-emerald-300">
                 {formatCurrency(debtFreeCashflow)}
               </p>
-              <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">Kein Schuldendienst</p>
+              <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">
+                Kein Schuldendienst
+              </p>
             </div>
           )}
           <div className="rounded-lg border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/50 p-4 text-center dark:border-slate-700 dark:from-slate-800/50 dark:to-slate-800/30">

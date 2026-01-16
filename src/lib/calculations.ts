@@ -22,6 +22,7 @@ import {
 
 // Constants
 const OPERATING_COSTS_INFLATION_RATE = 0.02; // 2% annual inflation for operating costs
+const DEBT_FREE_YEARS_TO_ADD = 1; // Number of debt-free years to show after complete repayment
 
 // Reusable currency formatter for German locale
 const currencyFormatter = new Intl.NumberFormat("de-DE", {
@@ -564,48 +565,41 @@ export function calculateExtendedCashflowProjection(
     });
   }
 
-  // Add at least 1 debt-free year after complete repayment
-  const debtFreeYearsToAdd = 1;
-  
-  for (let extraYear = 1; extraYear <= debtFreeYearsToAdd; extraYear++) {
+  // Add debt-free years after complete repayment
+  for (let extraYear = 1; extraYear <= DEBT_FREE_YEARS_TO_ADD; extraYear++) {
     const year = amortizationSchedule.length + extraYear;
-    
+
     // Continue to apply annual increases
     currentRent *= 1 + rentIncreaseRate;
     currentOperatingCosts *= 1 + inflationRate;
     propertyValue *= 1 + appreciationRate;
-    
+
     const vacancyDeduction = (currentRent * input.vacancyRiskPercent) / 100;
     const netRent = currentRent - vacancyDeduction;
-    
-    // NO interest and principal payments anymore!
-    const interestPayment = 0;
-    const principalPayment = 0;
-    const remainingDebt = 0;
-    
+
     // Calculate tax deductions (only AfA and operating costs, no interest)
     const totalDeductions = afaAmount + currentOperatingCosts;
     const rentalIncomeAfterDeductions = currentRent - totalDeductions;
-    
+
     // Tax effect: negative income = tax benefit, positive income = tax liability
     const taxEffect = -(rentalIncomeAfterDeductions * input.personalTaxRate) / 100;
-    
+
     // Cashflow without debt service
     const cashflowBeforeTax = netRent - currentOperatingCosts; // No debt service!
     const cashflowAfterTax = cashflowBeforeTax + taxEffect;
     const monthlyCashflowAfterTax = cashflowAfterTax / 12;
-    
+
     points.push({
       year,
       grossRent: currentRent,
       netRent,
-      interestPayment: 0,
-      principalPayment: 0,
+      interestPayment: 0, // No interest payment when debt-free
+      principalPayment: 0, // No principal payment when debt-free
       operatingCosts: currentOperatingCosts,
       cashflowBeforeTax,
       cashflowAfterTax,
       monthlyCashflowAfterTax,
-      remainingDebt: 0,
+      remainingDebt: 0, // No remaining debt when debt-free
       propertyValue,
       equityValue: propertyValue, // Full property value = equity when debt-free
       afaEffect: afaAmount,
