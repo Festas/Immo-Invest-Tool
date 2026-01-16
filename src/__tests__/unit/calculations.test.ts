@@ -763,6 +763,7 @@ describe("calculateBreakEven", () => {
   it("should calculate break-even for positive cashflow", () => {
     const input: BreakEvenInput = {
       totalInvestment: 100000,
+      equity: 20000,
       annualCashflow: 5000,
       annualAppreciation: 2.0,
       sellingCostsPercent: 6.0,
@@ -779,6 +780,7 @@ describe("calculateBreakEven", () => {
   it("should handle negative cashflow", () => {
     const input: BreakEvenInput = {
       totalInvestment: 300000,
+      equity: 60000,
       annualCashflow: -4000,
       annualAppreciation: 3.0,
       sellingCostsPercent: 6.0,
@@ -794,6 +796,7 @@ describe("calculateBreakEven", () => {
   it("should calculate ROI at different time points", () => {
     const input: BreakEvenInput = {
       totalInvestment: 200000,
+      equity: 40000,
       annualCashflow: 8000,
       annualAppreciation: 2.5,
       sellingCostsPercent: 5.0,
@@ -809,6 +812,7 @@ describe("calculateBreakEven", () => {
   it("should handle zero annual cashflow", () => {
     const input: BreakEvenInput = {
       totalInvestment: 150000,
+      equity: 30000,
       annualCashflow: 0,
       annualAppreciation: 2.0,
       sellingCostsPercent: 6.0,
@@ -925,6 +929,8 @@ describe("calculateExitStrategy", () => {
       cumulativeCashflow: 20000,
       speculationTaxApplies: false,
       personalTaxRate: 42,
+      equity: 60000,
+      totalTilgung: 50000,
     };
 
     const result = calculateExitStrategy(input);
@@ -946,6 +952,8 @@ describe("calculateExitStrategy", () => {
       cumulativeCashflow: 10000,
       speculationTaxApplies: true,
       personalTaxRate: 35,
+      equity: 50000,
+      totalTilgung: 30000,
     };
 
     const result = calculateExitStrategy(input);
@@ -963,6 +971,8 @@ describe("calculateExitStrategy", () => {
       cumulativeCashflow: -5000,
       speculationTaxApplies: true,
       personalTaxRate: 40,
+      equity: 60000,
+      totalTilgung: 20000,
     };
 
     const result = calculateExitStrategy(input);
@@ -981,6 +991,8 @@ describe("calculateExitStrategy", () => {
       cumulativeCashflow: 30000,
       speculationTaxApplies: false,
       personalTaxRate: 35,
+      equity: 40000,
+      totalTilgung: 40000,
     };
 
     const result = calculateExitStrategy(input);
@@ -1000,6 +1012,8 @@ describe("calculateExitStrategy", () => {
       cumulativeCashflow: 20000,
       speculationTaxApplies: false,
       personalTaxRate: 30,
+      equity: 20000,
+      totalTilgung: 30000,
     };
 
     const result = calculateExitStrategy(input);

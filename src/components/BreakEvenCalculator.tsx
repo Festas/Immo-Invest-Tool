@@ -42,9 +42,12 @@ export function BreakEvenCalculator() {
   const handleCalculate = () => {
     const breakEvenResult = calculateBreakEven({
       totalInvestment: output.investmentVolume.totalInvestment,
+      equity: currentInput.equity,
       annualCashflow: output.cashflow.cashflowAfterTax,
       annualAppreciation: appreciationRate,
       sellingCostsPercent: sellingCostsPercent,
+      marketValue: currentInput.marketValue,
+      amortizationSchedule: output.amortizationSchedule,
     });
     setResult(breakEvenResult);
   };
@@ -107,6 +110,16 @@ export function BreakEvenCalculator() {
             formatValue={(v) => `${v.toFixed(1)}%`}
             helpText={helpTexts.sellingCosts}
           />
+
+          {currentInput.marketValue && currentInput.marketValue > 0 && (
+            <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 p-3 dark:border-blue-900/50 dark:bg-blue-950/50">
+              <Target className="h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                <strong>Hinweis:</strong> Die Berechnung verwendet den eingegebenen Marktwert von{" "}
+                {formatCurrency(currentInput.marketValue)} als Startwert für die Wertsteigerung.
+              </p>
+            </div>
+          )}
 
           <Button onClick={handleCalculate} className="w-full">
             <Calculator className="mr-2 h-4 w-4" />
@@ -171,10 +184,13 @@ export function BreakEvenCalculator() {
                         Gesamtrendite
                       </th>
                       <th className="px-2 py-3 text-right text-slate-900 dark:text-slate-100">
-                        ROI
+                        ROI auf EK
                       </th>
                       <th className="px-2 py-3 text-right text-slate-900 dark:text-slate-100">
-                        ROI p.a.
+                        Netto-Erlös
+                      </th>
+                      <th className="px-2 py-3 text-right text-slate-900 dark:text-slate-100">
+                        EK-Multiplikator
                       </th>
                     </tr>
                   </thead>
@@ -191,10 +207,11 @@ export function BreakEvenCalculator() {
                       >
                         {result.roiAt5Years.toFixed(1)}%
                       </td>
-                      <td
-                        className={`px-2 py-3 text-right ${result.roiAt5Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
-                      >
-                        {(result.roiAt5Years / 5).toFixed(2)}%
+                      <td className="px-2 py-3 text-right font-medium text-blue-600 dark:text-blue-400">
+                        {formatCurrency(result.netProceedsAt5Years)}
+                      </td>
+                      <td className="px-2 py-3 text-right font-medium text-slate-900 dark:text-slate-100">
+                        -
                       </td>
                     </tr>
                     <tr className="border-b border-slate-100 dark:border-slate-800">
@@ -209,10 +226,11 @@ export function BreakEvenCalculator() {
                       >
                         {result.roiAt10Years.toFixed(1)}%
                       </td>
-                      <td
-                        className={`px-2 py-3 text-right ${result.roiAt10Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
-                      >
-                        {(result.roiAt10Years / 10).toFixed(2)}%
+                      <td className="px-2 py-3 text-right font-medium text-blue-600 dark:text-blue-400">
+                        {formatCurrency(result.netProceedsAt10Years)}
+                      </td>
+                      <td className="px-2 py-3 text-right font-medium text-purple-600 dark:text-purple-400">
+                        {result.equityMultiplierAt10Years.toFixed(1)}x
                       </td>
                     </tr>
                     <tr>
@@ -227,40 +245,35 @@ export function BreakEvenCalculator() {
                       >
                         {result.roiAt15Years.toFixed(1)}%
                       </td>
-                      <td
-                        className={`px-2 py-3 text-right ${result.roiAt15Years >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
-                      >
-                        {(result.roiAt15Years / 15).toFixed(2)}%
+                      <td className="px-2 py-3 text-right font-medium text-blue-600 dark:text-blue-400">
+                        {formatCurrency(result.netProceedsAt15Years)}
+                      </td>
+                      <td className="px-2 py-3 text-right font-medium text-purple-600 dark:text-purple-400">
+                        {result.equityMultiplierAt15Years.toFixed(1)}x
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              <div className="mt-4 rounded-lg border border-slate-100 bg-slate-50 p-4 dark:border-slate-700/50 dark:bg-slate-800/50">
+              <div className="mt-4 rounded-lg border border-purple-100 bg-purple-50 p-4 dark:border-purple-700/50 dark:bg-purple-900/30">
                 <div className="mb-2 flex items-center gap-2">
                   <PiggyBank className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                   <p className="font-medium text-slate-900 dark:text-slate-100">
-                    Vermögensaufbau nach 15 Jahren
+                    Eigenkapital-Entwicklung
                   </p>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Bei einer jährlichen Wertsteigerung von {appreciationRate.toFixed(1)}% und
-                  Berücksichtigung des Cashflows beträgt Ihre Gesamtrendite{" "}
-                  <strong
-                    className={
-                      result.roiAt15Years >= 0
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-red-600 dark:text-red-400"
-                    }
-                  >
-                    {formatCurrency(result.totalReturnAt15Years)}
+                  Nach 15 Jahren: Aus {formatCurrency(currentInput.equity)} wurden{" "}
+                  {formatCurrency(currentInput.equity + result.totalReturnAt15Years)} (
+                  <strong className="text-purple-600 dark:text-purple-400">
+                    {result.equityMultiplierAt15Years.toFixed(1)}x
                   </strong>
-                  . Das entspricht einer durchschnittlichen jährlichen Rendite von{" "}
+                  ). Das entspricht einem ROI von{" "}
                   <strong className="text-slate-900 dark:text-slate-100">
-                    {(result.roiAt15Years / 15).toFixed(2)}%
-                  </strong>
-                  .
+                    {result.roiAt15Years.toFixed(1)}%
+                  </strong>{" "}
+                  auf das eingesetzte Eigenkapital.
                 </p>
               </div>
             </CardContent>
