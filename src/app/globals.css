@@ -2,6 +2,25 @@
 @import "tailwindcss";
 
 /* ============================================
+   CUSTOM LEAFLET MARKER STYLES
+   ============================================ */
+/* Custom Leaflet Marker Styles - Override Leaflet defaults */
+/* !important is required to override Leaflet's inline and default styles */
+.custom-poi-marker,
+.main-location-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+}
+
+.leaflet-popup-content {
+  margin: 12px;
+}
+
+/* ============================================
    LIGHT MODE - Clean, Modern, Professional
    ============================================ */
 :root,
