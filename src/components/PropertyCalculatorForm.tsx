@@ -588,9 +588,10 @@ export function PropertyCalculatorForm() {
                 label="Bewegliche Güter (z.B. Einbauküche)"
                 type="number"
                 value={currentInput.movableAssetsValue ?? 0}
-                onChange={(e) =>
-                  updateInput({ movableAssetsValue: parseFloat(e.target.value) || 0 })
-                }
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                  updateInput({ movableAssetsValue: isNaN(value) ? 0 : value });
+                }}
                 suffix="€"
                 min={0}
                 step={500}
@@ -601,9 +602,10 @@ export function PropertyCalculatorForm() {
                 label="Abschreibungsdauer"
                 type="number"
                 value={currentInput.movableAssetsDepreciationYears ?? 10}
-                onChange={(e) =>
-                  updateInput({ movableAssetsDepreciationYears: parseInt(e.target.value) || 10 })
-                }
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  updateInput({ movableAssetsDepreciationYears: isNaN(value) ? 10 : value });
+                }}
                 suffix="Jahre"
                 min={1}
                 max={15}

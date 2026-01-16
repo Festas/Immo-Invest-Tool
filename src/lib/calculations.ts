@@ -134,14 +134,15 @@ export function calculateAfA(
  */
 export function calculateTax(input: PropertyInput, annualInterest: number): TaxResult {
   const afaAmount = calculateAfA(input.purchasePrice, input.buildingSharePercent, input.afaType);
-  
+
   // Calculate movable assets AfA (e.g., fitted kitchen)
   const movableAssetsValue = input.movableAssetsValue ?? 0;
   const movableAssetsDepreciationYears = input.movableAssetsDepreciationYears ?? 10;
-  const movableAssetsAfA = movableAssetsValue > 0 && movableAssetsDepreciationYears > 0
-    ? movableAssetsValue / movableAssetsDepreciationYears
-    : 0;
-  
+  const movableAssetsAfA =
+    movableAssetsValue > 0 && movableAssetsDepreciationYears > 0
+      ? movableAssetsValue / movableAssetsDepreciationYears
+      : 0;
+
   const deductibleInterest = annualInterest;
   const deductibleCosts = (input.nonRecoverableCosts + input.maintenanceReserve) * 12;
 
@@ -531,9 +532,10 @@ export function calculateExtendedCashflowProjection(
   // Calculate movable assets AfA (e.g., fitted kitchen)
   const movableAssetsValue = input.movableAssetsValue ?? 0;
   const movableAssetsDepreciationYears = input.movableAssetsDepreciationYears ?? 10;
-  const movableAssetsAfAPerYear = movableAssetsValue > 0 && movableAssetsDepreciationYears > 0
-    ? movableAssetsValue / movableAssetsDepreciationYears
-    : 0;
+  const movableAssetsAfAPerYear =
+    movableAssetsValue > 0 && movableAssetsDepreciationYears > 0
+      ? movableAssetsValue / movableAssetsDepreciationYears
+      : 0;
 
   for (let i = 0; i < years; i++) {
     const yearData = amortizationSchedule[i];
@@ -556,10 +558,12 @@ export function calculateExtendedCashflowProjection(
     const remainingDebt = yearData.endingBalance;
 
     // Calculate movable assets AfA (only for the depreciation period)
-    const currentMovableAssetsAfA = currentYear <= movableAssetsDepreciationYears ? movableAssetsAfAPerYear : 0;
+    const currentMovableAssetsAfA =
+      currentYear <= (movableAssetsDepreciationYears ?? 10) ? movableAssetsAfAPerYear : 0;
 
     // Calculate tax deductions (including movable assets AfA if within depreciation period)
-    const totalDeductions = afaAmount + currentMovableAssetsAfA + interestPayment + currentOperatingCosts;
+    const totalDeductions =
+      afaAmount + currentMovableAssetsAfA + interestPayment + currentOperatingCosts;
     const rentalIncomeAfterDeductions = currentRent - totalDeductions;
 
     // Tax effect: negative income = tax benefit, positive income = tax liability
@@ -605,7 +609,8 @@ export function calculateExtendedCashflowProjection(
     const netRent = currentRent - vacancyDeduction;
 
     // Calculate movable assets AfA (only for the depreciation period)
-    const currentMovableAssetsAfA = year <= movableAssetsDepreciationYears ? movableAssetsAfAPerYear : 0;
+    const currentMovableAssetsAfA =
+      year <= (movableAssetsDepreciationYears ?? 10) ? movableAssetsAfAPerYear : 0;
 
     // Calculate tax deductions (only AfA, movable assets AfA if applicable, and operating costs, no interest)
     const totalDeductions = afaAmount + currentMovableAssetsAfA + currentOperatingCosts;
