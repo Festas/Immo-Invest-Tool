@@ -193,6 +193,35 @@ export interface CumulativeCashflowPoint {
 }
 
 /**
+ * Extended cashflow data point with detailed breakdown
+ */
+export interface ExtendedCashflowPoint {
+  year: number;
+  // Income
+  grossRent: number;
+  netRent: number;
+
+  // Expenses
+  interestPayment: number;
+  principalPayment: number;
+  operatingCosts: number;
+
+  // Cashflow
+  cashflowBeforeTax: number;
+  cashflowAfterTax: number;
+  monthlyCashflowAfterTax: number;
+
+  // Assets
+  remainingDebt: number;
+  propertyValue: number;
+  equityValue: number;
+
+  // Tax
+  afaEffect: number;
+  totalTaxEffect: number;
+}
+
+/**
  * Complete property calculation output
  */
 export interface PropertyOutput {

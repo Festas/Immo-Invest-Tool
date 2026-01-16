@@ -16,6 +16,7 @@ import {
   TaxResult,
   AmortizationYear,
   CumulativeCashflowPoint,
+  ExtendedCashflowPoint,
   AfARates,
 } from "@/types";
 
@@ -407,6 +408,162 @@ export function getDefaultPropertyInput(): PropertyInput {
     expectedAppreciationPercent: 2.0, // 2% annual appreciation
     expectedRentIncreasePercent: 1.5, // 1.5% annual rent increase
   };
+}
+
+/**
+ * Calculate years until full loan repayment
+ */
+export function calculateYearsToFullRepayment(
+  loanAmount: number,
+  interestRatePercent: number,
+  repaymentRatePercent: number
+): number {
+  if (loanAmount <= 0) return 0;
+
+  const interestRate = interestRatePercent / 100;
+  const annuityRatePercent = interestRatePercent + repaymentRatePercent;
+  const annualPayment = (loanAmount * annuityRatePercent) / 100;
+
+  let remainingBalance = loanAmount;
+  let years = 0;
+  const maxYears = 100; // Safety limit
+
+  while (remainingBalance > 0.01 && years < maxYears) {
+    years++;
+    const interestPayment = remainingBalance * interestRate;
+    const principalPayment = Math.min(annualPayment - interestPayment, remainingBalance);
+    remainingBalance = Math.max(0, remainingBalance - principalPayment);
+  }
+
+  return years;
+}
+
+/**
+ * Generate full amortization schedule until complete repayment
+ */
+export function generateFullAmortizationSchedule(
+  loanAmount: number,
+  interestRatePercent: number,
+  repaymentRatePercent: number,
+  maxYears: number = 50
+): AmortizationYear[] {
+  if (loanAmount <= 0) return [];
+
+  const schedule: AmortizationYear[] = [];
+  const interestRate = interestRatePercent / 100;
+  const annuityRatePercent = interestRatePercent + repaymentRatePercent;
+  const annualPayment = (loanAmount * annuityRatePercent) / 100;
+
+  let remainingBalance = loanAmount;
+  let cumulativeInterest = 0;
+  let cumulativePrincipal = 0;
+  let year = 1;
+
+  while (remainingBalance > 0.01 && year <= maxYears) {
+    const startingBalance = remainingBalance;
+    const interestPayment = remainingBalance * interestRate;
+    const principalPayment = Math.min(annualPayment - interestPayment, remainingBalance);
+    remainingBalance = Math.max(0, remainingBalance - principalPayment);
+
+    cumulativeInterest += interestPayment;
+    cumulativePrincipal += principalPayment;
+
+    schedule.push({
+      year,
+      startingBalance,
+      interestPayment,
+      principalPayment,
+      endingBalance: remainingBalance,
+      cumulativeInterest,
+      cumulativePrincipal,
+    });
+
+    year++;
+  }
+
+  return schedule;
+}
+
+/**
+ * Calculate extended cashflow projection with dynamic factors
+ */
+export function calculateExtendedCashflowProjection(
+  input: PropertyInput,
+  amortizationSchedule: AmortizationYear[],
+  yearsToProject: number
+): ExtendedCashflowPoint[] {
+  if (amortizationSchedule.length === 0) return [];
+
+  const points: ExtendedCashflowPoint[] = [];
+  const inflationRate = 0.02; // 2% annual inflation for operating costs
+  const rentIncreaseRate = input.expectedRentIncreasePercent / 100;
+  const appreciationRate = input.expectedAppreciationPercent / 100;
+
+  // Initial values
+  let currentRent = input.coldRentActual * 12; // Annual gross rent
+  let currentOperatingCosts = (input.nonRecoverableCosts + input.maintenanceReserve) * 12; // Annual operating costs
+  let propertyValue = input.purchasePrice;
+
+  const years = Math.min(yearsToProject, amortizationSchedule.length);
+
+  for (let i = 0; i < years; i++) {
+    const yearData = amortizationSchedule[i];
+
+    // Apply annual increases
+    if (i > 0) {
+      currentRent *= 1 + rentIncreaseRate;
+      currentOperatingCosts *= 1 + inflationRate;
+      propertyValue *= 1 + appreciationRate;
+    }
+
+    // Calculate rent after vacancy
+    const vacancyDeduction = (currentRent * input.vacancyRiskPercent) / 100;
+    const netRent = currentRent - vacancyDeduction;
+
+    // Get interest and principal from amortization schedule
+    const interestPayment = yearData.interestPayment;
+    const principalPayment = yearData.principalPayment;
+    const remainingDebt = yearData.endingBalance;
+
+    // Calculate AfA (depreciation)
+    const buildingValue = (input.purchasePrice * input.buildingSharePercent) / 100;
+    const afaRate = AfARates[input.afaType].rate;
+    const afaAmount = (buildingValue * afaRate) / 100;
+
+    // Calculate tax deductions
+    const totalDeductions = afaAmount + interestPayment + currentOperatingCosts;
+    const rentalIncomeAfterDeductions = currentRent - totalDeductions;
+
+    // Tax effect: negative income = tax benefit, positive income = tax liability
+    const taxEffect = -(rentalIncomeAfterDeductions * input.personalTaxRate) / 100;
+
+    // Calculate cashflow
+    const cashflowBeforeTax = netRent - currentOperatingCosts - interestPayment - principalPayment;
+    const cashflowAfterTax = cashflowBeforeTax + taxEffect;
+    const monthlyCashflowAfterTax = cashflowAfterTax / 12;
+
+    // Calculate equity value
+    const equityValue = propertyValue - remainingDebt;
+
+    points.push({
+      year: yearData.year,
+      grossRent: currentRent,
+      netRent,
+      interestPayment,
+      principalPayment,
+      operatingCosts: currentOperatingCosts,
+      cashflowBeforeTax,
+      cashflowAfterTax,
+      monthlyCashflowAfterTax,
+      remainingDebt,
+      propertyValue,
+      equityValue,
+      afaEffect: afaAmount,
+      totalTaxEffect: taxEffect,
+    });
+  }
+
+  return points;
 }
 
 // ============================================

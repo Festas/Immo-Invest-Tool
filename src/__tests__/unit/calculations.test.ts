@@ -21,6 +21,9 @@ import {
   calculateRenovationROI,
   calculateExitStrategy,
   calculateLocationAnalysis,
+  calculateYearsToFullRepayment,
+  generateFullAmortizationSchedule,
+  calculateExtendedCashflowProjection,
 } from "@/lib/calculations";
 import { calculateMarketValueDiscount } from "@/lib/utils";
 import type {
@@ -1545,5 +1548,182 @@ describe("Market Value", () => {
     const discount = calculateMarketValueDiscount(300000, 0);
 
     expect(discount).toBeNull();
+  });
+});
+
+// ===========================================
+// calculateYearsToFullRepayment Tests
+// ===========================================
+describe("calculateYearsToFullRepayment", () => {
+  it("should calculate years to full repayment correctly", () => {
+    const years = calculateYearsToFullRepayment(200000, 3.5, 2.0);
+
+    expect(years).toBeGreaterThan(0);
+    expect(years).toBeLessThan(50); // Should be reasonable
+  });
+
+  it("should return 0 for zero loan amount", () => {
+    const years = calculateYearsToFullRepayment(0, 3.5, 2.0);
+
+    expect(years).toBe(0);
+  });
+
+  it("should calculate faster repayment with higher repayment rate", () => {
+    const years1 = calculateYearsToFullRepayment(100000, 3.0, 2.0);
+    const years2 = calculateYearsToFullRepayment(100000, 3.0, 5.0);
+
+    expect(years2).toBeLessThan(years1);
+  });
+
+  it("should handle high repayment rate that pays off quickly", () => {
+    const years = calculateYearsToFullRepayment(100000, 2.0, 20.0);
+
+    expect(years).toBeLessThan(10);
+  });
+});
+
+// ===========================================
+// generateFullAmortizationSchedule Tests
+// ===========================================
+describe("generateFullAmortizationSchedule", () => {
+  it("should generate schedule until full repayment", () => {
+    const schedule = generateFullAmortizationSchedule(200000, 3.5, 2.0);
+
+    expect(schedule.length).toBeGreaterThan(0);
+    const lastYear = schedule[schedule.length - 1];
+    expect(lastYear.endingBalance).toBeCloseTo(0, 0);
+  });
+
+  it("should return empty array for zero loan", () => {
+    const schedule = generateFullAmortizationSchedule(0, 3.5, 2.0);
+
+    expect(schedule).toHaveLength(0);
+  });
+
+  it("should respect maxYears limit", () => {
+    const schedule = generateFullAmortizationSchedule(200000, 3.5, 1.0, 20);
+
+    expect(schedule.length).toBeLessThanOrEqual(20);
+  });
+
+  it("should have decreasing interest over time", () => {
+    const schedule = generateFullAmortizationSchedule(150000, 4.0, 2.0);
+
+    for (let i = 1; i < schedule.length; i++) {
+      expect(schedule[i].interestPayment).toBeLessThan(schedule[i - 1].interestPayment);
+    }
+  });
+
+  it("should have increasing principal over time", () => {
+    const schedule = generateFullAmortizationSchedule(150000, 4.0, 2.0);
+
+    // Principal should increase for most years (except potentially the last payment)
+    for (let i = 1; i < schedule.length - 1; i++) {
+      expect(schedule[i].principalPayment).toBeGreaterThanOrEqual(schedule[i - 1].principalPayment);
+    }
+  });
+
+  it("should calculate cumulative values correctly", () => {
+    const schedule = generateFullAmortizationSchedule(100000, 3.0, 3.0);
+    const lastYear = schedule[schedule.length - 1];
+
+    // Cumulative principal should equal the loan amount
+    expect(lastYear.cumulativePrincipal).toBeCloseTo(100000, 0);
+  });
+});
+
+// ===========================================
+// calculateExtendedCashflowProjection Tests
+// ===========================================
+describe("calculateExtendedCashflowProjection", () => {
+  it("should calculate extended cashflow with rent increases", () => {
+    const input = createStandardInput();
+    input.expectedRentIncreasePercent = 2.0;
+    input.coldRentActual = 1000;
+
+    const amortizationSchedule = generateAmortizationSchedule(200000, 3.5, 2.0, 10);
+    const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 10);
+
+    expect(projection.length).toBe(10);
+    // Rent should increase over time
+    expect(projection[9].grossRent).toBeGreaterThan(projection[0].grossRent);
+  });
+
+  it("should show decreasing interest payments over time", () => {
+    const input = createStandardInput();
+    const amortizationSchedule = generateAmortizationSchedule(150000, 4.0, 2.0, 15);
+    const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 15);
+
+    // Interest should decrease
+    expect(projection[14].interestPayment).toBeLessThan(projection[0].interestPayment);
+  });
+
+  it("should show increasing operating costs due to inflation", () => {
+    const input = createStandardInput();
+    input.nonRecoverableCosts = 100;
+    input.maintenanceReserve = 50;
+
+    const amortizationSchedule = generateAmortizationSchedule(200000, 3.5, 2.0, 10);
+    const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 10);
+
+    // Operating costs should increase with 2% inflation
+    expect(projection[9].operatingCosts).toBeGreaterThan(projection[0].operatingCosts);
+  });
+
+  it("should calculate property value appreciation", () => {
+    const input = createStandardInput();
+    input.purchasePrice = 300000;
+    input.expectedAppreciationPercent = 2.0;
+
+    const amortizationSchedule = generateAmortizationSchedule(200000, 3.5, 2.0, 10);
+    const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 10);
+
+    // Property value should appreciate
+    expect(projection[9].propertyValue).toBeGreaterThan(input.purchasePrice);
+  });
+
+  it("should show increasing equity value", () => {
+    const input = createStandardInput();
+    const amortizationSchedule = generateAmortizationSchedule(200000, 3.5, 2.0, 15);
+    const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 15);
+
+    // Equity should increase as debt decreases and property appreciates
+    expect(projection[14].equityValue).toBeGreaterThan(projection[0].equityValue);
+  });
+
+  it("should return empty array for empty amortization schedule", () => {
+    const input = createStandardInput();
+    const projection = calculateExtendedCashflowProjection(input, [], 10);
+
+    expect(projection).toHaveLength(0);
+  });
+
+  it("should calculate tax effects correctly", () => {
+    const input = createStandardInput();
+    input.personalTaxRate = 35;
+
+    const amortizationSchedule = generateAmortizationSchedule(200000, 3.5, 2.0, 10);
+    const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 10);
+
+    // Each year should have tax calculations
+    for (const point of projection) {
+      expect(point.afaEffect).toBeGreaterThan(0);
+      expect(point.totalTaxEffect).toBeDefined();
+    }
+  });
+
+  it("should show improving cashflow over time for typical case", () => {
+    const input = createStandardInput();
+    input.coldRentActual = 1200;
+    input.expectedRentIncreasePercent = 2.0;
+
+    const amortizationSchedule = generateAmortizationSchedule(200000, 3.5, 2.0, 15);
+    const projection = calculateExtendedCashflowProjection(input, amortizationSchedule, 15);
+
+    // Later years should have better cashflow as rent increases and interest decreases
+    // This is a typical scenario, though not guaranteed
+    expect(projection[14].monthlyCashflowAfterTax).toBeGreaterThan(
+      projection[0].monthlyCashflowAfterTax
+    );
   });
 });
