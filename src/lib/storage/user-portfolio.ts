@@ -60,13 +60,8 @@ export async function updatePropertyInPortfolio(
   propertyId: string,
   updates: Partial<Property>
 ): Promise<Property[]> {
-  try {
-    await propertyDb.updateProperty(propertyId, userId, updates);
-    return await propertyDb.getPropertiesByUserId(userId);
-  } catch (error) {
-    // Handle the case where property doesn't exist
-    throw new Error("Immobilie nicht gefunden");
-  }
+  await propertyDb.updateProperty(propertyId, userId, updates);
+  return await propertyDb.getPropertiesByUserId(userId);
 }
 
 /**
@@ -76,13 +71,8 @@ export async function deletePropertyFromPortfolio(
   userId: string,
   propertyId: string
 ): Promise<Property[]> {
-  try {
-    await propertyDb.deleteProperty(propertyId, userId);
-    return await propertyDb.getPropertiesByUserId(userId);
-  } catch (error) {
-    // Handle the case where property doesn't exist
-    throw new Error("Immobilie nicht gefunden");
-  }
+  await propertyDb.deleteProperty(propertyId, userId);
+  return await propertyDb.getPropertiesByUserId(userId);
 }
 
 /**

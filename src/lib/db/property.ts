@@ -77,10 +77,18 @@ export async function updateProperty(
   userId: string,
   data: Partial<Property>
 ): Promise<Property> {
+  // First verify the property exists and belongs to the user
+  const existing = await prisma.property.findFirst({
+    where: { id, userId },
+  });
+
+  if (!existing) {
+    throw new Error("Property not found or access denied");
+  }
+
   const property = await prisma.property.update({
     where: {
       id,
-      userId,
     },
     data: {
       name: data.name,
@@ -99,10 +107,18 @@ export async function updateProperty(
  * Delete a property
  */
 export async function deleteProperty(id: string, userId: string): Promise<void> {
+  // First verify the property exists and belongs to the user
+  const existing = await prisma.property.findFirst({
+    where: { id, userId },
+  });
+
+  if (!existing) {
+    throw new Error("Property not found or access denied");
+  }
+
   await prisma.property.delete({
     where: {
       id,
-      userId,
     },
   });
 }
