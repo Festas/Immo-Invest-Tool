@@ -239,12 +239,16 @@ docker compose exec web npx prisma migrate deploy
 Create regular backups of the PostgreSQL database:
 
 ```bash
-# Backup with timestamp
+# Backup with timestamp to a secure location
 docker compose exec -T db pg_dump -U immo_user immo_invest > backup_$(date +%Y%m%d_%H%M%S).sql
+chmod 600 backup_*.sql  # Restrict access to backup files
 
 # Backup with custom name
 docker compose exec -T db pg_dump -U immo_user immo_invest > backup.sql
+chmod 600 backup.sql
 ```
+
+**Note**: Store backup files in a secure location (not in the web-accessible directory) with restricted permissions to protect sensitive data.
 
 ### Database Restore
 
@@ -275,6 +279,8 @@ For a visual database management interface:
 # On your local machine with DATABASE_URL pointing to the server
 npm run db:studio
 ```
+
+**Security Warning**: Prisma Studio should only be used in development environments. Never expose it to the public internet. When connecting to production databases, ensure you're using a secure tunnel (e.g., SSH tunnel) and that the DATABASE_URL is properly configured with appropriate access controls.
 
 **Security Note**: The PostgreSQL container does NOT expose port 5432 externally. It's only accessible internally via the `caddy-network` for security reasons.
 

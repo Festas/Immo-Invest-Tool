@@ -335,7 +335,9 @@ docker compose exec web npx prisma db push
 **Backup the database:**
 
 ```bash
+# Backup to a secure location with proper permissions
 docker compose exec -T db pg_dump -U immo_user immo_invest > backup_$(date +%Y%m%d_%H%M%S).sql
+chmod 600 backup_*.sql  # Restrict access to backup files
 ```
 
 **Restore from backup:**
@@ -343,6 +345,8 @@ docker compose exec -T db pg_dump -U immo_user immo_invest > backup_$(date +%Y%m
 ```bash
 docker compose exec -T db psql -U immo_user immo_invest < backup.sql
 ```
+
+**Note**: Store backup files in a secure location with appropriate permissions (e.g., `chmod 600`) to protect sensitive data.
 
 **Note**: The PostgreSQL container does NOT expose port 5432 externally for security. It's only accessible internally via the `caddy-network`.
 
