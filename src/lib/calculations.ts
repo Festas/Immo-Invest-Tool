@@ -134,10 +134,19 @@ export function calculateAfA(
  */
 export function calculateTax(input: PropertyInput, annualInterest: number): TaxResult {
   const afaAmount = calculateAfA(input.purchasePrice, input.buildingSharePercent, input.afaType);
+  
+  // Calculate movable assets AfA (e.g., fitted kitchen)
+  const movableAssetsValue = input.movableAssetsValue ?? 0;
+  const movableAssetsDepreciationYears = input.movableAssetsDepreciationYears ?? 10;
+  const movableAssetsAfA = movableAssetsValue > 0 && movableAssetsDepreciationYears > 0
+    ? movableAssetsValue / movableAssetsDepreciationYears
+    : 0;
+  
   const deductibleInterest = annualInterest;
   const deductibleCosts = (input.nonRecoverableCosts + input.maintenanceReserve) * 12;
 
-  const totalDeductions = afaAmount + deductibleInterest + deductibleCosts;
+  // Total deductions include building AfA, movable assets AfA, interest, and costs
+  const totalDeductions = afaAmount + movableAssetsAfA + deductibleInterest + deductibleCosts;
   const grossRentalIncome = input.coldRentActual * 12;
   const rentalIncomeAfterDeductions = grossRentalIncome - totalDeductions;
 
@@ -147,6 +156,7 @@ export function calculateTax(input: PropertyInput, annualInterest: number): TaxR
 
   return {
     afaAmount,
+    movableAssetsAfA,
     deductibleInterest,
     deductibleCosts,
     totalDeductions,
@@ -405,6 +415,10 @@ export function getDefaultPropertyInput(): PropertyInput {
     buildingSharePercent: 75.0,
     afaType: "ALTBAU_AB_1925",
 
+    // Movable Assets
+    movableAssetsValue: 0,
+    movableAssetsDepreciationYears: 10,
+
     // Forecast/Prognose
     expectedAppreciationPercent: 2.0, // 2% annual appreciation
     expectedRentIncreasePercent: 1.5, // 1.5% annual rent increase
@@ -514,8 +528,16 @@ export function calculateExtendedCashflowProjection(
   const afaRate = AfARates[input.afaType].rate;
   const afaAmount = (buildingValue * afaRate) / 100;
 
+  // Calculate movable assets AfA (e.g., fitted kitchen)
+  const movableAssetsValue = input.movableAssetsValue ?? 0;
+  const movableAssetsDepreciationYears = input.movableAssetsDepreciationYears ?? 10;
+  const movableAssetsAfAPerYear = movableAssetsValue > 0 && movableAssetsDepreciationYears > 0
+    ? movableAssetsValue / movableAssetsDepreciationYears
+    : 0;
+
   for (let i = 0; i < years; i++) {
     const yearData = amortizationSchedule[i];
+    const currentYear = yearData.year;
 
     // Apply annual increases
     if (i > 0) {
@@ -533,8 +555,11 @@ export function calculateExtendedCashflowProjection(
     const principalPayment = yearData.principalPayment;
     const remainingDebt = yearData.endingBalance;
 
-    // Calculate tax deductions
-    const totalDeductions = afaAmount + interestPayment + currentOperatingCosts;
+    // Calculate movable assets AfA (only for the depreciation period)
+    const currentMovableAssetsAfA = currentYear <= movableAssetsDepreciationYears ? movableAssetsAfAPerYear : 0;
+
+    // Calculate tax deductions (including movable assets AfA if within depreciation period)
+    const totalDeductions = afaAmount + currentMovableAssetsAfA + interestPayment + currentOperatingCosts;
     const rentalIncomeAfterDeductions = currentRent - totalDeductions;
 
     // Tax effect: negative income = tax benefit, positive income = tax liability
@@ -579,8 +604,11 @@ export function calculateExtendedCashflowProjection(
     const vacancyDeduction = (currentRent * input.vacancyRiskPercent) / 100;
     const netRent = currentRent - vacancyDeduction;
 
-    // Calculate tax deductions (only AfA and operating costs, no interest)
-    const totalDeductions = afaAmount + currentOperatingCosts;
+    // Calculate movable assets AfA (only for the depreciation period)
+    const currentMovableAssetsAfA = year <= movableAssetsDepreciationYears ? movableAssetsAfAPerYear : 0;
+
+    // Calculate tax deductions (only AfA, movable assets AfA if applicable, and operating costs, no interest)
+    const totalDeductions = afaAmount + currentMovableAssetsAfA + currentOperatingCosts;
     const rentalIncomeAfterDeductions = currentRent - totalDeductions;
 
     // Tax effect: negative income = tax benefit, positive income = tax liability

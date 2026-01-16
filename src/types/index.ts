@@ -91,6 +91,10 @@ export interface PropertyInput {
   buildingSharePercent: number;
   afaType: AfAType;
 
+  // Movable Assets / Fitted Kitchen
+  movableAssetsValue?: number; // Value of movable assets (e.g., fitted kitchen) in €
+  movableAssetsDepreciationYears?: number; // Depreciation period in years (default: 10)
+
   // Forecast/Prognose
   expectedAppreciationPercent: number; // Expected annual property value increase
   expectedRentIncreasePercent: number; // Expected annual rent increase
@@ -160,6 +164,7 @@ export interface YieldMetrics {
  */
 export interface TaxResult {
   afaAmount: number;
+  movableAssetsAfA?: number; // Separate movable assets depreciation
   deductibleInterest: number;
   deductibleCosts: number;
   totalDeductions: number;
