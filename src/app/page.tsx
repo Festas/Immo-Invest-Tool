@@ -39,6 +39,30 @@ const CumulativeCashflowChart = dynamic(
   }
 );
 
+const CashflowDevelopmentChart = dynamic(
+  () => import("@/components/Charts").then((mod) => ({ default: mod.CashflowDevelopmentChart })),
+  {
+    loading: () => <ChartSkeleton />,
+    ssr: false,
+  }
+);
+
+const InterestPrincipalChart = dynamic(
+  () => import("@/components/Charts").then((mod) => ({ default: mod.InterestPrincipalChart })),
+  {
+    loading: () => <ChartSkeleton />,
+    ssr: false,
+  }
+);
+
+const EquityBuildupChart = dynamic(
+  () => import("@/components/Charts").then((mod) => ({ default: mod.EquityBuildupChart })),
+  {
+    loading: () => <ChartSkeleton />,
+    ssr: false,
+  }
+);
+
 const ScenarioComparison = dynamic(
   () =>
     import("@/components/ScenarioComparison").then((mod) => ({ default: mod.ScenarioComparison })),
@@ -390,7 +414,36 @@ export default function Home() {
             {/* Charts Tab */}
             <TabsContent value="charts">
               <div className="space-y-6">
+                <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
+                  <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
+                    📊 Tilgungsanalyse
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Umfassende Analyse der Kredittilgung bis zur vollständigen Rückzahlung
+                  </p>
+                </div>
                 <AmortizationChart />
+                <InterestPrincipalChart />
+
+                <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
+                  <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
+                    💰 Cashflow-Analyse
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Dynamische Entwicklung des monatlichen Cashflows über die Jahre
+                  </p>
+                </div>
+                <CashflowDevelopmentChart />
+
+                <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
+                  <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
+                    📈 Vermögensaufbau
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Gesamtvermögensentwicklung durch Tilgung, Wertsteigerung und Cashflow
+                  </p>
+                </div>
+                <EquityBuildupChart />
                 <CumulativeCashflowChart />
               </div>
             </TabsContent>
