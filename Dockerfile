@@ -1,5 +1,5 @@
 # ImmoCalc - Dockerfile für Produktion
-# Optimiert für Next.js Standalone Mode
+# Optimiert für Next.js Standalone Mode mit Prisma
 
 # Stage 1: Dependencies
 FROM node:20-alpine AS deps
@@ -20,6 +20,9 @@ COPY . .
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Generate Prisma Client
+RUN npx prisma generate
+
 # Build the application
 RUN npm run build
 
@@ -39,9 +42,10 @@ COPY --from=builder /app/public ./public
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
-# Create data directory for persistent storage with correct permissions
-RUN mkdir -p /data/.auth /data/users
-RUN chown -R nextjs:nodejs /data
+# Copy Prisma client and schema
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/prisma ./prisma
 
 # Automatically leverage output traces to reduce image size
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./

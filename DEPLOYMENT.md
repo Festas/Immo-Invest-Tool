@@ -28,10 +28,11 @@ Configure these secrets in your GitHub repository settings (`Settings` → `Secr
 
 ### Application Secrets
 
-| Secret           | Description                         | Required | How to Generate           |
-| ---------------- | ----------------------------------- | -------- | ------------------------- |
-| `JWT_SECRET`     | Secret key for JWT token generation | Yes      | `openssl rand -base64 32` |
-| `SESSION_SECRET` | Secret key for session management   | No       | `openssl rand -base64 32` |
+| Secret           | Description                            | Required | How to Generate           |
+| ---------------- | -------------------------------------- | -------- | ------------------------- |
+| `DB_PASSWORD`    | PostgreSQL database password           | Yes      | `openssl rand -base64 32` |
+| `JWT_SECRET`     | Secret key for JWT token generation    | Yes      | `openssl rand -base64 32` |
+| `SESSION_SECRET` | Secret key for session management      | No       | `openssl rand -base64 32` |
 
 Secrets are automatically injected into the `.env` file on the server during deployment. See the [Secrets Management Guide](docs/SECRETS_MANAGEMENT.md) for detailed setup instructions.
 
@@ -40,18 +41,18 @@ Secrets are automatically injected into the `.env` file on the server during dep
 Create a `.env` file on the server with these optional variables:
 
 ```bash
-# Supabase Configuration (for cloud sync feature)
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+# Database Configuration (Required)
+DB_PASSWORD=your_secure_postgres_password_here
+JWT_SECRET=your_secure_jwt_secret_here_at_least_32_chars
 
-# OpenAI API (for AI-powered deal analysis)
+# Optional: AI Integration
 OPENAI_API_KEY=sk-your-api-key
 
-# Google Maps API (for property location display)
+# Optional: Google Maps API (for property location display)
 NEXT_PUBLIC_GOOGLE_MAPS_KEY=your-google-maps-key
 ```
 
-> **Note:** All features work without these APIs (graceful degradation). The app will use local storage and disable optional features if keys are not provided.
+> **Note:** The PostgreSQL password and JWT secret are required for production deployment. Optional features (AI, Maps) work with graceful degradation if keys are not provided.
 
 ## Initial Server Setup
 
@@ -103,7 +104,19 @@ immocalc.festas-builds.com {
 docker compose up -d --build
 ```
 
-### 6. Verify Deployment
+### 6. Run Database Migrations
+
+After the containers are up, run the database migrations:
+
+```bash
+# Deploy migrations to the database
+docker compose exec web npx prisma migrate deploy
+
+# Verify the database is accessible
+docker compose exec web npx prisma db pull
+```
+
+### 7. Verify Deployment
 
 ```bash
 # Check container status
@@ -210,6 +223,67 @@ curl https://immocalc.festas-builds.com/api/health
 - `200 OK`: System is healthy or degraded (still operational)
 - `503 Service Unavailable`: System is unhealthy (critical issues)
 
+## Database Management
+
+### Running Migrations
+
+When the database schema changes, apply migrations to update the database:
+
+```bash
+# Deploy migrations to production database
+docker compose exec web npx prisma migrate deploy
+```
+
+### Database Backup
+
+Create regular backups of the PostgreSQL database:
+
+```bash
+# Backup with timestamp to a secure location
+docker compose exec -T db pg_dump -U immo_user immo_invest > backup_$(date +%Y%m%d_%H%M%S).sql
+chmod 600 backup_*.sql  # Restrict access to backup files
+
+# Backup with custom name
+docker compose exec -T db pg_dump -U immo_user immo_invest > backup.sql
+chmod 600 backup.sql
+```
+
+**Note**: Store backup files in a secure location (not in the web-accessible directory) with restricted permissions to protect sensitive data.
+
+### Database Restore
+
+Restore from a backup file:
+
+```bash
+# Restore from backup
+docker compose exec -T db psql -U immo_user immo_invest < backup.sql
+```
+
+### Database Access
+
+Access the PostgreSQL database directly:
+
+```bash
+# Access PostgreSQL shell
+docker compose exec db psql -U immo_user -d immo_invest
+
+# Run SQL query
+docker compose exec db psql -U immo_user -d immo_invest -c "SELECT COUNT(*) FROM \"User\";"
+```
+
+### Database Studio (Development)
+
+For a visual database management interface:
+
+```bash
+# On your local machine with DATABASE_URL pointing to the server
+npm run db:studio
+```
+
+**Security Warning**: Prisma Studio should only be used in development environments. Never expose it to the public internet. When connecting to production databases, ensure you're using a secure tunnel (e.g., SSH tunnel) and that the DATABASE_URL is properly configured with appropriate access controls.
+
+**Security Note**: The PostgreSQL container does NOT expose port 5432 externally. It's only accessible internally via the `caddy-network` for security reasons.
+
 ## Error Handling and Logging
 
 ### Backend Error Logging
@@ -264,21 +338,23 @@ The login form provides user-friendly error messages:
 **Login fails with "Netzwerkfehler":**
 
 1. Check if backend is running: `curl http://localhost:3000/api/health`
-2. Check health endpoint status and storage accessibility
-3. Verify Docker container is healthy: `docker compose ps`
+2. Check health endpoint status and database accessibility
+3. Verify Docker containers are healthy: `docker compose ps`
 4. Check logs for errors: `docker compose logs -f`
 
 **Login fails with "Fehler beim Zugriff auf Benutzerdaten":**
 
-1. Check storage permissions: `ls -la /data/.auth`
-2. Verify container user owns the directory: `chown -R nextjs:nodejs /data`
-3. Check health endpoint storage status
+1. Check database connection: `docker compose exec db pg_isready -U immo_user -d immo_invest`
+2. Verify DATABASE_URL is correctly configured in the web container
+3. Check health endpoint database status
+4. Review database logs: `docker compose logs db`
 
 **Login fails with "Server-Konfigurationsfehler":**
 
 1. Ensure JWT_SECRET is set in production environment
 2. Generate a secure secret: `openssl rand -base64 32`
 3. Add to `.env` file: `JWT_SECRET=your-generated-secret`
+4. Restart the containers: `docker compose restart`
 
 ## Automated Deployments
 
@@ -377,29 +453,48 @@ docker compose restart web
 
 4. Restart the Caddy container in Link-in-Bio repository
 
-### Storage/Permission Issues
+### Database Connection Issues
 
-If the health check reports storage issues or login fails with permission errors:
+If the health check reports database issues or the application cannot connect to PostgreSQL:
 
-1. Check storage directory permissions:
-
-   ```bash
-   docker exec immocalc ls -la /data
-   ```
-
-2. Fix ownership if needed (container should own the directory):
+1. Check if the database container is running:
 
    ```bash
-   docker exec immocalc chown -R nextjs:nodejs /data
+   docker compose ps db
+   docker compose logs db
    ```
 
-3. Verify the volume is mounted correctly:
+2. Verify database is healthy:
 
    ```bash
-   docker volume inspect immocalc_immocalc-data
+   docker compose exec db pg_isready -U immo_user -d immo_invest
    ```
 
-4. Check for disk space issues:
+3. Check if web container can reach the database:
+
+   ```bash
+   docker compose exec web sh -c 'nc -zv db 5432'
+   ```
+
+4. Verify DATABASE_URL is correctly set:
+
+   ```bash
+   docker compose exec web env | grep DATABASE_URL
+   ```
+
+5. Check if migrations have been applied:
+
+   ```bash
+   docker compose exec web npx prisma migrate status
+   ```
+
+6. Inspect the postgres-data volume:
+
+   ```bash
+   docker volume inspect immocalc_postgres-data
+   ```
+
+7. Check for disk space issues:
 
    ```bash
    df -h
@@ -425,18 +520,25 @@ If the health check reports storage issues or login fails with permission errors
                                     │         Link-in-Bio             │
                                     │    (Caddy Reverse Proxy)        │
                                     │                                 │
-Internet ──► immocalc.festas-builds.com ──► caddy-network ──► immocalc:3000
-                                    │                                 │
-                                    └─────────────────────────────────┘
+Internet ──► immocalc.festas-builds.com ──► caddy-network ──┬─► immocalc:3000 (web)
+                                    │                        │
+                                    └────────────────────────┼────────────────┘
+                                                             │
+                                                             └─► immocalc-db:5432 (PostgreSQL)
 
 Host machine (nginx/other services) ──► localhost:8086 ──► immocalc:3000
 ```
 
 ### Port Configuration
-- **Container Port**: 3000 (defined in Dockerfile EXPOSE 3000)
+- **Container Port (Web)**: 3000 (defined in Dockerfile EXPOSE 3000)
+- **Container Port (DB)**: 5432 (internal only, not exposed to host)
 - **Host Port**: 8086 (mapped in docker-compose files)
-- **Internal Network**: immocalc:3000 (accessible to containers on caddy-network)
+- **Internal Network**: immocalc:3000, immocalc-db:5432 (accessible to containers on caddy-network)
 - **External Access**: localhost:8086 (accessible to host machine services like nginx)
+
+### Data Persistence
+- **PostgreSQL Data**: Stored in `postgres-data` Docker volume
+- **Database Backups**: Created manually using `pg_dump` (see Database Management section)
 
 ## Reference
 
