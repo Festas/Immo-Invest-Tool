@@ -5,8 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { LocationSearch } from "@/components/ui/location-search";
+import { LocationMap } from "@/components/LocationMap";
 import { calculateLocationAnalysis } from "@/lib/calculations";
-import { LocationAnalysisInput, LocationAnalysisResult, ReferenceRentData } from "@/types";
+import { LocationAnalysisInput, LocationAnalysisResult } from "@/types";
+import { PLZResult } from "@/lib/api/openplz";
+import { fetchPOIsNearby, calculateInfrastructureScores, POIStats } from "@/lib/api/overpass";
 import {
   MapPin,
   TrendingUp,
@@ -20,12 +24,9 @@ import {
   CheckCircle2,
   XCircle,
   Calculator,
+  Loader2,
+  Map as MapIcon,
 } from "lucide-react";
-
-const cityOptions = Object.entries(ReferenceRentData).map(([key, data]) => ({
-  value: key,
-  label: data.city,
-}));
 
 const populationOptions = [
   { value: "WACHSEND", label: "Wachsend" },
@@ -67,6 +68,37 @@ export function LocationAnalysis() {
   });
 
   const [result, setResult] = useState<LocationAnalysisResult | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<PLZResult | null>(null);
+  const [poiStats, setPoiStats] = useState<POIStats | null>(null);
+  const [isLoadingPOIs, setIsLoadingPOIs] = useState(false);
+
+  const handleLocationSelect = async (location: PLZResult) => {
+    setSelectedLocation(location);
+    setInput({ ...input, city: location.name, district: location.district || "" });
+
+    // Fetch POIs for the selected location
+    if (location.latitude && location.longitude) {
+      setIsLoadingPOIs(true);
+      try {
+        const stats = await fetchPOIsNearby(location.latitude, location.longitude, 1000);
+        setPoiStats(stats);
+
+        // Auto-calculate infrastructure scores
+        const scores = calculateInfrastructureScores(stats);
+        setInput((prev) => ({
+          ...prev,
+          publicTransportScore: scores.publicTransportScore,
+          shoppingScore: scores.shoppingScore,
+          schoolsScore: scores.schoolsScore,
+          infrastructureScore: scores.infrastructureScore,
+        }));
+      } catch (error) {
+        console.error("Error fetching POIs:", error);
+      } finally {
+        setIsLoadingPOIs(false);
+      }
+    }
+  };
 
   const handleCalculate = () => {
     const analysisResult = calculateLocationAnalysis(input);
@@ -101,18 +133,104 @@ export function LocationAnalysis() {
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Bewerten Sie die Attraktivität eines Standorts für Ihre Immobilieninvestition anhand
-            verschiedener Faktoren.
+            Suchen Sie nach PLZ oder Ortsname, um automatisch Infrastrukturdaten zu laden und die
+            Standortqualität zu bewerten.
           </p>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <Select
-              label="Stadt/Region"
-              options={cityOptions}
-              value={input.city}
-              onChange={(value) => setInput({ ...input, city: value })}
-            />
+          {/* Location Search */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+              PLZ / Ort suchen
+            </label>
+            <LocationSearch onSelect={handleLocationSelect} />
+          </div>
 
+          {/* Map and POI Statistics */}
+          {selectedLocation && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                {/* Map */}
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <MapIcon className="h-4 w-4 text-indigo-600" />
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      Standortkarte (1km Radius)
+                    </span>
+                  </div>
+                  <LocationMap
+                    latitude={selectedLocation.latitude}
+                    longitude={selectedLocation.longitude}
+                    pois={poiStats?.pois || []}
+                    radiusMeters={1000}
+                    className="h-[400px] w-full rounded-lg"
+                  />
+                </div>
+
+                {/* POI Statistics */}
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <Home className="h-4 w-4 text-indigo-600" />
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      Infrastruktur im Umkreis
+                    </span>
+                  </div>
+                  {isLoadingPOIs ? (
+                    <div className="flex h-[400px] items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700">
+                      <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                    </div>
+                  ) : poiStats ? (
+                    <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+                      <div className="flex items-center justify-between rounded-lg bg-white p-3 dark:bg-slate-900/50">
+                        <div className="flex items-center gap-2">
+                          <Train className="h-5 w-5 text-blue-500" />
+                          <span className="text-sm font-medium">ÖPNV-Haltestellen</span>
+                        </div>
+                        <span className="text-lg font-bold text-blue-600">
+                          {poiStats.transitStops}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg bg-white p-3 dark:bg-slate-900/50">
+                        <div className="flex items-center gap-2">
+                          <ShoppingBag className="h-5 w-5 text-orange-500" />
+                          <span className="text-sm font-medium">Supermärkte</span>
+                        </div>
+                        <span className="text-lg font-bold text-orange-600">
+                          {poiStats.supermarkets}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg bg-white p-3 dark:bg-slate-900/50">
+                        <div className="flex items-center gap-2">
+                          <GraduationCap className="h-5 w-5 text-purple-500" />
+                          <span className="text-sm font-medium">Schulen</span>
+                        </div>
+                        <span className="text-lg font-bold text-purple-600">
+                          {poiStats.schools}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg bg-white p-3 dark:bg-slate-900/50">
+                        <div className="flex items-center gap-2">
+                          <Shield className="h-5 w-5 text-red-500" />
+                          <span className="text-sm font-medium">Krankenhäuser</span>
+                        </div>
+                        <span className="text-lg font-bold text-red-600">{poiStats.hospitals}</span>
+                      </div>
+                      <div className="mt-3 rounded-lg bg-indigo-50 p-3 dark:bg-indigo-900/20">
+                        <p className="text-xs text-indigo-700 dark:text-indigo-300">
+                          ✓ Infrastruktur-Scores wurden automatisch berechnet
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex h-[400px] items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700">
+                      <p className="text-sm text-slate-400">Wählen Sie einen Standort aus</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <Select
               label="Bevölkerungsentwicklung"
               options={populationOptions}
@@ -162,57 +280,68 @@ export function LocationAnalysis() {
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
-              <Train className="h-5 w-5 text-blue-500" />
-              <Slider
-                label="ÖPNV-Anbindung"
-                min={1}
-                max={10}
-                step={1}
-                value={input.publicTransportScore}
-                onChange={(value) => setInput({ ...input, publicTransportScore: value })}
-                formatValue={(v) => `${v}/10`}
-              />
-            </div>
+          <div className="space-y-4">
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Infrastruktur-Bewertung
+              {selectedLocation && poiStats && (
+                <span className="ml-2 text-xs text-indigo-600 dark:text-indigo-400">
+                  (Automatisch ermittelt)
+                </span>
+              )}
+            </p>
 
-            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
-              <ShoppingBag className="h-5 w-5 text-orange-500" />
-              <Slider
-                label="Einkaufsmöglichkeiten"
-                min={1}
-                max={10}
-                step={1}
-                value={input.shoppingScore}
-                onChange={(value) => setInput({ ...input, shoppingScore: value })}
-                formatValue={(v) => `${v}/10`}
-              />
-            </div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
+                <Train className="h-5 w-5 text-blue-500" />
+                <Slider
+                  label="ÖPNV-Anbindung"
+                  min={1}
+                  max={10}
+                  step={1}
+                  value={input.publicTransportScore}
+                  onChange={(value) => setInput({ ...input, publicTransportScore: value })}
+                  formatValue={(v) => `${v}/10`}
+                />
+              </div>
 
-            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
-              <GraduationCap className="h-5 w-5 text-purple-500" />
-              <Slider
-                label="Schulen & Bildung"
-                min={1}
-                max={10}
-                step={1}
-                value={input.schoolsScore}
-                onChange={(value) => setInput({ ...input, schoolsScore: value })}
-                formatValue={(v) => `${v}/10`}
-              />
-            </div>
+              <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
+                <ShoppingBag className="h-5 w-5 text-orange-500" />
+                <Slider
+                  label="Einkaufsmöglichkeiten"
+                  min={1}
+                  max={10}
+                  step={1}
+                  value={input.shoppingScore}
+                  onChange={(value) => setInput({ ...input, shoppingScore: value })}
+                  formatValue={(v) => `${v}/10`}
+                />
+              </div>
 
-            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
-              <Home className="h-5 w-5 text-green-500" />
-              <Slider
-                label="Allgemeine Infrastruktur"
-                min={1}
-                max={10}
-                step={1}
-                value={input.infrastructureScore}
-                onChange={(value) => setInput({ ...input, infrastructureScore: value })}
-                formatValue={(v) => `${v}/10`}
-              />
+              <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
+                <GraduationCap className="h-5 w-5 text-purple-500" />
+                <Slider
+                  label="Schulen & Bildung"
+                  min={1}
+                  max={10}
+                  step={1}
+                  value={input.schoolsScore}
+                  onChange={(value) => setInput({ ...input, schoolsScore: value })}
+                  formatValue={(v) => `${v}/10`}
+                />
+              </div>
+
+              <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
+                <Home className="h-5 w-5 text-green-500" />
+                <Slider
+                  label="Allgemeine Infrastruktur"
+                  min={1}
+                  max={10}
+                  step={1}
+                  value={input.infrastructureScore}
+                  onChange={(value) => setInput({ ...input, infrastructureScore: value })}
+                  formatValue={(v) => `${v}/10`}
+                />
+              </div>
             </div>
           </div>
 

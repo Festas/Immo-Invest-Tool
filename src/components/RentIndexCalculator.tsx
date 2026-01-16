@@ -5,15 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { LocationSearch } from "@/components/ui/location-search";
 import { calculateRentIndex } from "@/lib/calculations";
-import { RentIndexInput, RentIndexResult, ReferenceRentData } from "@/types";
+import { RentIndexInput, RentIndexResult, CityRentData } from "@/types";
 import { formatCurrency } from "@/lib/utils";
-import { MapPin, TrendingUp, Calculator, Home } from "lucide-react";
-
-const cityOptions = Object.entries(ReferenceRentData).map(([key, data]) => ({
-  value: key,
-  label: data.city,
-}));
+import { PLZResult } from "@/lib/api/openplz";
+import { MapPin, TrendingUp, Calculator, Home, Info } from "lucide-react";
+import rentIndexData from "@/data/rent-index-extended.json";
 
 const conditionOptions = [
   { value: "SEHR_GUT", label: "Sehr gut (neuwertig/luxussaniert)" },
@@ -30,11 +28,11 @@ const equipmentOptions = [
 
 // Help texts for rent index calculator
 const helpTexts = {
-  city: `Wählen Sie die Stadt/Region für den Mietspiegelvergleich.
+  city: `Suchen Sie nach PLZ oder Ortsname für den Mietspiegelvergleich.
 
-📍 Größere Städte haben höhere Durchschnittsmieten.
+📍 Über 70 deutsche Städte in der Datenbank.
 
-💡 Falls Ihre Stadt nicht gelistet ist, wählen Sie eine vergleichbare Stadt oder "Sonstige / Ländlich".`,
+💡 Falls Ihre Stadt nicht gefunden wird, wird "Sonstige / Ländlich" als Vergleich verwendet.`,
 
   livingArea: `Die Wohnfläche der Immobilie in Quadratmetern.
 
@@ -101,6 +99,44 @@ export function RentIndexCalculator() {
   });
 
   const [result, setResult] = useState<RentIndexResult | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<PLZResult | null>(null);
+  const [dataSource, setDataSource] = useState<string>("München");
+
+  // Create city lookup map once for better performance
+  const cityLookupMap = React.useMemo(() => {
+    const map = new Map<string, string>();
+    Object.entries(rentIndexData as Record<string, CityRentData>).forEach(([key, data]) => {
+      // Store lowercase city name as key for fast lookup
+      map.set(data.city.toLowerCase(), key);
+    });
+    return map;
+  }, []);
+
+  const findCityInDatabase = (cityName: string): string => {
+    const lowerCityName = cityName.toLowerCase();
+
+    // Try exact match first
+    const exactMatch = cityLookupMap.get(lowerCityName);
+    if (exactMatch) return exactMatch;
+
+    // Try partial match - find first city that includes the search term
+    for (const [cityKey, dbKey] of cityLookupMap.entries()) {
+      if (cityKey.includes(lowerCityName)) {
+        return dbKey;
+      }
+    }
+
+    // Default to SONSTIGE
+    return "SONSTIGE";
+  };
+
+  const handleLocationSelect = (location: PLZResult) => {
+    setSelectedLocation(location);
+    const cityKey = findCityInDatabase(location.name);
+    const cityData = (rentIndexData as Record<string, CityRentData>)[cityKey];
+    setInput({ ...input, city: cityKey });
+    setDataSource(cityData.city);
+  };
 
   const handleCalculate = () => {
     const calculationResult = calculateRentIndex(input);
@@ -118,19 +154,28 @@ export function RentIndexCalculator() {
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Vergleichen Sie Ihre aktuelle Miete mit dem lokalen Mietpreisspiegel und ermitteln Sie
-            Ihr Mieterhöhungspotenzial.
+            Suchen Sie nach PLZ oder Ort, um Ihre Miete mit dem lokalen Mietpreisspiegel zu
+            vergleichen und Ihr Mieterhöhungspotenzial zu ermitteln.
           </p>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <Select
-              label="Stadt/Region"
-              options={cityOptions}
-              value={input.city}
-              onChange={(value) => setInput({ ...input, city: value })}
-              helpText={helpTexts.city}
-            />
+          {/* Location Search */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+              PLZ / Ort suchen
+            </label>
+            <LocationSearch onSelect={handleLocationSelect} />
+            {selectedLocation && (
+              <div className="mt-2 flex items-center gap-2 rounded-lg bg-indigo-50 p-2 dark:bg-indigo-900/20">
+                <Info className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                <p className="text-xs text-indigo-700 dark:text-indigo-300">
+                  Vergleichsdaten: <strong>{dataSource}</strong>
+                  {dataSource === "Sonstige / Ländlich" && " (Stadt nicht in Datenbank gefunden)"}
+                </p>
+              </div>
+            )}
+          </div>
 
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <Input
               label="Wohnfläche (m²)"
               type="number"

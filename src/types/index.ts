@@ -275,7 +275,7 @@ export const PropertyTypeLabels: Record<PropertyType, string> = {
  */
 export const ReferenceRentData: Record<
   string,
-  { city: string; avgRentPerSqm: number; minRent: number; maxRent: number }
+  { city: string; avgRentPerSqm: number; minRent: number; maxRent: number; population?: number }
 > = {
   MUENCHEN: { city: "München", avgRentPerSqm: 19.5, minRent: 14.0, maxRent: 28.0 },
   FRANKFURT: { city: "Frankfurt am Main", avgRentPerSqm: 16.5, minRent: 12.0, maxRent: 24.0 },
@@ -501,6 +501,30 @@ export interface LocationAnalysisResult {
   strengths: string[];
   weaknesses: string[];
   riskLevel: "NIEDRIG" | "MITTEL" | "HOCH";
+}
+
+/**
+ * Extended location data with coordinates
+ */
+export interface LocationData {
+  postalCode: string;
+  city: string;
+  district?: string;
+  state: string;
+  bundesland: Bundesland;
+  latitude: number;
+  longitude: number;
+}
+
+/**
+ * Extended rent data with population
+ */
+export interface CityRentData {
+  city: string;
+  avgRentPerSqm: number;
+  minRent: number;
+  maxRent: number;
+  population?: number;
 }
 
 /**

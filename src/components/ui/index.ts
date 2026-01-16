@@ -4,6 +4,7 @@ export * from "./button";
 export * from "./coach-mark";
 export * from "./expandable-help";
 export * from "./input";
+export * from "./location-search";
 export * from "./onboarding";
 export * from "./preset-selector";
 export * from "./slider";
