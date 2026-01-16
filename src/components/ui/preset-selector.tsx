@@ -47,217 +47,263 @@ function getBundeslandAbbreviation(bundesland: string): string {
 }
 
 /**
- * Pre-defined presets with realistic Northern Germany real estate examples
+ * Pre-defined presets with 5 didactic investment archetypes
+ * These examples teach users how the tool reacts to different scenarios
  */
 export const PRESETS: Preset[] = [
+  // ============================================
+  // 1. DER FAMILIEN-DEAL (Basis: Schwerin)
+  // ============================================
+  // Status: Real case - low-risk family purchase
+  // Logic: Discounted purchase from family, no broker, no property transfer tax
   {
     id: "family-schwerin",
-    name: "Familienkauf Schwerin",
-    description: "Wohnung von Großeltern kaufen - steuerbegünstigt & unter Marktwert",
+    name: "🏠 Der Familien-Deal",
+    description:
+      "Schwerin: Wohnung von Großeltern kaufen – 0% GrESt, 0% Makler, 33% unter Marktwert",
     icon: "🏠",
     bundesland: "Mecklenburg-Vorpommern",
     values: {
       // Bundesland
       bundesland: "MECKLENBURG_VORPOMMERN",
 
-      // Kaufpreis & Nebenkosten
-      purchasePrice: 160000,
-      marketValue: 240000,
+      // Kaufpreis & Nebenkosten - deutlich unter Marktwert (33% Discount)
+      purchasePrice: 120000,
+      marketValue: 180000,
       isFamilyPurchase: true,
-      propertyTransferTaxPercent: 0,
-      brokerPercent: 0,
-      notaryPercent: 2,
-      renovationCosts: 500,
+      propertyTransferTaxPercent: 0, // Family exemption
+      brokerPercent: 0, // No broker for family deals
+      notaryPercent: 1.5, // Only notary costs
+      renovationCosts: 2000, // Minor cosmetic refresh
 
-      // Finanzierung - Loan is full purchase price, side costs from equity
-      equity: 3700,
-      loanAmount: 160000, // Full purchase price - side costs paid from equity
-      interestRate: 3.0,
-      repaymentRate: 2.25,
-      fixedInterestPeriod: 10,
+      // Finanzierung - Conservative with good equity ratio
+      // Side costs: 120000 * 1.5% + 2000 = 3,800€
+      // Total: 120000 + 3800 = 123,800€
+      equity: 25000, // ~20% of total
+      loanAmount: 98800, // 123,800 - 25,000
+      interestRate: 3.2,
+      repaymentRate: 2.5, // Good repayment for faster payoff
+      fixedInterestPeriod: 15,
 
-      // Mieteinnahmen
-      coldRentActual: 1000,
-      coldRentTarget: 1000,
-      nonRecoverableCosts: 69,
-      maintenanceReserve: 95,
-      vacancyRiskPercent: 2,
+      // Mieteinnahmen - realistic for 65m² in Schwerin
+      coldRentActual: 520,
+      coldRentTarget: 520,
+      nonRecoverableCosts: 45,
+      maintenanceReserve: 65,
+      vacancyRiskPercent: 2, // Low risk due to affordable rent
 
       // Steuern
       personalTaxRate: 42,
-      buildingSharePercent: 95,
-      afaType: "ALTBAU_VOR_1925" as AfAType,
+      buildingSharePercent: 85,
+      afaType: "ALTBAU_AB_1925" as AfAType,
 
-      // Prognose
-      expectedAppreciationPercent: 1.5, // Mecklenburg-Vorpommern has slower growth
+      // Prognose - Conservative for MV
+      expectedAppreciationPercent: 1.0,
       expectedRentIncreasePercent: 1.0,
     },
   },
+
+  // ============================================
+  // 2. DIE "WARNUNG" (Negativ-Beispiel)
+  // ============================================
+  // Logic: Looks nice on paper but terrible ROI
+  // Characteristics: Faktor > 35, negative cashflow, bad energy efficiency implied by high costs
   {
-    id: "apartment-rostock",
-    name: "ETW Rostock",
-    description: "Eigentumswohnung in der Hansestadt - solide Rendite an der Ostsee",
-    icon: "🏢",
-    bundesland: "Mecklenburg-Vorpommern",
+    id: "warning-duesseldorf",
+    name: "⚠️ Die Warnung",
+    description: "Düsseldorf: Schick, aber viel zu teuer – Faktor 42, negativer Cashflow",
+    icon: "⚠️",
+    bundesland: "Nordrhein-Westfalen",
     values: {
       // Bundesland
-      bundesland: "MECKLENBURG_VORPOMMERN",
+      bundesland: "NORDRHEIN_WESTFALEN",
 
-      purchasePrice: 185000,
-      marketValue: 195000, // Slightly above purchase price
+      // Kaufpreis - Overpriced: 420,000€ for only 700€ rent = Faktor 50!
+      purchasePrice: 420000,
+      marketValue: 400000, // Even above market value - overpaying!
       isFamilyPurchase: false,
-      propertyTransferTaxPercent: 6.0,
-      brokerPercent: 3.57,
-      notaryPercent: 1.5,
-      renovationCosts: 5000,
+      propertyTransferTaxPercent: 6.5, // NRW has highest rate
+      brokerPercent: 3.57, // Full broker commission
+      notaryPercent: 2.0,
+      renovationCosts: 0, // "Move-in ready" they said...
 
-      // Side costs: 185000 * (6% + 3.57% + 1.5%) + 5000 = ~25,500
-      // Total: 185000 + 25500 = 210,500
-      // Loan: 210500 - 45000 = 165,500
-      equity: 45000,
-      loanAmount: 165500, // Calculated
-      interestRate: 3.5,
-      repaymentRate: 2.0,
+      // Finanzierung
+      // Side costs: 420000 * (6.5% + 3.57% + 2%) = 50,694€
+      // Total: 420000 + 50,694 = 470,694€
+      equity: 50000, // Low equity ratio
+      loanAmount: 420694, // High leverage
+      interestRate: 3.8, // Higher rate due to risk profile
+      repaymentRate: 1.5, // Low repayment stretches loan
       fixedInterestPeriod: 10,
 
-      coldRentActual: 750,
+      // Mieteinnahmen - Way too low for price
+      coldRentActual: 700, // Only 700€ for 420k purchase = terrible ratio
       coldRentTarget: 750,
-      nonRecoverableCosts: 60,
-      maintenanceReserve: 80,
+      nonRecoverableCosts: 180, // High Hausgeld, bad energy efficiency
+      maintenanceReserve: 120,
       vacancyRiskPercent: 3,
 
-      personalTaxRate: 42, // Changed from 35%
-      buildingSharePercent: 80,
+      // Steuern
+      personalTaxRate: 42,
+      buildingSharePercent: 70, // Lower building share
       afaType: "ALTBAU_AB_1925" as AfAType,
 
-      // Prognose
+      // Prognose - Even optimistic assumptions can't save this
       expectedAppreciationPercent: 2.0,
       expectedRentIncreasePercent: 1.5,
     },
   },
+
+  // ============================================
+  // 3. DAS "WERTSTEIGERUNGS-PLAY" (Spekulation)
+  // ============================================
+  // Logic: Classic A-location, negative cashflow but betting on appreciation
+  // Characteristics: Munich, expensive, low initial yield, hope for 10-year tax-free gain
   {
-    id: "mfh-luebeck",
-    name: "MFH Lübeck",
-    description: "Mehrfamilienhaus in der Altstadt - 4 Einheiten, stabiler Cashflow",
-    icon: "🏘️",
-    bundesland: "Schleswig-Holstein",
+    id: "appreciation-munich",
+    name: "📈 Das Wertsteigerungs-Play",
+    description: "München Schwabing: Negative Cashflow, aber Premium-Lage für steuerfreien Verkauf",
+    icon: "📈",
+    bundesland: "Bayern",
     values: {
       // Bundesland
-      bundesland: "SCHLESWIG_HOLSTEIN",
+      bundesland: "BAYERN",
 
-      purchasePrice: 420000,
-      marketValue: 450000,
+      // Kaufpreis - High price but strong location
+      purchasePrice: 650000,
+      marketValue: 680000, // Buying slightly under market
       isFamilyPurchase: false,
-      propertyTransferTaxPercent: 6.5,
-      brokerPercent: 3.57,
+      propertyTransferTaxPercent: 3.5, // Bayern lowest rate!
+      brokerPercent: 3.0, // Standard Munich
       notaryPercent: 1.5,
-      renovationCosts: 15000,
+      renovationCosts: 0, // Top condition
 
-      // Side costs: 420000 * (6.5% + 3.57% + 1.5%) + 15000 = ~63,500
-      // Total: 420000 + 63500 = 483,500
-      // Loan: 483500 - 120000 = 363,500
-      equity: 120000,
-      loanAmount: 363500, // Calculated
+      // Finanzierung
+      // Side costs: 650000 * (3.5% + 3% + 1.5%) = 52,000€
+      // Total: 650000 + 52,000 = 702,000€
+      equity: 150000, // Solid equity
+      loanAmount: 552000,
       interestRate: 3.4,
-      repaymentRate: 2.0,
+      repaymentRate: 1.5, // Low repayment to manage cashflow
       fixedInterestPeriod: 15,
 
-      coldRentActual: 2400,
-      coldRentTarget: 2600,
-      nonRecoverableCosts: 180,
-      maintenanceReserve: 250,
-      vacancyRiskPercent: 3,
+      // Mieteinnahmen - Low yield typical for Munich
+      coldRentActual: 1650, // Good rent but still low yield for price
+      coldRentTarget: 1800,
+      nonRecoverableCosts: 120,
+      maintenanceReserve: 80, // Modern building, low maintenance
+      vacancyRiskPercent: 1, // Minimal vacancy in Munich
 
+      // Steuern
       personalTaxRate: 42,
       buildingSharePercent: 75,
       afaType: "ALTBAU_AB_1925" as AfAType,
 
-      // Prognose
-      expectedAppreciationPercent: 2.0,
-      expectedRentIncreasePercent: 1.5,
+      // Prognose - The bet: high appreciation
+      expectedAppreciationPercent: 3.5, // Munich premium
+      expectedRentIncreasePercent: 2.5, // Strong rental growth
     },
   },
+
+  // ============================================
+  // 4. DER "TURNAROUND" (Management-Intensiv)
+  // ============================================
+  // Logic: Hidden potential - under-rented, needs work
+  // Characteristics: Bad numbers now, but simulate rent increase to see potential
   {
-    id: "neubau-hamburg",
-    name: "Neubau Hamburg",
-    description: "Neubauwohnung in Hamburg - Premium-Lage mit Wertsteigerungspotenzial",
-    icon: "🏗️",
-    bundesland: "Hamburg",
+    id: "turnaround-leipzig",
+    name: "🔧 Der Turnaround",
+    description: "Leipzig Lindenau: Unter Marktmiete vermietet – Potenzial durch Mietanpassung",
+    icon: "🔧",
+    bundesland: "Sachsen",
     values: {
       // Bundesland
-      bundesland: "HAMBURG",
+      bundesland: "SACHSEN",
 
-      purchasePrice: 480000,
-      marketValue: 510000,
+      // Kaufpreis - Reasonable for the location
+      purchasePrice: 195000,
+      marketValue: 210000, // Fair deal
       isFamilyPurchase: false,
       propertyTransferTaxPercent: 5.5,
-      brokerPercent: 3.0,
-      notaryPercent: 1.5,
-      renovationCosts: 0,
-
-      // Side costs: 480000 * (5.5% + 3% + 1.5%) + 0 = 48,000
-      // Total: 480000 + 48000 = 528,000
-      // Loan: 528000 - 130000 = 398,000
-      equity: 130000,
-      loanAmount: 398000, // Calculated
-      interestRate: 3.3,
-      repaymentRate: 2.5,
-      fixedInterestPeriod: 15,
-
-      coldRentActual: 1350,
-      coldRentTarget: 1400,
-      nonRecoverableCosts: 80,
-      maintenanceReserve: 50,
-      vacancyRiskPercent: 2,
-
-      personalTaxRate: 42,
-      buildingSharePercent: 85,
-      afaType: "NEUBAU_AB_2023" as AfAType,
-
-      // Prognose
-      expectedAppreciationPercent: 3.0, // Hamburg has higher appreciation
-      expectedRentIncreasePercent: 2.0, // Strong rental market
-    },
-  },
-  {
-    id: "cashflow-bremen",
-    name: "Cashflow-Objekt Bremen",
-    description: "Renditestarke Wohnung in Bremen-Nord - positiver Cashflow ab Tag 1",
-    icon: "💰",
-    bundesland: "Bremen",
-    values: {
-      // Bundesland
-      bundesland: "BREMEN",
-
-      purchasePrice: 95000,
-      marketValue: 100000,
-      isFamilyPurchase: false,
-      propertyTransferTaxPercent: 5.0,
       brokerPercent: 3.57,
       notaryPercent: 1.5,
-      renovationCosts: 8000,
+      renovationCosts: 25000, // Key: Renovation budget for value-add
 
-      // Side costs: 95000 * (5% + 3.57% + 1.5%) + 8000 = ~17,570
-      // Total: 95000 + 17570 = 112,570
-      // Loan: 112570 - 25000 = 87,570
-      equity: 25000,
-      loanAmount: 87570, // Calculated
-      interestRate: 3.8,
+      // Finanzierung
+      // Side costs: 195000 * (5.5% + 3.57% + 1.5%) + 25000 = 45,600€
+      // Total: 195000 + 45,600 = 240,600€
+      equity: 60000,
+      loanAmount: 180600,
+      interestRate: 3.5,
       repaymentRate: 2.0,
       fixedInterestPeriod: 10,
 
-      coldRentActual: 520,
-      coldRentTarget: 550,
-      nonRecoverableCosts: 50,
-      maintenanceReserve: 70,
-      vacancyRiskPercent: 4,
+      // Mieteinnahmen - KEY: Currently under-rented!
+      coldRentActual: 480, // Old tenant, way below market
+      coldRentTarget: 750, // Market potential after renovation/new tenant
+      nonRecoverableCosts: 80,
+      maintenanceReserve: 100,
+      vacancyRiskPercent: 5, // Account for renovation vacancy
 
-      personalTaxRate: 42, // Changed from 35%
+      // Steuern
+      personalTaxRate: 35, // Mid-income investor
       buildingSharePercent: 80,
       afaType: "ALTBAU_AB_1925" as AfAType,
 
       // Prognose
-      expectedAppreciationPercent: 1.5,
+      expectedAppreciationPercent: 2.5, // Leipzig growing
+      expectedRentIncreasePercent: 2.0,
+    },
+  },
+
+  // ============================================
+  // 5. DER "CASHFLOW-NO-BRAINER"
+  // ============================================
+  // Logic: High-yield C-location, positive cashflow from day 1
+  // Characteristics: Cheap purchase, high rent ratio, immediate returns
+  {
+    id: "cashflow-halle",
+    name: "💰 Der Cashflow-No-Brainer",
+    description:
+      "Halle (Saale): Kaufpreis 75.000€, 7,5% Brutto-Rendite – positiver Cashflow ab Tag 1",
+    icon: "💰",
+    bundesland: "Sachsen-Anhalt",
+    values: {
+      // Bundesland
+      bundesland: "SACHSEN_ANHALT",
+
+      // Kaufpreis - Very affordable
+      purchasePrice: 75000,
+      marketValue: 80000,
+      isFamilyPurchase: false,
+      propertyTransferTaxPercent: 5.0,
+      brokerPercent: 3.0, // Lower broker for cheap properties
+      notaryPercent: 1.5,
+      renovationCosts: 5000, // Minor refresh
+
+      // Finanzierung
+      // Side costs: 75000 * (5% + 3% + 1.5%) + 5000 = 12,125€
+      // Total: 75000 + 12,125 = 87,125€
+      equity: 20000, // Manageable entry point
+      loanAmount: 67125,
+      interestRate: 4.0, // Slightly higher for smaller loan
+      repaymentRate: 3.0, // Aggressive payoff
+      fixedInterestPeriod: 10,
+
+      // Mieteinnahmen - Great ratio!
+      coldRentActual: 470, // 470€ for 75k = Faktor 13.3 = excellent!
+      coldRentTarget: 500,
+      nonRecoverableCosts: 55,
+      maintenanceReserve: 75, // Older building needs reserves
+      vacancyRiskPercent: 4, // C-location risk
+
+      // Steuern
+      personalTaxRate: 35,
+      buildingSharePercent: 80,
+      afaType: "ALTBAU_AB_1925" as AfAType,
+
+      // Prognose - Conservative, focus is on cashflow not appreciation
+      expectedAppreciationPercent: 0.5, // C-location, minimal growth
       expectedRentIncreasePercent: 1.0,
     },
   },
