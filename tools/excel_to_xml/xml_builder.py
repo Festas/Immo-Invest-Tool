@@ -306,17 +306,27 @@ class XMLBuilder:
             bool: True if save was successful.
         """
         try:
-            xml_string = self.to_string(groups, source_path)
+            root = self.build_xml(groups, source_path)
 
-            # Remove XML declaration from minidom (it adds it automatically)
-            lines = xml_string.split("\n")
-            if lines[0].startswith("<?xml"):
-                lines = lines[1:]
-            xml_content = "\n".join(lines)
+            # Use ElementTree's built-in XML writing with encoding
+            xml_content = tostring(root, encoding="unicode")
 
             # Add proper XML declaration
             declaration = f'<?xml version="1.0" encoding="{self.encoding}"?>\n'
-            full_content = declaration + xml_content
+
+            # Pretty print the content
+            from xml.dom import minidom
+
+            reparsed = minidom.parseString(xml_content)
+            pretty_xml = reparsed.toprettyxml(indent=" " * self.indent)
+
+            # Remove the minidom declaration and add our own
+            lines = pretty_xml.split("\n")
+            if lines[0].startswith("<?xml"):
+                lines = lines[1:]
+            xml_body = "\n".join(lines)
+
+            full_content = declaration + xml_body
 
             with open(output_path, "w", encoding=self.encoding) as f:
                 f.write(full_content)

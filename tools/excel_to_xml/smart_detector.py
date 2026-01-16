@@ -88,8 +88,9 @@ class SmartColumnDetector:
 
     def _get_cache_key(self, df: pd.DataFrame, pattern_name: str) -> str:
         """Generate a cache key for detection results."""
-        # Use shape and first few values as cache key
-        return f"{id(df)}_{df.shape}_{pattern_name}"
+        # Use shape and column names for stable caching
+        col_names = tuple(df.columns.tolist()) if len(df.columns) <= 20 else tuple(df.columns[:20].tolist())
+        return f"{df.shape}_{hash(col_names)}_{pattern_name}"
 
     def detect_by_content_pattern(
         self, df: pd.DataFrame

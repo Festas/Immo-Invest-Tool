@@ -81,14 +81,21 @@ class FixedFileHandler:
         Returns:
             bool: True if network drive is accessible, False otherwise.
         """
+        import platform
+
+        # Only check Z:\ on Windows systems
+        if platform.system() != "Windows":
+            logger.info("Non-Windows system detected, skipping network drive check")
+            return False
+
         # Check if Z:\ drive exists
         network_root = Path(r"Z:\\")
         try:
             if network_root.exists():
-                logger.info("Network drive Z:\\ is accessible")
+                logger.info(r"Network drive Z:\ is accessible")
                 return True
             else:
-                logger.warning("Network drive Z:\\ is not accessible")
+                logger.warning(r"Network drive Z:\ is not accessible")
                 return False
         except OSError as e:
             logger.error(f"Error checking network drive: {e}")

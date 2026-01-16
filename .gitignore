@@ -51,3 +51,13 @@ next-env.d.ts
 /prisma/migrations
 *.db
 *.db-journal
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.eggs/
+*.egg-info/
+*.egg
