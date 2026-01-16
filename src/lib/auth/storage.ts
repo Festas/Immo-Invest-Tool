@@ -1,11 +1,9 @@
 /**
- * Simple user storage for basic authentication
- * In production, this should be replaced with a proper database
+ * User storage using Prisma ORM
+ * Migrated from JSON file-based storage to PostgreSQL database
  */
 
-import fs from "fs/promises";
-import path from "path";
-import { randomUUID } from "crypto";
+import * as userDb from "@/lib/db/user";
 
 export interface StoredUser {
   id: string;
@@ -14,61 +12,27 @@ export interface StoredUser {
   createdAt: string;
 }
 
-// Storage directory - configurable via environment variable
-// Default: .data for development, /data/.auth for production
-export function getStorageDir(): string {
-  if (process.env.DATA_DIR) {
-    return process.env.DATA_DIR;
-  }
-  // In Docker/production, use /data/.auth (writable location)
-  // In development, use .data in project root
-  return process.env.NODE_ENV === "production" ? "/data/.auth" : path.join(process.cwd(), ".data");
-}
-
-// Storage file path - in production this would be a database
-const STORAGE_PATH = path.join(getStorageDir(), "users.json");
-
-// Ensure storage directory exists
-async function ensureStorageDir() {
-  const dir = path.dirname(STORAGE_PATH);
-  try {
-    await fs.access(dir);
-  } catch {
-    await fs.mkdir(dir, { recursive: true });
-  }
-}
-
-// Load users from storage
-async function loadUsers(): Promise<StoredUser[]> {
-  try {
-    await ensureStorageDir();
-    const data = await fs.readFile(STORAGE_PATH, "utf-8");
-    return JSON.parse(data);
-  } catch {
-    // If file doesn't exist, return empty array
-    return [];
-  }
-}
-
-// Save users to storage
-async function saveUsers(users: StoredUser[]): Promise<void> {
-  await ensureStorageDir();
-  await fs.writeFile(STORAGE_PATH, JSON.stringify(users, null, 2), "utf-8");
-}
-
 /**
- * Find a user by username
+ * Find a user by username (case-insensitive)
  */
 export async function findUserByUsername(username: string): Promise<StoredUser | null> {
   try {
-    const users = await loadUsers();
-    return users.find((u) => u.username.toLowerCase() === username.toLowerCase()) || null;
+    const user = await userDb.findUserByUsername(username);
+    if (!user) {
+      return null;
+    }
+
+    return {
+      id: user.id,
+      username: user.username,
+      passwordHash: user.passwordHash,
+      createdAt: user.createdAt.toISOString(),
+    };
   } catch (error) {
     // Re-throw with context
     console.error("[Storage] Error finding user by username:", {
       username,
       error: error instanceof Error ? error.message : String(error),
-      code: (error as NodeJS.ErrnoException).code,
     });
     throw error;
   }
@@ -78,30 +42,35 @@ export async function findUserByUsername(username: string): Promise<StoredUser |
  * Find a user by ID
  */
 export async function findUserById(id: string): Promise<StoredUser | null> {
-  const users = await loadUsers();
-  return users.find((u) => u.id === id) || null;
+  const user = await userDb.findUserById(id);
+  if (!user) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    username: user.username,
+    passwordHash: user.passwordHash,
+    createdAt: user.createdAt.toISOString(),
+  };
 }
 
 /**
  * Create a new user
  */
 export async function createUser(username: string, passwordHash: string): Promise<StoredUser> {
-  const users = await loadUsers();
-
   // Check if username already exists
-  if (users.some((u) => u.username.toLowerCase() === username.toLowerCase())) {
+  const existingUser = await userDb.findUserByUsername(username);
+  if (existingUser) {
     throw new Error("Username already exists");
   }
 
-  const newUser: StoredUser = {
-    id: randomUUID(),
-    username,
-    passwordHash,
-    createdAt: new Date().toISOString(),
+  const user = await userDb.createUser(username, passwordHash);
+
+  return {
+    id: user.id,
+    username: user.username,
+    passwordHash: user.passwordHash,
+    createdAt: user.createdAt.toISOString(),
   };
-
-  users.push(newUser);
-  await saveUsers(users);
-
-  return newUser;
 }
