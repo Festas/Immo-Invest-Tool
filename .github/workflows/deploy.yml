@@ -77,12 +77,13 @@ jobs:
           GHCR_ACTOR: ${{ github.actor }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           # Diese Environment-Variablen werden an das Remote-Skript übergeben
-          envs: IMAGE_SHA,IMAGE_NAME,REGISTRY,DOMAIN,GHCR_TOKEN,GHCR_ACTOR,JWT_SECRET,SESSION_SECRET
+          envs: IMAGE_SHA,IMAGE_NAME,REGISTRY,DOMAIN,GHCR_TOKEN,GHCR_ACTOR,JWT_SECRET,SESSION_SECRET,DB_PASSWORD
           script: |
             # Beende das Skript sofort bei Fehlern
             set -euo pipefail
@@ -93,54 +94,108 @@ jobs:
             mkdir -p "${DEPLOY_DIR}"
             cd "${DEPLOY_DIR}"
 
-            echo "[1/4] Writing configuration..."
-            # Erstelle .env Datei
+            echo "[1/5] Writing configuration..."
+            # Erstelle .env Datei mit Datenbank-Konfiguration
             cat > .env << EOF
             NODE_ENV=production
             JWT_SECRET=${JWT_SECRET}
             SESSION_SECRET=${SESSION_SECRET}
             DOMAIN=${DOMAIN}
+            DB_PASSWORD=${DB_PASSWORD}
+            DATABASE_URL=postgresql://immo_user:${DB_PASSWORD}@db:5432/immo_invest?schema=public
             EOF
 
-            echo "[2/4] Authenticating & Pulling..."
+            echo "[2/5] Authenticating & Pulling..."
             echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_ACTOR}" --password-stdin
             docker pull "${REGISTRY}/${IMAGE_NAME}:${IMAGE_SHA}"
 
-            echo "[3/4] Generating Docker Compose..."
-            # Inline Docker Compose für volle Kontrolle über Ports
+            echo "[3/5] Generating Docker Compose..."
+            # Docker Compose mit PostgreSQL
             cat > docker-compose.yml <<EOF_COMPOSE
             services:
+              # PostgreSQL Database
+              db:
+                image: postgres:16.6-alpine
+                container_name: immocalc-db
+                restart: unless-stopped
+                environment:
+                  POSTGRES_USER: immo_user
+                  POSTGRES_PASSWORD: ${DB_PASSWORD}
+                  POSTGRES_DB: immo_invest
+                volumes:
+                  - postgres-data:/var/lib/postgresql/data
+                healthcheck:
+                  test: ["CMD-SHELL", "pg_isready -U immo_user -d immo_invest"]
+                  interval: 5s
+                  timeout: 5s
+                  retries: 5
+                deploy:
+                  resources:
+                    limits:
+                      memory: 256M
+
+              # ImmoCalc Application
               immocalc:
                 image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_SHA}
                 container_name: immocalc
                 restart: unless-stopped
                 ports:
-                  # Host: 8086 -> Container: 3000 (nur localhost)
                   - "127.0.0.1:8086:3000"
                 env_file:
                   - .env
-                # Optional: Ressourcen-Limits setzen (gut für Shared Server)
+                depends_on:
+                  db:
+                    condition: service_healthy
                 deploy:
                   resources:
                     limits:
                       memory: 512M
+
+            volumes:
+              postgres-data:
+                driver: local
             EOF_COMPOSE
 
-            echo "[4/4] Restarting Container..."
+            echo "[4/5] Restarting Containers..."
             docker compose down --remove-orphans || true
             docker compose up -d
 
-            echo "Deployment finished. Checking status..."
-            sleep 5
-            
-            # Kurzer Check ob der Container läuft
+            # Kurzer Check ob die Container laufen
             if [ "$(docker inspect -f '{{.State.Running}}' immocalc 2>/dev/null)" = "true" ]; then
-                echo "✅ Container is running."
+                echo "✅ App container is running."
             else
-                echo "❌ Container is NOT running. Logs:"
-                docker logs immocalc --tail 20
+                echo "❌ App container is NOT running. Logs:"
+                docker logs immocalc --tail 30
                 exit 1
             fi
+
+            if [ "$(docker inspect -f '{{.State.Running}}' immocalc-db 2>/dev/null)" = "true" ]; then
+                echo "✅ Database container is running."
+            else
+                echo "❌ Database container is NOT running. Logs:"
+                docker logs immocalc-db --tail 30
+                exit 1
+            fi
+
+            echo "[5/5] Running database migrations..."
+            # Run Prisma migrations
+            if ! docker compose exec -T immocalc npx prisma migrate deploy 2>&1; then
+                echo "⚠️ Migration deployment failed. This might be the first deployment."
+                echo "Attempting to initialize database schema with db push..."
+                if ! docker compose exec -T immocalc npx prisma db push 2>&1; then
+                    echo "❌ Database setup failed! Showing logs:"
+                    echo "=== App Container Logs ==="
+                    docker logs immocalc --tail 50
+                    echo "=== Database Container Logs ==="
+                    docker logs immocalc-db --tail 30
+                    exit 1
+                fi
+                echo "✅ Database schema initialized successfully."
+            else
+                echo "✅ Migrations applied successfully."
+            fi
+
+            echo "✅ Deployment finished successfully!"
 
             # Aufräumen (Images älter als 24h)
             docker image prune -f --filter "until=24h"

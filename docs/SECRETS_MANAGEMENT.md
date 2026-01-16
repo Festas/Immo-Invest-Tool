@@ -27,11 +27,13 @@ These secrets are used by the ImmoCalc application at runtime:
 
 | Secret Name      | Description                                  | Required | How to Generate           |
 | ---------------- | -------------------------------------------- | -------- | ------------------------- |
+| `DB_PASSWORD`    | PostgreSQL database password                 | **Yes**  | `openssl rand -base64 32` |
 | `JWT_SECRET`     | Secret key for JWT token generation          | **Yes**  | `openssl rand -base64 32` |
 | `SESSION_SECRET` | Secret key for session management (optional) | No       | `openssl rand -base64 32` |
 
 **Notes:**
 
+- `DB_PASSWORD` is **required** for production deployments with PostgreSQL database.
 - `JWT_SECRET` is **required** for production deployments. Without it, authentication will fail.
 - `SESSION_SECRET` is optional. If not provided, it defaults to `JWT_SECRET`.
 
@@ -42,6 +44,9 @@ These secrets are used by the ImmoCalc application at runtime:
 Generate secure random values for your secrets:
 
 ```bash
+# Generate DB_PASSWORD
+openssl rand -base64 32
+
 # Generate JWT_SECRET
 openssl rand -base64 32
 
@@ -92,6 +97,8 @@ When you push code to the `main` branch or manually trigger a deployment:
    JWT_SECRET=<value from GitHub secret>
    SESSION_SECRET=<value from GitHub secret>
    DOMAIN=<value from GitHub secret>
+   DB_PASSWORD=<value from GitHub secret>
+   DATABASE_URL=postgresql://immo_user:<DB_PASSWORD>@db:5432/immo_invest?schema=public
    ```
 5. **Docker Container Start**: Docker Compose loads the `.env` file and starts the application with the secrets as environment variables
 
@@ -256,7 +263,7 @@ Edit `.github/workflows/deploy.yml`:
     NEW_SECRET: ${{ secrets.NEW_SECRET }} # Add here
   with:
     # ... existing with config ...
-    envs: IMAGE_SHA,COMMIT_SHA,REGISTRY,IMAGE_NAME,DOMAIN,GHCR_TOKEN,GHCR_ACTOR,JWT_SECRET,SESSION_SECRET,NEW_SECRET # Add here
+    envs: IMAGE_SHA,IMAGE_NAME,REGISTRY,DOMAIN,GHCR_TOKEN,GHCR_ACTOR,JWT_SECRET,SESSION_SECRET,DB_PASSWORD,NEW_SECRET # Add here
     script: |
       # ...
       cat > .env << 'EOF'
