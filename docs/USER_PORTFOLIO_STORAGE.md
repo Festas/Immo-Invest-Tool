@@ -269,30 +269,82 @@ JWT_SECRET=your-secure-random-secret-here
 
 ### Docker Configuration
 
-The database should be configured as a separate service or use an external PostgreSQL instance:
+For Docker deployments, PostgreSQL is included as a service in docker-compose:
 
 ```yaml
 services:
-  web:
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - JWT_SECRET=${JWT_SECRET}
-
-  # Optional: Include PostgreSQL service
   db:
     image: postgres:16-alpine
+    container_name: immocalc-db
+    restart: unless-stopped
     environment:
-      - POSTGRES_DB=immo_invest
-      - POSTGRES_USER=immo_user
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      POSTGRES_USER: immo_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: immo_invest
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U immo_user -d immo_invest"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - caddy-network
+
+  web:
+    environment:
+      - DATABASE_URL=postgresql://immo_user:${DB_PASSWORD}@db:5432/immo_invest?schema=public
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   postgres-data:
+    driver: local
 ```
 
-**Note**: The `/data` volume mounts for JSON file storage are no longer needed as all data is stored in PostgreSQL.
+#### Starting the Containers
+
+```bash
+# Set required environment variables
+export DB_PASSWORD=your_secure_password
+export JWT_SECRET=your_secure_jwt_secret
+
+# Start all services
+docker compose up -d
+
+# Check health status
+docker compose ps
+```
+
+#### Running Database Migrations
+
+After starting the containers for the first time, run migrations:
+
+```bash
+# Deploy migrations to the database
+docker compose exec web npx prisma migrate deploy
+
+# Or generate and push schema (for development)
+docker compose exec web npx prisma db push
+```
+
+#### Database Backup and Restore
+
+**Backup the database:**
+
+```bash
+docker compose exec db pg_dump -U immo_user immo_invest > backup_$(date +%Y%m%d_%H%M%S).sql
+```
+
+**Restore from backup:**
+
+```bash
+docker compose exec -T db psql -U immo_user immo_invest < backup.sql
+```
+
+**Note**: The PostgreSQL container does NOT expose port 5432 externally for security. It's only accessible internally via the `caddy-network`.
 
 ## Security
 
