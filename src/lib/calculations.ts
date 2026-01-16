@@ -515,7 +515,18 @@ export function calculateRentIndex(input: RentIndexInput): RentIndexResult {
  * Calculate break-even analysis
  */
 export function calculateBreakEven(input: BreakEvenInput): BreakEvenResult {
-  const { totalInvestment, annualCashflow, annualAppreciation, sellingCostsPercent } = input;
+  const {
+    totalInvestment,
+    equity,
+    annualCashflow,
+    annualAppreciation,
+    sellingCostsPercent,
+    marketValue,
+    amortizationSchedule,
+  } = input;
+
+  // Use marketValue as starting point if provided, otherwise use totalInvestment
+  const startValue = marketValue && marketValue > 0 ? marketValue : totalInvestment;
 
   // Break-even through cashflow only
   const breakEvenYearsCashflow =
@@ -524,12 +535,12 @@ export function calculateBreakEven(input: BreakEvenInput): BreakEvenResult {
   // Break-even including appreciation
   let breakEvenYearsTotal = 999;
   let cumulativeReturn = 0;
-  let propertyValue = totalInvestment;
+  let propertyValue = startValue;
 
   for (let year = 1; year <= 50; year++) {
     cumulativeReturn += annualCashflow;
     propertyValue *= 1 + annualAppreciation / 100;
-    const appreciation = propertyValue - totalInvestment;
+    const appreciation = propertyValue - startValue;
     const netAppreciation = appreciation * (1 - sellingCostsPercent / 100);
 
     if (cumulativeReturn + netAppreciation >= totalInvestment && breakEvenYearsTotal === 999) {
@@ -541,29 +552,53 @@ export function calculateBreakEven(input: BreakEvenInput): BreakEvenResult {
   // Calculate returns at specific time points
   const calculateReturnAtYear = (years: number) => {
     const cashflowTotal = annualCashflow * years;
-    const futureValue = totalInvestment * Math.pow(1 + annualAppreciation / 100, years);
-    const appreciation = futureValue - totalInvestment;
+    const futureValue = startValue * Math.pow(1 + annualAppreciation / 100, years);
+    const appreciation = futureValue - startValue;
     const netAppreciation = appreciation * (1 - sellingCostsPercent / 100);
-    return cashflowTotal + netAppreciation;
+
+    // Calculate remaining debt if amortization schedule is provided
+    const remainingDebt =
+      amortizationSchedule && years <= amortizationSchedule.length
+        ? amortizationSchedule[years - 1]?.endingBalance || 0
+        : 0;
+
+    const netProceeds = futureValue * (1 - sellingCostsPercent / 100) - remainingDebt;
+
+    return {
+      totalReturn: cashflowTotal + netAppreciation,
+      netProceeds: netProceeds + cashflowTotal,
+    };
   };
 
-  const totalReturnAt5Years = calculateReturnAtYear(5);
-  const totalReturnAt10Years = calculateReturnAtYear(10);
-  const totalReturnAt15Years = calculateReturnAtYear(15);
+  const returnAt5Years = calculateReturnAtYear(5);
+  const returnAt10Years = calculateReturnAtYear(10);
+  const returnAt15Years = calculateReturnAtYear(15);
 
-  const roiAt5Years = totalInvestment > 0 ? (totalReturnAt5Years / totalInvestment) * 100 : 0;
-  const roiAt10Years = totalInvestment > 0 ? (totalReturnAt10Years / totalInvestment) * 100 : 0;
-  const roiAt15Years = totalInvestment > 0 ? (totalReturnAt15Years / totalInvestment) * 100 : 0;
+  // ROI based on equity, not total investment
+  const roiAt5Years = equity > 0 ? (returnAt5Years.totalReturn / equity) * 100 : 0;
+  const roiAt10Years = equity > 0 ? (returnAt10Years.totalReturn / equity) * 100 : 0;
+  const roiAt15Years = equity > 0 ? (returnAt15Years.totalReturn / equity) * 100 : 0;
+
+  // Equity Multiplier: How many times the equity has grown
+  const equityMultiplierAt10Years =
+    equity > 0 ? (equity + returnAt10Years.totalReturn) / equity : 0;
+  const equityMultiplierAt15Years =
+    equity > 0 ? (equity + returnAt15Years.totalReturn) / equity : 0;
 
   return {
     breakEvenYearsCashflow,
     breakEvenYearsTotal,
-    totalReturnAt5Years,
-    totalReturnAt10Years,
-    totalReturnAt15Years,
+    totalReturnAt5Years: returnAt5Years.totalReturn,
+    totalReturnAt10Years: returnAt10Years.totalReturn,
+    totalReturnAt15Years: returnAt15Years.totalReturn,
     roiAt5Years,
     roiAt10Years,
     roiAt15Years,
+    netProceedsAt5Years: returnAt5Years.netProceeds,
+    netProceedsAt10Years: returnAt10Years.netProceeds,
+    netProceedsAt15Years: returnAt15Years.netProceeds,
+    equityMultiplierAt10Years,
+    equityMultiplierAt15Years,
   };
 }
 
@@ -627,14 +662,19 @@ export function calculateExitStrategy(input: ExitStrategyInput): ExitStrategyRes
   const {
     purchasePrice,
     currentValue,
+    marketValue,
     holdingPeriodYears,
     remainingDebt,
     cumulativeCashflow,
     speculationTaxApplies,
     personalTaxRate,
+    equity,
+    totalTilgung,
   } = input;
 
-  const grossProfit = currentValue - purchasePrice;
+  // Use marketValue as base if provided, otherwise use purchasePrice
+  const baseValue = marketValue && marketValue > 0 ? marketValue : purchasePrice;
+  const grossProfit = currentValue - baseValue;
 
   // Default selling costs percentage (typically 5-8% including broker, notary, etc.)
   const DEFAULT_SELLING_COSTS_PERCENT = 6;
@@ -649,10 +689,22 @@ export function calculateExitStrategy(input: ExitStrategyInput): ExitStrategyRes
   const netProfit = grossProfit - sellingCosts - speculationTax;
   const totalReturn = netProfit + cumulativeCashflow;
 
-  // Annualized return
+  // Net proceeds after paying off remaining debt
+  const netProceedsAfterDebt = currentValue - sellingCosts - speculationTax - remainingDebt;
+
+  // Equity build-up through principal payments (Tilgung)
+  const equityBuildUp = totalTilgung;
+
+  // Return on Equity: Total return divided by initial equity
+  const returnOnEquity = equity > 0 ? (totalReturn / equity) * 100 : 0;
+
+  // Equity Multiplier: How many times the equity has grown
+  const equityMultiplier = equity > 0 ? (equity + totalReturn) / equity : 0;
+
+  // Annualized return based on equity
   const annualizedReturn =
-    holdingPeriodYears > 0 && purchasePrice > 0
-      ? (Math.pow((purchasePrice + totalReturn) / purchasePrice, 1 / holdingPeriodYears) - 1) * 100
+    holdingPeriodYears > 0 && equity > 0
+      ? (Math.pow((equity + totalReturn) / equity, 1 / holdingPeriodYears) - 1) * 100
       : 0;
 
   // Format currency for recommendation message
@@ -680,6 +732,10 @@ export function calculateExitStrategy(input: ExitStrategyInput): ExitStrategyRes
     netProfit,
     totalReturn,
     annualizedReturn,
+    equityMultiplier,
+    returnOnEquity,
+    equityBuildUp,
+    netProceedsAfterDebt,
     recommendation,
   };
 }

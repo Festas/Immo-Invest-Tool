@@ -8,7 +8,16 @@ import { useImmoCalcStore } from "@/store";
 import { calculateExitStrategy, calculatePropertyKPIs } from "@/lib/calculations";
 import { formatCurrency } from "@/lib/utils";
 import { ExitStrategyResult } from "@/types";
-import { LogOut, Calculator, AlertTriangle, TrendingUp, Clock, Wallet, Scale } from "lucide-react";
+import {
+  LogOut,
+  Calculator,
+  AlertTriangle,
+  TrendingUp,
+  Clock,
+  Wallet,
+  Scale,
+  PiggyBank,
+} from "lucide-react";
 
 // Help texts for exit strategy calculator
 const helpTexts = {
@@ -38,9 +47,14 @@ export function ExitStrategyCalculator() {
   const [appreciationRate, setAppreciationRate] = useState(2.0);
   const [result, setResult] = useState<ExitStrategyResult | null>(null);
 
+  // Use marketValue if available, otherwise use totalInvestment
+  const baseValue =
+    currentInput.marketValue && currentInput.marketValue > 0
+      ? currentInput.marketValue
+      : output.investmentVolume.totalInvestment;
+
   // Calculate current values based on holding period and appreciation
-  const currentValue =
-    output.investmentVolume.totalInvestment * Math.pow(1 + appreciationRate / 100, holdingPeriod);
+  const currentValue = baseValue * Math.pow(1 + appreciationRate / 100, holdingPeriod);
 
   // Calculate remaining debt based on amortization
   const remainingDebt =
@@ -51,15 +65,25 @@ export function ExitStrategyCalculator() {
   // Calculate cumulative cashflow
   const cumulativeCashflow = output.cashflow.cashflowAfterTax * holdingPeriod;
 
+  // Calculate total principal paid (Tilgung) over holding period
+  const totalTilgung =
+    holdingPeriod <= output.amortizationSchedule.length
+      ? output.amortizationSchedule[holdingPeriod - 1]?.cumulativePrincipal || 0
+      : output.amortizationSchedule[output.amortizationSchedule.length - 1]?.cumulativePrincipal ||
+        0;
+
   const handleCalculate = () => {
     const exitResult = calculateExitStrategy({
       purchasePrice: output.investmentVolume.totalInvestment,
       currentValue: currentValue,
+      marketValue: currentInput.marketValue,
       holdingPeriodYears: holdingPeriod,
       remainingDebt: remainingDebt,
       cumulativeCashflow: cumulativeCashflow,
       speculationTaxApplies: holdingPeriod < 10,
       personalTaxRate: currentInput.personalTaxRate,
+      equity: currentInput.equity,
+      totalTilgung: totalTilgung,
     });
     setResult(exitResult);
   };
@@ -134,6 +158,16 @@ export function ExitStrategyCalculator() {
             formatValue={(v) => `${v.toFixed(1)}%`}
             helpText={helpTexts.appreciation}
           />
+
+          {currentInput.marketValue && currentInput.marketValue > 0 && (
+            <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 p-3 dark:border-blue-900/50 dark:bg-blue-950/50">
+              <AlertTriangle className="h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                <strong>Hinweis:</strong> Die Berechnung basiert auf dem eingegebenen Marktwert von{" "}
+                {formatCurrency(currentInput.marketValue)} als Ausgangspunkt für die Wertsteigerung.
+              </p>
+            </div>
+          )}
 
           <div className="rounded-lg border border-slate-100 bg-slate-50 p-4 dark:border-slate-700/50 dark:bg-slate-800/50">
             <p className="mb-2 text-sm font-medium text-slate-900 dark:text-slate-100">
@@ -289,12 +323,62 @@ export function ExitStrategyCalculator() {
                   <span className="text-sm font-medium">Netto-Erlös nach Tilgung</span>
                 </div>
                 <p className="text-3xl font-bold text-green-900 dark:text-green-100">
-                  {formatCurrency(
-                    currentValue - result.sellingCosts - result.speculationTax - remainingDebt
-                  )}
+                  {formatCurrency(result.netProceedsAfterDebt)}
                 </p>
                 <p className="mt-1 text-xs text-green-600 dark:text-green-400">
                   Auszahlungsbetrag nach Darlehenstilgung
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <Card className="border-purple-200 !bg-transparent bg-purple-50 dark:border-purple-700 dark:bg-purple-900/30">
+              <CardContent className="p-4">
+                <div className="mb-1 flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="text-sm font-medium">Equity Multiplier</span>
+                </div>
+                <p className="text-3xl font-bold text-purple-900 dark:text-purple-100">
+                  {result.equityMultiplier.toFixed(1)}x
+                </p>
+                <p className="mt-1 text-xs text-purple-600 dark:text-purple-400">
+                  Aus {formatCurrency(currentInput.equity)} wurden{" "}
+                  {formatCurrency(currentInput.equity + result.totalReturn)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-blue-200 !bg-transparent bg-blue-50 dark:border-blue-700 dark:bg-blue-900/30">
+              <CardContent className="p-4">
+                <div className="mb-1 flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                  <Scale className="h-4 w-4" />
+                  <span className="text-sm font-medium">Return on Equity</span>
+                </div>
+                <p
+                  className={`text-3xl font-bold ${
+                    result.returnOnEquity >= 0 ? "text-blue-900 dark:text-blue-100" : "text-red-600"
+                  }`}
+                >
+                  {result.returnOnEquity.toFixed(1)}%
+                </p>
+                <p className="mt-1 text-xs text-blue-600 dark:text-blue-400">
+                  ROI bezogen auf Eigenkapital
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-orange-200 !bg-transparent bg-orange-50 dark:border-orange-700 dark:bg-orange-900/30">
+              <CardContent className="p-4">
+                <div className="mb-1 flex items-center gap-2 text-orange-600 dark:text-orange-400">
+                  <PiggyBank className="h-4 w-4" />
+                  <span className="text-sm font-medium">Equity Build-up</span>
+                </div>
+                <p className="text-3xl font-bold text-orange-900 dark:text-orange-100">
+                  {formatCurrency(result.equityBuildUp)}
+                </p>
+                <p className="mt-1 text-xs text-orange-600 dark:text-orange-400">
+                  Durch Tilgung aufgebautes Eigenkapital
                 </p>
               </CardContent>
             </Card>

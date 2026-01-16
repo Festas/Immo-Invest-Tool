@@ -325,9 +325,12 @@ export interface RentIndexResult {
  */
 export interface BreakEvenInput {
   totalInvestment: number;
+  equity: number; // Initial equity for ROI calculation
   annualCashflow: number;
   annualAppreciation: number; // percentage
   sellingCostsPercent: number; // typically 5-10%
+  marketValue?: number; // Optional market value as starting point
+  amortizationSchedule?: AmortizationYear[]; // For calculating remaining debt
 }
 
 /**
@@ -339,9 +342,14 @@ export interface BreakEvenResult {
   totalReturnAt5Years: number;
   totalReturnAt10Years: number;
   totalReturnAt15Years: number;
-  roiAt5Years: number;
+  roiAt5Years: number; // ROI based on equity
   roiAt10Years: number;
   roiAt15Years: number;
+  netProceedsAt5Years: number; // Net proceeds after remaining debt
+  netProceedsAt10Years: number;
+  netProceedsAt15Years: number;
+  equityMultiplierAt10Years: number; // How many times equity was multiplied
+  equityMultiplierAt15Years: number;
 }
 
 /**
@@ -427,11 +435,14 @@ export interface RenovationResult {
 export interface ExitStrategyInput {
   purchasePrice: number;
   currentValue: number;
+  marketValue?: number; // Optional market value as base for calculation
   holdingPeriodYears: number;
   remainingDebt: number;
   cumulativeCashflow: number;
   speculationTaxApplies: boolean; // true if held < 10 years
   personalTaxRate: number;
+  equity: number; // Initial equity invested
+  totalTilgung: number; // Total principal paid over holding period
 }
 
 /**
@@ -444,6 +455,10 @@ export interface ExitStrategyResult {
   netProfit: number;
   totalReturn: number; // including cashflow
   annualizedReturn: number;
+  equityMultiplier: number; // How many times equity was multiplied (e.g., 3.0x)
+  returnOnEquity: number; // ROI based on equity (percentage)
+  equityBuildUp: number; // Equity built through principal payments
+  netProceedsAfterDebt: number; // Net proceeds after paying off remaining debt
   recommendation: string;
 }
 

@@ -763,6 +763,7 @@ describe("calculateBreakEven", () => {
   it("should calculate break-even for positive cashflow", () => {
     const input: BreakEvenInput = {
       totalInvestment: 100000,
+      equity: 20000,
       annualCashflow: 5000,
       annualAppreciation: 2.0,
       sellingCostsPercent: 6.0,
@@ -779,6 +780,7 @@ describe("calculateBreakEven", () => {
   it("should handle negative cashflow", () => {
     const input: BreakEvenInput = {
       totalInvestment: 300000,
+      equity: 60000,
       annualCashflow: -4000,
       annualAppreciation: 3.0,
       sellingCostsPercent: 6.0,
@@ -794,6 +796,7 @@ describe("calculateBreakEven", () => {
   it("should calculate ROI at different time points", () => {
     const input: BreakEvenInput = {
       totalInvestment: 200000,
+      equity: 40000,
       annualCashflow: 8000,
       annualAppreciation: 2.5,
       sellingCostsPercent: 5.0,
@@ -809,6 +812,7 @@ describe("calculateBreakEven", () => {
   it("should handle zero annual cashflow", () => {
     const input: BreakEvenInput = {
       totalInvestment: 150000,
+      equity: 30000,
       annualCashflow: 0,
       annualAppreciation: 2.0,
       sellingCostsPercent: 6.0,
@@ -817,6 +821,77 @@ describe("calculateBreakEven", () => {
     const result = calculateBreakEven(input);
 
     expect(result.breakEvenYearsCashflow).toBe(999);
+  });
+
+  it("should use marketValue as starting point if provided", () => {
+    const result = calculateBreakEven({
+      totalInvestment: 327210,
+      equity: 60000,
+      annualCashflow: 5000,
+      annualAppreciation: 2.0,
+      sellingCostsPercent: 6.0,
+      marketValue: 350000, // Higher than purchase price
+    });
+
+    // Calculate expected return with marketValue
+    const resultWithoutMarket = calculateBreakEven({
+      totalInvestment: 327210,
+      equity: 60000,
+      annualCashflow: 5000,
+      annualAppreciation: 2.0,
+      sellingCostsPercent: 6.0,
+    });
+
+    // Returns should be higher when starting from higher marketValue
+    expect(result.totalReturnAt10Years).toBeGreaterThan(resultWithoutMarket.totalReturnAt10Years);
+  });
+
+  it("should calculate ROI based on equity not totalInvestment", () => {
+    const result = calculateBreakEven({
+      totalInvestment: 327210,
+      equity: 60000,
+      annualCashflow: 5000,
+      annualAppreciation: 2.0,
+      sellingCostsPercent: 6.0,
+    });
+
+    // ROI should be based on 60,000€ equity, not 327,210€ total investment
+    // This creates leverage effect, so ROI should be significantly higher
+    expect(result.roiAt10Years).toBeGreaterThan(50); // Should be well above 50% due to leverage
+  });
+
+  it("should calculate netProceeds considering remaining debt", () => {
+    const schedule = generateAmortizationSchedule(267210, 3.5, 2.0, 15);
+
+    const result = calculateBreakEven({
+      totalInvestment: 327210,
+      equity: 60000,
+      annualCashflow: 5000,
+      annualAppreciation: 2.0,
+      sellingCostsPercent: 6.0,
+      amortizationSchedule: schedule,
+    });
+
+    // Net proceeds should be less than total return because remaining debt is deducted
+    expect(result.netProceedsAt10Years).toBeLessThan(
+      result.totalReturnAt10Years + 327210 * Math.pow(1.02, 10)
+    );
+    expect(result.netProceedsAt10Years).toBeDefined();
+  });
+
+  it("should calculate equity multiplier correctly", () => {
+    const result = calculateBreakEven({
+      totalInvestment: 200000,
+      equity: 40000,
+      annualCashflow: 8000,
+      annualAppreciation: 2.5,
+      sellingCostsPercent: 5.0,
+    });
+
+    // Equity multiplier at 10 years should be > 1 if returns are positive
+    expect(result.equityMultiplierAt10Years).toBeGreaterThan(1);
+    // At 15 years should be greater than at 10 years
+    expect(result.equityMultiplierAt15Years).toBeGreaterThan(result.equityMultiplierAt10Years);
   });
 });
 
@@ -925,6 +1000,8 @@ describe("calculateExitStrategy", () => {
       cumulativeCashflow: 20000,
       speculationTaxApplies: false,
       personalTaxRate: 42,
+      equity: 60000,
+      totalTilgung: 50000,
     };
 
     const result = calculateExitStrategy(input);
@@ -946,6 +1023,8 @@ describe("calculateExitStrategy", () => {
       cumulativeCashflow: 10000,
       speculationTaxApplies: true,
       personalTaxRate: 35,
+      equity: 50000,
+      totalTilgung: 30000,
     };
 
     const result = calculateExitStrategy(input);
@@ -963,6 +1042,8 @@ describe("calculateExitStrategy", () => {
       cumulativeCashflow: -5000,
       speculationTaxApplies: true,
       personalTaxRate: 40,
+      equity: 60000,
+      totalTilgung: 20000,
     };
 
     const result = calculateExitStrategy(input);
@@ -981,6 +1062,8 @@ describe("calculateExitStrategy", () => {
       cumulativeCashflow: 30000,
       speculationTaxApplies: false,
       personalTaxRate: 35,
+      equity: 40000,
+      totalTilgung: 40000,
     };
 
     const result = calculateExitStrategy(input);
@@ -1000,12 +1083,105 @@ describe("calculateExitStrategy", () => {
       cumulativeCashflow: 20000,
       speculationTaxApplies: false,
       personalTaxRate: 30,
+      equity: 20000,
+      totalTilgung: 30000,
     };
 
     const result = calculateExitStrategy(input);
 
     expect(result.annualizedReturn).toBeGreaterThan(0);
     expect(result.annualizedReturn).toBeLessThan(20); // Reasonable range
+  });
+
+  it("should use marketValue for gross profit calculation if provided", () => {
+    const result = calculateExitStrategy({
+      purchasePrice: 300000,
+      currentValue: 400000,
+      marketValue: 350000, // Bought below market value
+      holdingPeriodYears: 10,
+      remainingDebt: 150000,
+      cumulativeCashflow: 50000,
+      speculationTaxApplies: false,
+      personalTaxRate: 35,
+      equity: 60000,
+      totalTilgung: 80000,
+    });
+
+    // Gross profit should be based on marketValue: 400,000 - 350,000 = 50,000
+    expect(result.grossProfit).toBe(50000);
+  });
+
+  it("should calculate returnOnEquity correctly", () => {
+    const result = calculateExitStrategy({
+      purchasePrice: 300000,
+      currentValue: 400000,
+      holdingPeriodYears: 12,
+      remainingDebt: 150000,
+      cumulativeCashflow: 20000,
+      speculationTaxApplies: false,
+      personalTaxRate: 42,
+      equity: 60000,
+      totalTilgung: 50000,
+    });
+
+    // Return on equity should be percentage based on equity
+    expect(result.returnOnEquity).toBeGreaterThan(0);
+    // Should be much higher than if calculated on total investment due to leverage
+    expect(result.returnOnEquity).toBeGreaterThan(50);
+  });
+
+  it("should show equity multiplier", () => {
+    const result = calculateExitStrategy({
+      purchasePrice: 300000,
+      currentValue: 400000,
+      holdingPeriodYears: 12,
+      remainingDebt: 150000,
+      cumulativeCashflow: 20000,
+      speculationTaxApplies: false,
+      personalTaxRate: 42,
+      equity: 60000,
+      totalTilgung: 50000,
+    });
+
+    // Equity multiplier should be > 1 if there's positive return
+    expect(result.equityMultiplier).toBeGreaterThan(1);
+    // Total return is 96000, so equity should grow from 60000 to 156000 = 2.6x
+    expect(result.equityMultiplier).toBeCloseTo(2.6, 1);
+  });
+
+  it("should calculate equity build-up correctly", () => {
+    const result = calculateExitStrategy({
+      purchasePrice: 200000,
+      currentValue: 250000,
+      holdingPeriodYears: 8,
+      remainingDebt: 100000,
+      cumulativeCashflow: 15000,
+      speculationTaxApplies: false,
+      personalTaxRate: 35,
+      equity: 40000,
+      totalTilgung: 60000, // Paid off 60,000 in principal
+    });
+
+    // Equity build-up should equal totalTilgung
+    expect(result.equityBuildUp).toBe(60000);
+  });
+
+  it("should calculate netProceedsAfterDebt correctly", () => {
+    const result = calculateExitStrategy({
+      purchasePrice: 300000,
+      currentValue: 400000,
+      holdingPeriodYears: 10,
+      remainingDebt: 150000,
+      cumulativeCashflow: 20000,
+      speculationTaxApplies: false,
+      personalTaxRate: 35,
+      equity: 60000,
+      totalTilgung: 50000,
+    });
+
+    // Net proceeds = currentValue - sellingCosts - speculationTax - remainingDebt
+    // 400000 - 24000 - 0 - 150000 = 226000
+    expect(result.netProceedsAfterDebt).toBeCloseTo(226000, 0);
   });
 });
 
