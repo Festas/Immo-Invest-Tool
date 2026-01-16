@@ -81,8 +81,9 @@ export const PRESETS: Preset[] = [
       // Eigenkapital deckt nur Nebenkosten
       // Darlehen: 160000€ (100% Kaufpreisfinanzierung)
       equity: 4000,
+      loanAmount: 160000,
       interestRate: 3.0, // Familienzins fix bis Ende
-      repaymentRate: 2.25, // ergibt ~700€ Rate/Monat
+      repaymentRate: 2.25,
       fixedInterestPeriod: 30, // Zinsbindung bis Ende
 
       // Mieteinnahmen - 95m² Wohnung
