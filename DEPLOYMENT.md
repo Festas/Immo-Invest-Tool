@@ -110,11 +110,10 @@ After the containers are up, run the database migrations:
 
 ```bash
 # Deploy migrations to the database
-# Note: Prisma 7 requires passing --url flag since prisma.config.ts is not used
-docker compose exec web npx prisma migrate deploy --url="$DATABASE_URL"
+docker compose exec web npx prisma migrate deploy
 
 # Verify the database is accessible
-docker compose exec web npx prisma db pull --url="$DATABASE_URL"
+docker compose exec web npx prisma db pull
 ```
 
 ### 7. Verify Deployment
@@ -232,8 +231,7 @@ When the database schema changes, apply migrations to update the database:
 
 ```bash
 # Deploy migrations to production database
-# Note: Prisma 7 requires passing --url flag since prisma.config.ts is not used
-docker compose exec web npx prisma migrate deploy --url="$DATABASE_URL"
+docker compose exec web npx prisma migrate deploy
 ```
 
 ### Database Backup
@@ -487,7 +485,7 @@ If the health check reports database issues or the application cannot connect to
 5. Check if migrations have been applied:
 
    ```bash
-   docker compose exec web npx prisma migrate status --url="$DATABASE_URL"
+   docker compose exec web npx prisma migrate status
    ```
 
 6. Inspect the postgres-data volume:
