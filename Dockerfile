@@ -20,6 +20,10 @@ COPY . .
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Provide a dummy DATABASE_URL for prisma generate (build-time only)
+# The actual URL is provided at runtime by docker-compose
+ENV DATABASE_URL="postgresql://build:build@localhost:5432/build?schema=public"
+
 # Generate Prisma Client
 RUN npx prisma generate
 
