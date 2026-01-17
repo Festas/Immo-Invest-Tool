@@ -28,11 +28,11 @@ Configure these secrets in your GitHub repository settings (`Settings` → `Secr
 
 ### Application Secrets
 
-| Secret           | Description                            | Required | How to Generate           |
-| ---------------- | -------------------------------------- | -------- | ------------------------- |
-| `DB_PASSWORD`    | PostgreSQL database password           | Yes      | `openssl rand -base64 32` |
-| `JWT_SECRET`     | Secret key for JWT token generation    | Yes      | `openssl rand -base64 32` |
-| `SESSION_SECRET` | Secret key for session management      | No       | `openssl rand -base64 32` |
+| Secret           | Description                         | Required | How to Generate           |
+| ---------------- | ----------------------------------- | -------- | ------------------------- |
+| `DB_PASSWORD`    | PostgreSQL database password        | Yes      | `openssl rand -base64 32` |
+| `JWT_SECRET`     | Secret key for JWT token generation | Yes      | `openssl rand -base64 32` |
+| `SESSION_SECRET` | Secret key for session management   | No       | `openssl rand -base64 32` |
 
 Secrets are automatically injected into the `.env` file on the server during deployment. See the [Secrets Management Guide](docs/SECRETS_MANAGEMENT.md) for detailed setup instructions.
 
@@ -110,10 +110,11 @@ After the containers are up, run the database migrations:
 
 ```bash
 # Deploy migrations to the database
-docker compose exec web npx prisma migrate deploy
+# Note: Prisma 7 requires passing --url flag since prisma.config.ts is not used
+docker compose exec web npx prisma migrate deploy --url="$DATABASE_URL"
 
 # Verify the database is accessible
-docker compose exec web npx prisma db pull
+docker compose exec web npx prisma db pull --url="$DATABASE_URL"
 ```
 
 ### 7. Verify Deployment
@@ -231,7 +232,8 @@ When the database schema changes, apply migrations to update the database:
 
 ```bash
 # Deploy migrations to production database
-docker compose exec web npx prisma migrate deploy
+# Note: Prisma 7 requires passing --url flag since prisma.config.ts is not used
+docker compose exec web npx prisma migrate deploy --url="$DATABASE_URL"
 ```
 
 ### Database Backup
@@ -485,7 +487,7 @@ If the health check reports database issues or the application cannot connect to
 5. Check if migrations have been applied:
 
    ```bash
-   docker compose exec web npx prisma migrate status
+   docker compose exec web npx prisma migrate status --url="$DATABASE_URL"
    ```
 
 6. Inspect the postgres-data volume:
@@ -530,6 +532,7 @@ Host machine (nginx/other services) ──► localhost:8086 ──► immocalc:
 ```
 
 ### Port Configuration
+
 - **Container Port (Web)**: 3000 (defined in Dockerfile EXPOSE 3000)
 - **Container Port (DB)**: 5432 (internal only, not exposed to host)
 - **Host Port**: 8086 (mapped in docker-compose files)
@@ -537,6 +540,7 @@ Host machine (nginx/other services) ──► localhost:8086 ──► immocalc:
 - **External Access**: localhost:8086 (accessible to host machine services like nginx)
 
 ### Data Persistence
+
 - **PostgreSQL Data**: Stored in `postgres-data` Docker volume
 - **Database Backups**: Created manually using `pg_dump` (see Database Management section)
 
