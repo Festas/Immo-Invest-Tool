@@ -67,7 +67,8 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 RUN npm install prisma@7.2.0 --save-exact
 
 # Fix ownership of prisma files for nextjs user
-RUN chown -R nextjs:nodejs ./prisma ./node_modules/.prisma ./node_modules/@prisma ./node_modules/prisma ./node_modules/.bin/prisma
+RUN chown -R nextjs:nodejs ./prisma ./node_modules/.prisma ./node_modules/@prisma ./node_modules/prisma && \
+    chown nextjs:nodejs ./node_modules/.bin/prisma
 
 USER nextjs
 
