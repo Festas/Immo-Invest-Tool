@@ -61,13 +61,14 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
-# Install ONLY prisma CLI for migrations (as root before switching user)
+# Install prisma CLI and required dependencies for migrations
+# Prisma 7.x requires 'effect' package for @prisma/config
 # This properly creates the node_modules/.bin/prisma symlink
 # IMPORTANT: Must run AFTER copying standalone to avoid being overwritten
-RUN npm install prisma@7.2.0 --save-exact
+RUN npm install prisma@7.2.0 effect --save-exact
 
-# Fix ownership of prisma files for nextjs user
-RUN chown -R nextjs:nodejs ./prisma ./node_modules/.prisma ./node_modules/@prisma ./node_modules/prisma && \
+# Fix ownership of prisma files and dependencies for nextjs user
+RUN chown -R nextjs:nodejs ./prisma ./node_modules/.prisma ./node_modules/@prisma ./node_modules/prisma ./node_modules/effect && \
     chown nextjs:nodejs ./node_modules/.bin/prisma
 
 USER nextjs
