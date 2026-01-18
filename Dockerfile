@@ -48,16 +48,27 @@ COPY --from=builder /app/public ./public
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
-# Copy Prisma client and schema
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+# Copy Prisma schema for migrations
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
 # Automatically leverage output traces to reduce image size
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy Prisma client (generated during build)
+# IMPORTANT: Must be AFTER standalone copy to avoid being overwritten
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Install ONLY prisma CLI for migrations (as root before switching user)
+# This properly creates the node_modules/.bin/prisma symlink
+# IMPORTANT: Must run AFTER copying standalone to avoid being overwritten
+RUN npm install prisma@7.2.0 --save-exact
+
+# Fix ownership of prisma files for nextjs user
+RUN chown -R nextjs:nodejs ./prisma ./node_modules/.prisma ./node_modules/@prisma ./node_modules/prisma && \
+    chown nextjs:nodejs ./node_modules/.bin/prisma
 
 USER nextjs
 
