@@ -65,7 +65,7 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 # Prisma 7.x requires 'effect' package for @prisma/config
 # This properly creates the node_modules/.bin/prisma symlink
 # IMPORTANT: Must run AFTER copying standalone to avoid being overwritten
-RUN npm install prisma@7.2.0 effect --save-exact
+RUN npm install prisma@7.2.0 effect@3.18.4 --save-exact
 
 # Fix ownership of prisma files and dependencies for nextjs user
 RUN chown -R nextjs:nodejs ./prisma ./node_modules/.prisma ./node_modules/@prisma ./node_modules/prisma ./node_modules/effect && \
