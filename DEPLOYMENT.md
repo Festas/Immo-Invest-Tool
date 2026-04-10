@@ -1,6 +1,6 @@
 # ImmoCalc Deployment Guide
 
-This document describes how to deploy ImmoCalc to a production server using Docker and the caddy-network infrastructure.
+This document describes how to deploy ImmoCalc to a production server using Docker and an nginx-based infrastructure.
 
 ## Overview
 
@@ -8,7 +8,7 @@ ImmoCalc is deployed to `immocalc.festas-builds.com` using:
 
 - **Docker** for containerization
 - **Docker Compose** for orchestration
-- **Caddy** (from Link-in-Bio repository) as reverse proxy with automatic HTTPS
+- **nginx** (managed centrally in `Festas/Link-in-Bio`) as reverse proxy with automatic HTTPS
 - **GitHub Actions** for automated deployments
 
 ## Required GitHub Secrets
@@ -65,15 +65,7 @@ git clone https://github.com/Festas/Immo-Invest-Tool.git immocalc
 cd immocalc
 ```
 
-### 2. Create the External Network
-
-If the `caddy-network` doesn't exist yet:
-
-```bash
-docker network create caddy-network
-```
-
-### 3. Create Environment File (Optional)
+### 2. Create Environment File (Optional)
 
 ```bash
 cp .env.example .env
@@ -81,30 +73,17 @@ cp .env.example .env
 nano .env
 ```
 
-### 4. Update Caddyfile in Link-in-Bio Repository
+### 3. Update nginx Reverse Proxy in Link-in-Bio Repository
 
-Add the following entry to the Caddyfile in the `Festas/Link-in-Bio` repository:
+The nginx reverse proxy is centrally managed in the `Festas/Link-in-Bio` repository. The configuration file `nginx/sites-available/immocalc.festas-builds.com.conf` already proxies `immocalc.festas-builds.com` to `127.0.0.1:3100` on the host. No changes are needed there — just ensure the Docker container binds to host port `3100` (which is the default in this repository's `docker-compose.yml`).
 
-```caddyfile
-# ImmoCalc subdomain - Immobilien Investment Calculator
-# The immocalc container must join the 'caddy-network' external network
-immocalc.festas-builds.com {
-    tls eric@festas-builds.com
-    encode gzip zstd
-    # Cache static Next.js assets with immutable cache headers
-    @static path /_next/static/*
-    header @static Cache-Control "public, max-age=31536000, immutable"
-    reverse_proxy immocalc:3000
-}
-```
-
-### 5. Deploy the Application
+### 4. Deploy the Application
 
 ```bash
 docker compose up -d --build
 ```
 
-### 6. Run Database Migrations
+### 5. Run Database Migrations
 
 After the containers are up, run the database migrations:
 
@@ -116,7 +95,7 @@ docker compose exec web npx prisma migrate deploy
 docker compose exec web npx prisma db pull
 ```
 
-### 7. Verify Deployment
+### 6. Verify Deployment
 
 ```bash
 # Check container status
@@ -125,8 +104,8 @@ docker compose ps
 # View logs
 docker compose logs -f
 
-# Test health endpoint (via host port 8086 mapped to container port 3000)
-curl http://localhost:8086/api/health
+# Test health endpoint (via host port 3100 mapped to container port 3000)
+curl http://localhost:3100/api/health
 
 # Alternative: Test container port directly (from within the container network)
 curl http://localhost:3000/api/health
@@ -137,7 +116,7 @@ curl http://localhost:3000/api/health
 # - status: "unhealthy" when critical systems are down
 ```
 
-**Port Mapping**: The container internally listens on port 3000 (as defined in the Dockerfile). The docker-compose configuration maps host port 8086 to container port 3000, making the application accessible via `http://127.0.0.1:8086` on the host machine. This allows nginx or other services running on the host to access the immocalc container on port 8086.
+**Port Mapping**: The container internally listens on port 3000 (as defined in the Dockerfile). The docker-compose configuration maps host port 3100 to container port 3000, bound to localhost only (`127.0.0.1:3100:3000`), making the application accessible via `http://127.0.0.1:3100` on the host machine. The nginx reverse proxy (managed in `Festas/Link-in-Bio`) forwards external HTTPS traffic to this address.
 
 ## Health Monitoring
 
@@ -282,7 +261,7 @@ npm run db:studio
 
 **Security Warning**: Prisma Studio should only be used in development environments. Never expose it to the public internet. When connecting to production databases, ensure you're using a secure tunnel (e.g., SSH tunnel) and that the DATABASE_URL is properly configured with appropriate access controls.
 
-**Security Note**: The PostgreSQL container does NOT expose port 5432 externally. It's only accessible internally via the `caddy-network` for security reasons.
+**Security Note**: The PostgreSQL container does NOT expose port 5432 externally. It's only accessible internally within the Docker Compose network for security reasons.
 
 ## Error Handling and Logging
 
@@ -422,13 +401,13 @@ docker compose restart web
    curl http://localhost:3000/api/health
    ```
 
-3. Verify the caddy-network exists:
+3. Verify the app is listening on host port 3100:
 
    ```bash
-   docker network ls | grep caddy-network
+   curl http://127.0.0.1:3100/api/health
    ```
 
-4. Ensure port 3000 is not in use by another process
+4. Ensure port 3100 is not in use by another process
 
 ### 502 Bad Gateway
 
@@ -445,13 +424,18 @@ docker compose restart web
    curl http://localhost:3000/api/health
    ```
 
-3. Check if the container is connected to caddy-network:
+3. Verify nginx can reach the app on host port 3100:
 
    ```bash
-   docker network inspect caddy-network
+   curl http://127.0.0.1:3100/api/health
    ```
 
-4. Restart the Caddy container in Link-in-Bio repository
+4. Test and reload nginx configuration:
+
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
 
 ### Database Connection Issues
 
@@ -516,26 +500,21 @@ If the health check reports database issues or the application cannot connect to
 ## Architecture
 
 ```
-                                    ┌─────────────────────────────────┐
-                                    │         Link-in-Bio             │
-                                    │    (Caddy Reverse Proxy)        │
-                                    │                                 │
-Internet ──► immocalc.festas-builds.com ──► caddy-network ──┬─► immocalc:3000 (web)
-                                    │                        │
-                                    └────────────────────────┼────────────────┘
-                                                             │
-                                                             └─► immocalc-db:5432 (PostgreSQL)
-
-Host machine (nginx/other services) ──► localhost:8086 ──► immocalc:3000
+Internet ──► immocalc.festas-builds.com ──► nginx (host, managed in Link-in-Bio)
+                                                │
+                                                │ proxy_pass 127.0.0.1:3100
+                                                ▼
+                                         immocalc:3000 (web container)
+                                                │
+                                                └─► immocalc-db:5432 (PostgreSQL, internal only)
 ```
 
 ### Port Configuration
 
 - **Container Port (Web)**: 3000 (defined in Dockerfile EXPOSE 3000)
 - **Container Port (DB)**: 5432 (internal only, not exposed to host)
-- **Host Port**: 8086 (mapped in docker-compose files)
-- **Internal Network**: immocalc:3000, immocalc-db:5432 (accessible to containers on caddy-network)
-- **External Access**: localhost:8086 (accessible to host machine services like nginx)
+- **Host Port**: 3100, bound to `127.0.0.1` only (`127.0.0.1:3100:3000`)
+- **External Access**: nginx (host) proxies `immocalc.festas-builds.com` → `127.0.0.1:3100`
 
 ### Data Persistence
 
