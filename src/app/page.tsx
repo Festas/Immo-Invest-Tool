@@ -13,6 +13,7 @@ import { ToastProvider } from "@/components/ui/toast";
 import { Onboarding } from "@/components/ui/onboarding";
 import { PresetButton } from "@/components/ui/preset-selector";
 import { SkipLink } from "@/components/ui/skip-link";
+import { FeatureErrorBoundary } from "@/components/ui/error-boundary";
 import { ThemeToggle } from "@/components/theme";
 import { UserMenu } from "@/components/auth/UserMenu";
 import { PropertyCalculatorForm, PropertyWizard, ResultsPanel, SmartTips } from "@/components";
@@ -349,145 +350,165 @@ export default function Home() {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               {/* Calculator Tab */}
               <TabsContent value="calculator">
-                {/* Mode Toggle */}
-                <div className="mb-6 flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                      {wizardMode ? "Wizard-Modus" : "Experten-Modus"}
-                    </h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                      {wizardMode
-                        ? "Schritt für Schritt zur Immobilienbewertung"
-                        : "Alle Eingabefelder auf einen Blick"}
-                    </p>
+                <FeatureErrorBoundary featureName="Rechner">
+                  {/* Mode Toggle */}
+                  <div className="mb-6 flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        {wizardMode ? "Wizard-Modus" : "Experten-Modus"}
+                      </h2>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                        {wizardMode
+                          ? "Schritt für Schritt zur Immobilienbewertung"
+                          : "Alle Eingabefelder auf einen Blick"}
+                      </p>
+                    </div>
+                    <Button
+                      variant={wizardMode ? "outline" : "default"}
+                      onClick={() => setWizardMode(!wizardMode)}
+                      className="gap-2"
+                      aria-label={
+                        wizardMode ? "Zu Experten-Modus wechseln" : "Zu Wizard-Modus wechseln"
+                      }
+                    >
+                      <Wand2 className="h-4 w-4" aria-hidden="true" />
+                      {wizardMode ? "Experten-Modus" : "Wizard-Modus"}
+                    </Button>
                   </div>
-                  <Button
-                    variant={wizardMode ? "outline" : "default"}
-                    onClick={() => setWizardMode(!wizardMode)}
-                    className="gap-2"
-                    aria-label={
-                      wizardMode ? "Zu Experten-Modus wechseln" : "Zu Wizard-Modus wechseln"
-                    }
-                  >
-                    <Wand2 className="h-4 w-4" aria-hidden="true" />
-                    {wizardMode ? "Experten-Modus" : "Wizard-Modus"}
-                  </Button>
-                </div>
 
-                {wizardMode ? (
-                  /* Wizard Mode */
-                  <PropertyWizard />
-                ) : (
-                  /* Expert Mode - Original Form */
-                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
-                    {/* Input Form */}
-                    <div className="animate-fade-in" data-onboarding="form">
-                      <div className="mb-6 flex items-center gap-3">
-                        <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
-                          <Calculator className="h-5 w-5 text-white" />
+                  {wizardMode ? (
+                    /* Wizard Mode */
+                    <PropertyWizard />
+                  ) : (
+                    /* Expert Mode - Original Form */
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+                      {/* Input Form */}
+                      <div className="animate-fade-in" data-onboarding="form">
+                        <div className="mb-6 flex items-center gap-3">
+                          <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
+                            <Calculator className="h-5 w-5 text-white" />
+                          </div>
+                          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            Eingaben
+                          </h2>
                         </div>
-                        <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                          Eingaben
-                        </h2>
+                        <PropertyCalculatorForm />
+                        {/* Smart Tips - Show contextual guidance */}
+                        <div className="mt-6">
+                          <SmartTips />
+                        </div>
                       </div>
-                      <PropertyCalculatorForm />
-                      {/* Smart Tips - Show contextual guidance */}
-                      <div className="mt-6">
-                        <SmartTips />
+
+                      {/* Results */}
+                      <div className="animate-fade-in animate-delay-200" data-onboarding="results">
+                        <div className="mb-6 flex items-center gap-3">
+                          <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
+                            <BarChart3 className="h-5 w-5 text-white" />
+                          </div>
+                          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            Ergebnisse
+                          </h2>
+                        </div>
+                        <ResultsPanel />
                       </div>
                     </div>
-
-                    {/* Results */}
-                    <div className="animate-fade-in animate-delay-200" data-onboarding="results">
-                      <div className="mb-6 flex items-center gap-3">
-                        <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
-                          <BarChart3 className="h-5 w-5 text-white" />
-                        </div>
-                        <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                          Ergebnisse
-                        </h2>
-                      </div>
-                      <ResultsPanel />
-                    </div>
-                  </div>
-                )}
+                  )}
+                </FeatureErrorBoundary>
               </TabsContent>
 
               {/* Charts Tab */}
               <TabsContent value="charts">
-                <div className="space-y-6">
-                  <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
-                    <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
-                      📊 Tilgungsanalyse
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                      Umfassende Analyse der Kredittilgung bis zur vollständigen Rückzahlung
-                    </p>
-                  </div>
-                  <AmortizationChart />
-                  <InterestPrincipalChart />
+                <FeatureErrorBoundary featureName="Charts">
+                  <div className="space-y-6">
+                    <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
+                      <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
+                        📊 Tilgungsanalyse
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        Umfassende Analyse der Kredittilgung bis zur vollständigen Rückzahlung
+                      </p>
+                    </div>
+                    <AmortizationChart />
+                    <InterestPrincipalChart />
 
-                  <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
-                    <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
-                      💰 Cashflow-Analyse
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                      Dynamische Entwicklung des monatlichen Cashflows über die Jahre
-                    </p>
-                  </div>
-                  <CashflowDevelopmentChart />
+                    <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
+                      <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
+                        💰 Cashflow-Analyse
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        Dynamische Entwicklung des monatlichen Cashflows über die Jahre
+                      </p>
+                    </div>
+                    <CashflowDevelopmentChart />
 
-                  <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
-                    <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
-                      📈 Vermögensaufbau
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                      Gesamtvermögensentwicklung durch Tilgung, Wertsteigerung und Cashflow
-                    </p>
+                    <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
+                      <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
+                        📈 Vermögensaufbau
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        Gesamtvermögensentwicklung durch Tilgung, Wertsteigerung und Cashflow
+                      </p>
+                    </div>
+                    <EquityBuildupChart />
+                    <CumulativeCashflowChart />
                   </div>
-                  <EquityBuildupChart />
-                  <CumulativeCashflowChart />
-                </div>
+                </FeatureErrorBoundary>
               </TabsContent>
 
               {/* Comparison Tab */}
               <TabsContent value="comparison">
-                <ScenarioComparison />
+                <FeatureErrorBoundary featureName="Vergleich">
+                  <ScenarioComparison />
+                </FeatureErrorBoundary>
               </TabsContent>
 
               {/* Dashboard Tab */}
               <TabsContent value="dashboard">
-                <PortfolioDashboard />
+                <FeatureErrorBoundary featureName="Dashboard">
+                  <PortfolioDashboard />
+                </FeatureErrorBoundary>
               </TabsContent>
 
               {/* Rent Index Tab */}
               <TabsContent value="rent-index">
-                <RentIndexCalculator />
+                <FeatureErrorBoundary featureName="Mietspiegel">
+                  <RentIndexCalculator />
+                </FeatureErrorBoundary>
               </TabsContent>
 
               {/* Break-Even Tab */}
               <TabsContent value="break-even">
-                <BreakEvenCalculator />
+                <FeatureErrorBoundary featureName="Break-Even">
+                  <BreakEvenCalculator />
+                </FeatureErrorBoundary>
               </TabsContent>
 
               {/* Renovation Tab */}
               <TabsContent value="renovation">
-                <RenovationCalculator />
+                <FeatureErrorBoundary featureName="Renovierung">
+                  <RenovationCalculator />
+                </FeatureErrorBoundary>
               </TabsContent>
 
               {/* Exit Strategy Tab */}
               <TabsContent value="exit-strategy">
-                <ExitStrategyCalculator />
+                <FeatureErrorBoundary featureName="Exit-Strategie">
+                  <ExitStrategyCalculator />
+                </FeatureErrorBoundary>
               </TabsContent>
 
               {/* Location Analysis Tab */}
               <TabsContent value="location">
-                <LocationAnalysis />
+                <FeatureErrorBoundary featureName="Standortanalyse">
+                  <LocationAnalysis />
+                </FeatureErrorBoundary>
               </TabsContent>
 
               {/* Due Diligence Checklist Tab */}
               <TabsContent value="checklist">
-                <DueDiligenceChecklist />
+                <FeatureErrorBoundary featureName="Checkliste">
+                  <DueDiligenceChecklist />
+                </FeatureErrorBoundary>
               </TabsContent>
             </Tabs>
           </main>
