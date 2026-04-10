@@ -17,19 +17,12 @@ import {
 import { calculatePropertyKPIs, getDefaultPropertyInput } from "@/lib/calculations";
 
 /**
- * Generate a UUID that works in all environments
- * Falls back to a simple implementation if crypto.randomUUID is not available
+ * Generate a UUID using the crypto API.
+ * crypto.randomUUID() is available in all modern browsers, Node.js 19+,
+ * and all environments where this application runs.
  */
 function generateId(): string {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-  // Fallback for environments without crypto.randomUUID
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+  return crypto.randomUUID();
 }
 
 /**
@@ -41,13 +34,21 @@ async function handleSyncError(
   set: (state: Partial<ImmoCalcState>) => void
 ): Promise<void> {
   if (!response.ok) {
-    const errorText = await response.text();
+    let errorText: string;
+    try {
+      errorText = await response.text();
+    } catch {
+      errorText = `HTTP ${response.status}`;
+    }
     set({ syncError: `Fehler beim ${operation}: ${errorText}` });
     console.error(`Failed to ${operation}:`, errorText);
   } else {
     set({ syncError: null });
   }
 }
+
+/** Default timeout for server sync operations (15 seconds) */
+const SYNC_TIMEOUT_MS = 15_000;
 
 interface ImmoCalcState {
   // Current calculator input
@@ -259,6 +260,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ property: newProperty }),
+              signal: AbortSignal.timeout(SYNC_TIMEOUT_MS),
             });
             await handleSyncError(response, "Speichern auf dem Server", set);
           } catch (error) {
@@ -296,6 +298,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
           try {
             const response = await fetch(`/api/portfolio/${id}`, {
               method: "DELETE",
+              signal: AbortSignal.timeout(SYNC_TIMEOUT_MS),
             });
             await handleSyncError(response, "Löschen auf dem Server", set);
           } catch (error) {
@@ -433,7 +436,9 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       // Sync portfolio with server
       syncWithServer: async () => {
         try {
-          const response = await fetch("/api/portfolio");
+          const response = await fetch("/api/portfolio", {
+            signal: AbortSignal.timeout(SYNC_TIMEOUT_MS),
+          });
           if (response.ok) {
             const data = await response.json();
             set({

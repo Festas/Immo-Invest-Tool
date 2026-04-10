@@ -7,9 +7,39 @@ const nextConfig: NextConfig = {
     // Use timestamp to ensure unique build ID on each deployment
     return `build-${Date.now()}`;
   },
-  // TODO: CSP headers temporarily removed to restore Next.js client-side functionality
-  // The previous CSP configuration was blocking Next.js dynamic scripts (hydration, navigation, etc.)
-  // CSP should be reconfigured later with proper Next.js compatibility (e.g., using nonces or 'unsafe-inline' for scripts)
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "X-XSS-Protection",
+            value: "1; mode=block",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(self)",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

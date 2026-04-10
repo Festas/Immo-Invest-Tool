@@ -33,6 +33,15 @@ export function RegisterForm({ onSuccess, onLoginClick }: RegisterFormProps) {
     if (password.length < 8) {
       return "Das Passwort muss mindestens 8 Zeichen lang sein.";
     }
+    if (!/[A-Z]/.test(password)) {
+      return "Das Passwort muss mindestens einen Großbuchstaben enthalten.";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Das Passwort muss mindestens einen Kleinbuchstaben enthalten.";
+    }
+    if (!/[0-9]/.test(password)) {
+      return "Das Passwort muss mindestens eine Zahl enthalten.";
+    }
     if (password !== confirmPassword) {
       return "Die Passwörter stimmen nicht überein.";
     }
@@ -162,7 +171,7 @@ export function RegisterForm({ onSuccess, onLoginClick }: RegisterFormProps) {
               <Input
                 id="password"
                 type="password"
-                placeholder="Mindestens 8 Zeichen"
+                placeholder="Mind. 8 Zeichen, Groß-/Kleinbuchstaben, Zahl"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10"
