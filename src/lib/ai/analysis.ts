@@ -5,12 +5,7 @@
  * Uses rule-based analysis by default, with structure for AI API integration.
  */
 
-import type {
-  PropertyInput,
-  PropertyOutput,
-  LocationAnalysisInput,
-  LocationAnalysisResult,
-} from "@/types";
+import type { PropertyInput, PropertyOutput, LocationAnalysisResult } from "@/types";
 
 export interface DealScore {
   overall: number; // 0-100

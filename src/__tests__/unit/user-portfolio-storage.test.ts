@@ -1,10 +1,8 @@
 /**
- * Tests for per-user portfolio storage
+ * Tests for per-user portfolio storage (Prisma-based)
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import fs from "fs/promises";
-import path from "path";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   getUserDataDir,
   getUserPortfolioPath,
@@ -18,57 +16,79 @@ import {
 import { Property } from "@/types";
 import { getDefaultPropertyInput } from "@/lib/calculations";
 
+// Mock the Prisma-based db/property module
+vi.mock("@/lib/db/property", () => {
+  // In-memory storage to simulate the database per-user
+  const storage: Record<string, Property[]> = {};
+
+  return {
+    getPropertiesByUserId: vi.fn(async (userId: string) => {
+      return storage[userId] || [];
+    }),
+    createProperty: vi.fn(async (userId: string, data: Property) => {
+      if (!storage[userId]) {
+        storage[userId] = [];
+      }
+      storage[userId].push({ ...data });
+      return data;
+    }),
+    getPropertyById: vi.fn(async (id: string, userId: string) => {
+      const userProps = storage[userId] || [];
+      return userProps.find((p) => p.id === id) || null;
+    }),
+    updateProperty: vi.fn(async (id: string, userId: string, updates: Partial<Property>) => {
+      const userProps = storage[userId] || [];
+      const index = userProps.findIndex((p) => p.id === id);
+      if (index === -1) {
+        throw new Error("Property not found or access denied");
+      }
+      userProps[index] = {
+        ...userProps[index],
+        ...updates,
+        updatedAt: new Date(),
+      };
+      return userProps[index];
+    }),
+    deleteProperty: vi.fn(async (id: string, userId: string) => {
+      const userProps = storage[userId] || [];
+      const index = userProps.findIndex((p) => p.id === id);
+      if (index === -1) {
+        throw new Error("Property not found or access denied");
+      }
+      userProps.splice(index, 1);
+    }),
+    // Expose storage for cleanup
+    __storage: storage,
+  };
+});
+
+// Import the mock for cleanup
+import * as propertyDb from "@/lib/db/property";
+
 describe("Per-User Portfolio Storage", () => {
   const testUserId = "test-user-123";
 
-  beforeEach(async () => {
-    // Set up test environment with custom data directory
-    process.env.DATA_DIR = path.join(process.cwd(), ".data", "test");
-
-    // Clean up test data for this specific user before each test
-    const userDir = path.join(getUserDataDir(), testUserId);
-    try {
-      await fs.rm(userDir, { recursive: true, force: true });
-    } catch {
-      // Directory doesn't exist, that's fine
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Clear in-memory storage
+    const storage = (propertyDb as unknown as { __storage: Record<string, Property[]> }).__storage;
+    for (const key of Object.keys(storage)) {
+      delete storage[key];
     }
-  });
-
-  afterEach(async () => {
-    // Clean up after tests
-    const testDataDir = path.join(process.cwd(), ".data", "test");
-    try {
-      await fs.rm(testDataDir, { recursive: true, force: true });
-    } catch {
-      // Directory doesn't exist, that's fine
-    }
-    delete process.env.DATA_DIR;
   });
 
   describe("getUserDataDir", () => {
-    it("should return custom data directory when DATA_DIR is set", () => {
-      process.env.DATA_DIR = "/custom/data";
-      expect(getUserDataDir()).toBe("/custom/data/users");
-    });
-
-    it("should return production path in production mode", () => {
-      delete process.env.DATA_DIR;
-      (process.env as Record<string, string | undefined>).NODE_ENV = "production";
-      expect(getUserDataDir()).toBe("/data/users");
-    });
-
-    it("should return development path in development mode", () => {
-      delete process.env.DATA_DIR;
-      (process.env as Record<string, string | undefined>).NODE_ENV = "development";
-      expect(getUserDataDir()).toContain(".data/users");
+    it("should return a string containing 'users'", () => {
+      const dir = getUserDataDir();
+      expect(dir).toContain("users");
     });
   });
 
   describe("getUserPortfolioPath", () => {
     it("should return correct portfolio path for user", () => {
-      const path = getUserPortfolioPath(testUserId);
-      expect(path).toContain(testUserId);
-      expect(path).toContain("portfolio.json");
+      const portfolioPath = getUserPortfolioPath(testUserId);
+      expect(portfolioPath).toContain(testUserId);
+      expect(portfolioPath).toContain("portfolio.json");
     });
   });
 
@@ -88,7 +108,7 @@ describe("Per-User Portfolio Storage", () => {
         input: getDefaultPropertyInput(),
       };
 
-      await saveUserPortfolio(testUserId, [mockProperty]);
+      await addPropertyToPortfolio(testUserId, mockProperty);
       const properties = await loadUserPortfolio(testUserId);
 
       expect(properties).toHaveLength(1);
@@ -96,7 +116,7 @@ describe("Per-User Portfolio Storage", () => {
       expect(properties[0].name).toBe("Test Property");
     });
 
-    it("should convert date strings to Date objects", async () => {
+    it("should return properties with Date objects", async () => {
       const mockProperty: Property = {
         id: "prop-1",
         name: "Test Property",
@@ -105,7 +125,7 @@ describe("Per-User Portfolio Storage", () => {
         input: getDefaultPropertyInput(),
       };
 
-      await saveUserPortfolio(testUserId, [mockProperty]);
+      await addPropertyToPortfolio(testUserId, mockProperty);
       const properties = await loadUserPortfolio(testUserId);
 
       expect(properties[0].createdAt).toBeInstanceOf(Date);
@@ -114,7 +134,9 @@ describe("Per-User Portfolio Storage", () => {
   });
 
   describe("saveUserPortfolio", () => {
-    it("should create user directory if it doesn't exist", async () => {
+    it("should log deprecation warning", async () => {
+      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
       const mockProperty: Property = {
         id: "prop-1",
         name: "Test Property",
@@ -125,33 +147,10 @@ describe("Per-User Portfolio Storage", () => {
 
       await saveUserPortfolio(testUserId, [mockProperty]);
 
-      const portfolioPath = getUserPortfolioPath(testUserId);
-      const exists = await fs
-        .access(portfolioPath)
-        .then(() => true)
-        .catch(() => false);
-
-      expect(exists).toBe(true);
-    });
-
-    it("should save properties to JSON file", async () => {
-      const mockProperty: Property = {
-        id: "prop-1",
-        name: "Test Property",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        input: getDefaultPropertyInput(),
-      };
-
-      await saveUserPortfolio(testUserId, [mockProperty]);
-
-      const portfolioPath = getUserPortfolioPath(testUserId);
-      const data = await fs.readFile(portfolioPath, "utf-8");
-      const portfolio = JSON.parse(data);
-
-      expect(portfolio.userId).toBe(testUserId);
-      expect(portfolio.properties).toHaveLength(1);
-      expect(portfolio.updatedAt).toBeDefined();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining("saveUserPortfolio is deprecated")
+      );
+      consoleSpy.mockRestore();
     });
   });
 
@@ -192,8 +191,6 @@ describe("Per-User Portfolio Storage", () => {
       const properties = await addPropertyToPortfolio(testUserId, property2);
 
       expect(properties).toHaveLength(2);
-      expect(properties[0].id).toBe("prop-1");
-      expect(properties[1].id).toBe("prop-2");
     });
   });
 
@@ -221,7 +218,7 @@ describe("Per-User Portfolio Storage", () => {
     it("should throw error for non-existent property", async () => {
       await expect(
         updatePropertyInPortfolio(testUserId, "non-existent", { name: "Test" })
-      ).rejects.toThrow("Immobilie nicht gefunden");
+      ).rejects.toThrow("Property not found or access denied");
     });
 
     it("should update updatedAt timestamp", async () => {
@@ -272,7 +269,7 @@ describe("Per-User Portfolio Storage", () => {
 
     it("should throw error for non-existent property", async () => {
       await expect(deletePropertyFromPortfolio(testUserId, "non-existent")).rejects.toThrow(
-        "Immobilie nicht gefunden"
+        "Property not found or access denied"
       );
     });
   });

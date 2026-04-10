@@ -4,27 +4,19 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { GET } from "@/app/api/health/route";
-import { promises as fs } from "fs";
 
-// Mock fs module
-vi.mock("fs", () => {
+// Mock Prisma client
+vi.mock("@/lib/db/prisma", () => {
   return {
-    default: {},
-    promises: {
-      access: vi.fn(),
-      mkdir: vi.fn(),
-      readFile: vi.fn(),
-      constants: {
-        R_OK: 4,
-        W_OK: 2,
+    default: {
+      user: {
+        count: vi.fn(),
       },
-    },
-    constants: {
-      R_OK: 4,
-      W_OK: 2,
     },
   };
 });
+
+import prisma from "@/lib/db/prisma";
 
 describe("Health Check API Route", () => {
   let consoleInfoSpy: ReturnType<typeof vi.spyOn>;
@@ -37,6 +29,8 @@ describe("Health Check API Route", () => {
 
     // Set default NODE_ENV to development for tests
     (process.env as Record<string, string | undefined>).NODE_ENV = "development";
+    // Set DATABASE_URL so secrets check passes
+    process.env.DATABASE_URL = "postgresql://test@localhost:5432/test";
     // Clean up all secret-related env vars
     delete process.env.JWT_SECRET;
     delete process.env.SESSION_SECRET;
@@ -46,12 +40,12 @@ describe("Health Check API Route", () => {
   afterEach(() => {
     consoleInfoSpy.mockRestore();
     consoleErrorSpy.mockRestore();
+    delete process.env.DATABASE_URL;
   });
 
   describe("Database Issues", () => {
-    it("should return unhealthy status when database file is corrupted", async () => {
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue("invalid json{{{");
+    it("should return unhealthy status when database query fails", async () => {
+      vi.mocked(prisma.user.count).mockRejectedValue(new Error("Connection refused"));
 
       const response = await GET();
       const data = await response.json();
@@ -63,10 +57,9 @@ describe("Health Check API Route", () => {
     });
 
     it("should return unhealthy status when database read fails with permission error", async () => {
-      vi.mocked(fs.access).mockResolvedValue(undefined);
       const error = new Error("EACCES: permission denied") as NodeJS.ErrnoException;
       error.code = "EACCES";
-      vi.mocked(fs.readFile).mockRejectedValue(error);
+      vi.mocked(prisma.user.count).mockRejectedValue(error);
 
       const response = await GET();
       const data = await response.json();
@@ -80,8 +73,7 @@ describe("Health Check API Route", () => {
   describe("Environment Information", () => {
     it("should report JWT_SECRET status correctly when set", async () => {
       process.env.JWT_SECRET = "test-secret";
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
@@ -93,8 +85,7 @@ describe("Health Check API Route", () => {
 
     it("should report JWT_SECRET status correctly when not set", async () => {
       delete process.env.JWT_SECRET;
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
@@ -105,9 +96,8 @@ describe("Health Check API Route", () => {
 
     it("should report correct NODE_ENV", async () => {
       (process.env as Record<string, string | undefined>).NODE_ENV = "production";
-      process.env.JWT_SECRET = "test-secret"; // Set JWT_SECRET to avoid unhealthy status
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      process.env.JWT_SECRET = "test-secret";
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
@@ -122,8 +112,7 @@ describe("Health Check API Route", () => {
       process.env.JWT_SECRET = "test-jwt-secret";
       process.env.SESSION_SECRET = "test-session-secret";
       process.env.DOMAIN = "example.com";
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
@@ -143,8 +132,7 @@ describe("Health Check API Route", () => {
       process.env.JWT_SECRET = "test-jwt-secret";
       delete process.env.SESSION_SECRET;
       delete process.env.DOMAIN;
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
@@ -159,8 +147,7 @@ describe("Health Check API Route", () => {
 
     it("should report missing status when JWT_SECRET is not set", async () => {
       delete process.env.JWT_SECRET;
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
@@ -174,8 +161,7 @@ describe("Health Check API Route", () => {
       delete process.env.JWT_SECRET;
       delete process.env.SESSION_SECRET;
       delete process.env.DOMAIN;
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
@@ -188,8 +174,7 @@ describe("Health Check API Route", () => {
 
     it("should return unhealthy status when required secrets are missing", async () => {
       delete process.env.JWT_SECRET;
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
@@ -202,8 +187,7 @@ describe("Health Check API Route", () => {
       process.env.JWT_SECRET = "test-jwt-secret";
       delete process.env.SESSION_SECRET;
       delete process.env.DOMAIN;
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
@@ -221,9 +205,8 @@ describe("Health Check API Route", () => {
   describe("Logging", () => {
     it("should log health check in development mode", async () => {
       (process.env as Record<string, string | undefined>).NODE_ENV = "development";
-      delete process.env.JWT_SECRET; // Will trigger warning
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      delete process.env.JWT_SECRET;
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       await GET();
 
@@ -238,8 +221,7 @@ describe("Health Check API Route", () => {
       process.env.JWT_SECRET = "test-secret";
       delete process.env.SESSION_SECRET;
       delete process.env.DOMAIN;
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       await GET();
 
@@ -257,8 +239,7 @@ describe("Health Check API Route", () => {
   describe("Response Structure", () => {
     it("should include timestamp in ISO format", async () => {
       process.env.JWT_SECRET = "test-secret";
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
@@ -271,8 +252,7 @@ describe("Health Check API Route", () => {
 
     it("should include server uptime", async () => {
       process.env.JWT_SECRET = "test-secret";
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
@@ -286,20 +266,39 @@ describe("Health Check API Route", () => {
 
     it("should include all required check sections", async () => {
       process.env.JWT_SECRET = "test-secret";
-      vi.mocked(fs.access).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify([]));
+      vi.mocked(prisma.user.count).mockResolvedValue(0);
 
       const response = await GET();
       const data = await response.json();
 
       expect(data.checks).toBeDefined();
       expect(data.checks.server).toBeDefined();
-      expect(data.checks.storage).toBeDefined();
       expect(data.checks.database).toBeDefined();
       expect(data.checks.secrets).toBeDefined();
       expect(data.environment).toBeDefined();
 
       delete process.env.JWT_SECRET;
+    });
+  });
+
+  describe("Healthy database", () => {
+    it("should report accessible database with user count", async () => {
+      process.env.JWT_SECRET = "test-secret";
+      process.env.SESSION_SECRET = "test-session";
+      process.env.DOMAIN = "example.com";
+      vi.mocked(prisma.user.count).mockResolvedValue(5);
+
+      const response = await GET();
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.status).toBe("healthy");
+      expect(data.checks.database.status).toBe("accessible");
+      expect(data.checks.database.userCount).toBe(5);
+
+      delete process.env.JWT_SECRET;
+      delete process.env.SESSION_SECRET;
+      delete process.env.DOMAIN;
     });
   });
 });
