@@ -288,8 +288,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - caddy-network
 
   web:
     environment:
@@ -348,7 +346,7 @@ docker compose exec -T db psql -U immo_user immo_invest < backup.sql
 
 **Note**: Store backup files in a secure location with appropriate permissions (e.g., `chmod 600`) to protect sensitive data.
 
-**Note**: The PostgreSQL container does NOT expose port 5432 externally for security. It's only accessible internally via the `caddy-network`.
+**Note**: The PostgreSQL container does NOT expose port 5432 externally for security. It's only accessible internally within the Docker Compose network.
 
 ## Security
 

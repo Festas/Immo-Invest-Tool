@@ -1,5 +1,5 @@
 # ImmoCalc - Production Docker Compose
-# Uses external Caddy network for reverse proxy
+# Uses nginx reverse proxy on the host for HTTPS
 
 services:
   # PostgreSQL Database
@@ -18,15 +18,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - caddy-network
 
   immocalc:
     image: ghcr.io/festas/immo-invest-tool:latest
     container_name: immocalc
     restart: unless-stopped
     ports:
-      - "8086:3000"
+      - "127.0.0.1:3100:3000"
     env_file:
       - .env
     environment:
@@ -47,13 +45,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    networks:
-      - caddy-network
 
 volumes:
   postgres-data:
     driver: local
-
-networks:
-  caddy-network:
-    external: true

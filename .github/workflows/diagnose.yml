@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       auto_fix:
-        description: "Attempt automatic fixes (reload/restart Caddy)"
+        description: "Attempt automatic fixes (reload nginx)"
         required: false
         default: "false"
         type: boolean
@@ -32,65 +32,51 @@ jobs:
             echo "=============================================="
             echo "📦 1. CONTAINER STATUS"
             echo "=============================================="
-            echo "Checking immocalc and caddy containers..."
-            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "immocalc|caddy|NAMES" || echo "⚠️  No matching containers found"
+            echo "Checking immocalc containers..."
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "immocalc|NAMES" || echo "⚠️  No matching containers found"
             echo ""
 
             echo "=============================================="
-            echo "🌐 2. NETWORK CONFIGURATION"
+            echo "🌐 2. HOST PORT BINDING"
             echo "=============================================="
-            echo "Inspecting caddy-network..."
-            if docker network inspect caddy-network > /dev/null 2>&1; then
-              echo "✅ caddy-network exists"
-              echo ""
-              echo "Connected containers:"
-              docker network inspect caddy-network --format '{{range .Containers}}  - {{.Name}}{{"\n"}}{{end}}'
-              echo ""
-              echo "Full network details:"
-              docker network inspect caddy-network --format '{{json .}}' | head -c 2000
+            echo "Checking if immocalc is bound to 127.0.0.1:3100..."
+            if ss -tlnp 2>/dev/null | grep -q "127.0.0.1:3100"; then
+              echo "✅ Port 3100 is bound to 127.0.0.1"
             else
-              echo "❌ caddy-network does not exist!"
+              echo "❌ Port 3100 is NOT bound - container may not be running or port mapping is wrong"
             fi
             echo ""
 
             echo "=============================================="
             echo "🔌 3. INTERNAL CONNECTIVITY TEST"
             echo "=============================================="
-            echo "Testing if Caddy can reach immocalc:3000..."
-            if docker exec caddy_server wget -qO- http://immocalc:3000 --timeout=5 2>/dev/null; then
-              echo ""
-              echo "✅ Internal connectivity OK - Caddy can reach immocalc:3000"
+            echo "Testing if nginx can reach immocalc on 127.0.0.1:3100..."
+            if curl -s --connect-timeout 5 http://127.0.0.1:3100/api/health > /dev/null 2>&1; then
+              echo "✅ Internal connectivity OK - app is reachable on 127.0.0.1:3100"
             else
-              echo "❌ Internal connectivity FAILED - Caddy cannot reach immocalc:3000"
-              echo ""
-              echo "Trying alternative test with curl..."
-              docker exec caddy_server curl -s --connect-timeout 5 http://immocalc:3000 2>&1 | head -20 || echo "curl also failed"
+              echo "❌ Internal connectivity FAILED - app is not reachable on 127.0.0.1:3100"
             fi
             echo ""
 
             echo "=============================================="
-            echo "📄 4. CADDY CONFIGURATION"
+            echo "📄 4. NGINX CONFIGURATION"
             echo "=============================================="
-            echo "Current Caddyfile contents:"
-            docker exec caddy_server cat /etc/caddy/Caddyfile 2>&1 || echo "❌ Could not read Caddyfile"
+            echo "Validating nginx configuration..."
+            sudo nginx -t 2>&1 || echo "❌ nginx config validation failed"
+            echo ""
+            echo "Current nginx site config for immocalc:"
+            cat /etc/nginx/sites-available/immocalc.festas-builds.com.conf 2>&1 || echo "❌ Could not read nginx site config"
             echo ""
 
             echo "=============================================="
-            echo "✅ 5. CADDY CONFIG VALIDATION"
+            echo "📝 5. NGINX LOGS (ERRORS)"
             echo "=============================================="
-            echo "Validating Caddy configuration..."
-            docker exec caddy_server caddy validate --config /etc/caddy/Caddyfile 2>&1 || echo "❌ Caddy config validation failed"
+            echo "Checking nginx error log for immocalc entries..."
+            sudo grep -iE "immocalc|3100|error" /var/log/nginx/error.log 2>/dev/null | tail -50 || echo "No matching log entries found"
             echo ""
 
             echo "=============================================="
-            echo "📝 6. CADDY LOGS (TLS/SSL ERRORS)"
-            echo "=============================================="
-            echo "Checking Caddy logs for immocalc, errors, TLS, and certificate issues..."
-            docker logs caddy_server 2>&1 | grep -iE "immocalc|error|tls|certificate|acme|ssl" | tail -50 || echo "No matching log entries found"
-            echo ""
-
-            echo "=============================================="
-            echo "🌍 7. IMMOCALC APP RESPONSE TEST"
+            echo "🌍 6. IMMOCALC APP RESPONSE TEST"
             echo "=============================================="
             echo "Testing if immocalc app responds internally..."
             docker exec immocalc curl -s --connect-timeout 5 http://localhost:3000 2>&1 | head -20 || echo "❌ App did not respond (curl may not be available in container)"
@@ -100,14 +86,14 @@ jobs:
             echo ""
 
             echo "=============================================="
-            echo "🏥 8. CONTAINER HEALTH STATUS"
+            echo "🏥 7. CONTAINER HEALTH STATUS"
             echo "=============================================="
             echo "Checking container health..."
             docker inspect immocalc --format '{{.State.Health.Status}}' 2>/dev/null || echo "No health check configured or container not found"
             echo ""
 
             echo "=============================================="
-            echo "📊 9. DNS RESOLUTION CHECK"
+            echo "📊 8. DNS RESOLUTION CHECK"
             echo "=============================================="
             echo "Checking DNS for immocalc.festas-builds.com..."
             if command -v dig > /dev/null 2>&1; then
@@ -122,12 +108,10 @@ jobs:
             echo ""
 
             echo "=============================================="
-            echo "🔐 10. SSL CERTIFICATE STATUS"
+            echo "🔐 9. SSL CERTIFICATE STATUS"
             echo "=============================================="
-            echo "Checking Caddy's certificate storage..."
-            docker exec caddy_server ls -la /data/caddy/certificates/ 2>&1 | head -20 || echo "Could not list certificate directory"
-            echo ""
-            docker exec caddy_server find /data/caddy/certificates -name "*immocalc*" 2>&1 || echo "No immocalc certificates found"
+            echo "Checking Let's Encrypt certificate for immocalc.festas-builds.com..."
+            sudo certbot certificates 2>&1 | grep -A5 "immocalc" || echo "No certificate info found (certbot may not be installed or domain not listed)"
             echo ""
 
             echo "=============================================="
@@ -147,24 +131,18 @@ jobs:
             echo "=============================================="
             echo ""
 
-            echo "Step 1: Attempting to reload Caddy configuration..."
-            if docker exec caddy_server caddy reload --config /etc/caddy/Caddyfile 2>&1; then
-              echo "✅ Caddy configuration reloaded successfully"
-            else
-              echo "❌ Caddy reload failed, attempting restart..."
+            echo "Step 1: Validating nginx configuration..."
+            if sudo nginx -t 2>&1; then
+              echo "✅ nginx config is valid"
               echo ""
-              echo "Step 2: Restarting Caddy container..."
-              if docker restart caddy_server 2>&1; then
-                echo "✅ Caddy container restarted successfully"
-                echo ""
-                echo "Waiting for Caddy to initialize..."
-                sleep 10
-                echo ""
-                echo "Checking Caddy status after restart..."
-                docker ps --filter "name=caddy_server" --format "table {{.Names}}\t{{.Status}}"
+              echo "Step 2: Reloading nginx..."
+              if sudo systemctl reload nginx 2>&1; then
+                echo "✅ nginx reloaded successfully"
               else
-                echo "❌ Failed to restart Caddy container"
+                echo "❌ nginx reload failed"
               fi
+            else
+              echo "❌ nginx config has errors - fix before reloading"
             fi
             echo ""
 
@@ -172,12 +150,11 @@ jobs:
             echo "🔄 POST-FIX VERIFICATION"
             echo "=============================================="
             echo ""
-            echo "Testing internal connectivity after fix..."
-            if docker exec caddy_server wget -qO- http://immocalc:3000 --timeout=5 2>/dev/null; then
-              echo ""
-              echo "✅ Internal connectivity OK"
+            echo "Testing connectivity after fix..."
+            if curl -s --connect-timeout 5 http://127.0.0.1:3100/api/health > /dev/null 2>&1; then
+              echo "✅ App reachable on 127.0.0.1:3100"
             else
-              echo "❌ Internal connectivity still failing"
+              echo "❌ App still not reachable on 127.0.0.1:3100"
             fi
             echo ""
 
