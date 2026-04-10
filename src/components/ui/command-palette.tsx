@@ -125,7 +125,7 @@ export function CommandPalette({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, filteredItems, selectedIndex, handleSelectItem]);
+  }, [isOpen, filteredItems, selectedIndex, handleSelectItem, setIsOpen]);
 
   // Focus search input when opening
   React.useEffect(() => {

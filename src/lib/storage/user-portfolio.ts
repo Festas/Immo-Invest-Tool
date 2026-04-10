@@ -35,9 +35,8 @@ export async function loadUserPortfolio(userId: string): Promise<Property[]> {
 export async function saveUserPortfolio(userId: string, properties: Property[]): Promise<void> {
   // This is a legacy function - in practice, properties should be
   // added/updated/deleted individually through the database layer
-  // For now, we'll just log a warning
   console.warn(
-    "[Portfolio Storage] saveUserPortfolio is deprecated - use individual property operations"
+    `[Portfolio Storage] saveUserPortfolio is deprecated - use individual property operations (userId: ${userId}, count: ${properties.length})`
   );
 }
 

@@ -210,7 +210,8 @@ export function calculateRentPotential(
   const potentialPercent = currentRent > 0 ? (potential / currentRent) * 100 : 0;
 
   // Kappungsgrenze: max 15-20% increase in 3 years (depends on local market)
-  const maxIncreasePercent = 15; // Conservative estimate
+  // If tenant has been paying current rent for longer, a larger increase may be justified
+  const maxIncreasePercent = yearsAtCurrentRent >= 3 ? 20 : 15; // Conservative estimate for shorter tenancies
   const cappedIncrease = Math.min(potential, (currentRent * maxIncreasePercent) / 100);
 
   // Time to reach market rent with yearly increases
@@ -253,7 +254,7 @@ export async function fetchComparableRents(
   yearBuilt: number,
   rooms: number
 ): Promise<{
-  comparables: Array<{ rentPerSqm: number; area: number; yearBuilt: number }>;
+  comparables: Array<{ rentPerSqm: number; area: number; yearBuilt: number; rooms: number }>;
   avgRentPerSqm: number;
   medianRentPerSqm: number;
 }> {
@@ -262,16 +263,18 @@ export async function fetchComparableRents(
   const baseData = await fetchRentData(city);
   const baseRent = baseData.avgRentPerSqm;
 
-  // Generate mock comparable properties
+  // Generate mock comparable properties with similar room counts
   const comparables = Array.from({ length: 5 }, () => {
     const areaVariation = livingArea * (0.8 + Math.random() * 0.4);
     const yearVariation = yearBuilt + Math.floor((Math.random() - 0.5) * 20);
     const rentVariation = baseRent * (0.85 + Math.random() * 0.3);
+    const roomVariation = Math.max(1, rooms + Math.floor((Math.random() - 0.5) * 2));
 
     return {
       rentPerSqm: Math.round(rentVariation * 100) / 100,
       area: Math.round(areaVariation),
       yearBuilt: yearVariation,
+      rooms: roomVariation,
     };
   });
 

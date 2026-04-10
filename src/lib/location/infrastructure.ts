@@ -424,7 +424,6 @@ export function analyzeInfrastructure(
 export function getMockInfrastructureData(postalCode: string): InfrastructureAnalysis {
   // Generate semi-random but consistent data based on postal code
   const hash = postalCode.split("").reduce((a, b) => a + b.charCodeAt(0), 0);
-  const baseScore = 40 + (hash % 40);
 
   const transport = calculateTransportScore(
     200 + (hash % 400),

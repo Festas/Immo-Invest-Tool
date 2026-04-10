@@ -320,10 +320,52 @@ export function calculateCumulativeCashflow(
 }
 
 /**
+ * Sanitize a numeric value: replace NaN/Infinity with a default, clamp to range
+ */
+function sanitizeNumber(value: number, defaultValue: number, min?: number, max?: number): number {
+  if (!Number.isFinite(value)) return defaultValue;
+  let result = value;
+  if (min !== undefined) result = Math.max(result, min);
+  if (max !== undefined) result = Math.min(result, max);
+  return result;
+}
+
+/**
+ * Sanitize property input to prevent invalid calculations.
+ * Ensures all numeric fields are finite and within reasonable bounds.
+ */
+function sanitizeInput(input: PropertyInput): PropertyInput {
+  return {
+    ...input,
+    purchasePrice: sanitizeNumber(input.purchasePrice, 0, 0),
+    brokerPercent: sanitizeNumber(input.brokerPercent, 0, 0, 100),
+    notaryPercent: sanitizeNumber(input.notaryPercent, 0, 0, 100),
+    propertyTransferTaxPercent: sanitizeNumber(input.propertyTransferTaxPercent, 0, 0, 100),
+    renovationCosts: sanitizeNumber(input.renovationCosts, 0, 0),
+    equity: sanitizeNumber(input.equity, 0, 0),
+    loanAmount: input.loanAmount !== undefined ? sanitizeNumber(input.loanAmount, 0, 0) : undefined,
+    interestRate: sanitizeNumber(input.interestRate, 0, 0, 100),
+    repaymentRate: sanitizeNumber(input.repaymentRate, 0, 0, 100),
+    fixedInterestPeriod: sanitizeNumber(input.fixedInterestPeriod, 10, 1, 50),
+    coldRentActual: sanitizeNumber(input.coldRentActual, 0, 0),
+    coldRentTarget: sanitizeNumber(input.coldRentTarget, 0, 0),
+    nonRecoverableCosts: sanitizeNumber(input.nonRecoverableCosts, 0, 0),
+    maintenanceReserve: sanitizeNumber(input.maintenanceReserve, 0, 0),
+    vacancyRiskPercent: sanitizeNumber(input.vacancyRiskPercent, 0, 0, 100),
+    personalTaxRate: sanitizeNumber(input.personalTaxRate, 0, 0, 100),
+    buildingSharePercent: sanitizeNumber(input.buildingSharePercent, 0, 0, 100),
+    expectedAppreciationPercent: sanitizeNumber(input.expectedAppreciationPercent, 0, -50, 50),
+    expectedRentIncreasePercent: sanitizeNumber(input.expectedRentIncreasePercent, 0, -50, 50),
+  };
+}
+
+/**
  * Calculate all KPIs for a property
  * This is the main entry point for the calculation engine
  */
-export function calculatePropertyKPIs(input: PropertyInput): PropertyOutput {
+export function calculatePropertyKPIs(raw: PropertyInput): PropertyOutput {
+  const input = sanitizeInput(raw);
+
   // 1. Calculate investment volume
   const investmentVolume = calculateInvestmentVolume(input);
 

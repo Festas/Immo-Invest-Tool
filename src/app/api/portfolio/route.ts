@@ -61,6 +61,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate critical numeric fields in property input
+    const numericFields = ["purchasePrice", "interestRate", "repaymentRate"] as const;
+    for (const field of numericFields) {
+      const value = property.input[field];
+      if (typeof value !== "number" || !Number.isFinite(value)) {
+        return NextResponse.json(
+          { error: `Ungültige Immobiliendaten: ${field} muss eine gültige Zahl sein` },
+          { status: 400 }
+        );
+      }
+    }
+
     // Validate dates
     if (!property.createdAt || !property.updatedAt) {
       return NextResponse.json(
