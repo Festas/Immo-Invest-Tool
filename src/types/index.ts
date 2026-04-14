@@ -74,7 +74,7 @@ export interface PropertyInput {
 
   // Financing
   equity: number;
-  loanAmount: number;
+  loanAmount?: number;
   interestRate: number;
   repaymentRate: number;
   fixedInterestPeriod: number;
