@@ -1,6 +1,12 @@
 /**
  * Navigation structure and constants
  * Defines the hierarchical navigation categories and items
+ *
+ * Grouped into 4 primary views:
+ * - Analyze: Core calculator + results flow
+ * - Visualize: All charts and projections
+ * - Compare: Scenario comparison + portfolio dashboard
+ * - Tools: Rent index, renovation, location analysis, etc.
  */
 
 import {
@@ -33,26 +39,60 @@ export interface NavigationCategory {
 
 /**
  * Navigation categories with their items
- * Grouped into 3 main categories as per requirements
+ * Grouped into 4 primary views to reduce tab overload
  */
 export const NAVIGATION_CATEGORIES: NavigationCategory[] = [
   {
     id: "analyse",
-    label: "Analyse",
+    label: "Analysieren",
     emoji: "📊",
-    description: "Primäre Funktionen",
+    description: "Rechner & Ergebnisse",
     items: [
       {
         value: "calculator",
         label: "Rechner",
         icon: Calculator,
-        description: "Immobilienkalkulation",
+        description: "Immobilienkalkulation & Ergebnisse",
       },
+      {
+        value: "break-even",
+        label: "Break-Even",
+        icon: Target,
+        description: "Break-Even Analyse",
+      },
+      {
+        value: "exit-strategy",
+        label: "Exit-Strategie",
+        icon: LogOut,
+        description: "Verkaufsanalyse",
+      },
+    ],
+  },
+  {
+    id: "visualisieren",
+    label: "Visualisieren",
+    emoji: "📈",
+    description: "Charts & Prognosen",
+    items: [
       {
         value: "charts",
         label: "Charts",
         icon: BarChart3,
-        description: "Visualisierungen & Grafiken",
+        description: "Tilgung, Cashflow & Vermögensaufbau",
+      },
+    ],
+  },
+  {
+    id: "vergleichen",
+    label: "Vergleichen",
+    emoji: "🔀",
+    description: "Szenarien & Portfolio",
+    items: [
+      {
+        value: "comparison",
+        label: "Vergleich",
+        icon: GitCompare,
+        description: "Szenario-Vergleich",
       },
       {
         value: "dashboard",
@@ -63,37 +103,17 @@ export const NAVIGATION_CATEGORIES: NavigationCategory[] = [
     ],
   },
   {
-    id: "bewertung",
-    label: "Bewertung",
-    emoji: "🔍",
-    description: "Markt & Standort",
+    id: "werkzeuge",
+    label: "Werkzeuge",
+    emoji: "🛠️",
+    description: "Zusätzliche Tools",
     items: [
       {
         value: "rent-index",
         label: "Mietspiegel",
         icon: MapPin,
-        description: "Mietspiegel-Analyse",
+        description: "Mietpreis-Vergleich",
       },
-      {
-        value: "location",
-        label: "Standort",
-        icon: MapPin,
-        description: "Standortanalyse",
-      },
-      {
-        value: "break-even",
-        label: "Break-Even",
-        icon: Target,
-        description: "Break-Even Analyse",
-      },
-    ],
-  },
-  {
-    id: "planung",
-    label: "Planung",
-    emoji: "📋",
-    description: "Zukunft & Strategie",
-    items: [
       {
         value: "renovation",
         label: "Renovierung",
@@ -101,16 +121,10 @@ export const NAVIGATION_CATEGORIES: NavigationCategory[] = [
         description: "Renovierungskalkulator",
       },
       {
-        value: "exit-strategy",
-        label: "Exit-Strategie",
-        icon: LogOut,
-        description: "Exit-Strategien",
-      },
-      {
-        value: "comparison",
-        label: "Vergleich",
-        icon: GitCompare,
-        description: "Szenario-Vergleich",
+        value: "location",
+        label: "Standort",
+        icon: MapPin,
+        description: "Standortanalyse",
       },
       {
         value: "checklist",

@@ -4,8 +4,9 @@ import React from "react";
 import { TabsContent } from "@/components/ui/tabs";
 import { FeatureErrorBoundary } from "@/components/ui/error-boundary";
 import { PropertyCalculatorForm, PropertyWizard, ResultsPanel, SmartTips } from "@/components";
-import { Calculator, BarChart3, Wand2 } from "lucide-react";
+import { Calculator, BarChart3, Wand2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useImmoCalcStore } from "@/store";
 import {
   AmortizationChart,
   CumulativeCashflowChart,
@@ -28,13 +29,14 @@ interface TabContentProps {
 }
 
 export function TabContent({ wizardMode, onToggleWizardMode }: TabContentProps) {
+  const { loadSampleProperty } = useImmoCalcStore();
   return (
     <>
       {/* Calculator Tab */}
       <TabsContent value="calculator">
         <FeatureErrorBoundary featureName="Rechner">
           {/* Mode Toggle */}
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {wizardMode ? "Wizard-Modus" : "Experten-Modus"}
@@ -45,15 +47,27 @@ export function TabContent({ wizardMode, onToggleWizardMode }: TabContentProps) 
                   : "Alle Eingabefelder auf einen Blick"}
               </p>
             </div>
-            <Button
-              variant={wizardMode ? "outline" : "default"}
-              onClick={onToggleWizardMode}
-              className="gap-2"
-              aria-label={wizardMode ? "Zu Experten-Modus wechseln" : "Zu Wizard-Modus wechseln"}
-            >
-              <Wand2 className="h-4 w-4" aria-hidden="true" />
-              {wizardMode ? "Experten-Modus" : "Wizard-Modus"}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={loadSampleProperty}
+                className="gap-2"
+                aria-label="Beispiel-Immobilie laden"
+              >
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden sm:inline">Beispiel laden</span>
+                <span className="sm:hidden">Beispiel</span>
+              </Button>
+              <Button
+                variant={wizardMode ? "outline" : "default"}
+                onClick={onToggleWizardMode}
+                className="gap-2"
+                aria-label={wizardMode ? "Zu Experten-Modus wechseln" : "Zu Wizard-Modus wechseln"}
+              >
+                <Wand2 className="h-4 w-4" aria-hidden="true" />
+                {wizardMode ? "Experten-Modus" : "Wizard-Modus"}
+              </Button>
+            </div>
           </div>
 
           {wizardMode ? (

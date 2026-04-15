@@ -81,6 +81,7 @@ interface ImmoCalcState {
   resetInput: () => void;
   clearInput: () => void;
   calculate: () => void;
+  loadSampleProperty: () => void;
 
   // Property actions
   saveProperty: (name: string, address?: string) => Promise<void>;
@@ -125,7 +126,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       selectedPropertyId: null,
       isCalculating: false,
       activeTab: "calculator",
-      wizardMode: false,
+      wizardMode: true,
       preFamilyPurchaseTaxPercent: null,
       preFamilyPurchaseBrokerPercent: null,
       isServerSyncEnabled: false,
@@ -230,6 +231,41 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
         }));
         // Small delay to show loading state
         setTimeout(() => set({ isCalculating: false }), 100);
+      },
+
+      // Load a realistic sample property for demo purposes
+      loadSampleProperty: () => {
+        set({
+          currentInput: {
+            purchasePrice: 285000,
+            brokerPercent: 3.57,
+            notaryPercent: 2.0,
+            propertyTransferTaxPercent: 3.5,
+            renovationCosts: 15000,
+            isFamilyPurchase: false,
+            marketValue: undefined,
+            bundesland: "BAYERN",
+            equity: 75000,
+            loanAmount: 0,
+            interestRate: 3.8,
+            repaymentRate: 2.5,
+            fixedInterestPeriod: 15,
+            coldRentActual: 950,
+            coldRentTarget: 1050,
+            nonRecoverableCosts: 120,
+            maintenanceReserve: 80,
+            vacancyRiskPercent: 3.0,
+            personalTaxRate: 35.0,
+            buildingSharePercent: 75.0,
+            afaType: "ALTBAU_AB_1925" as AfAType,
+            movableAssetsValue: 5000,
+            movableAssetsDepreciationYears: 10,
+            expectedAppreciationPercent: 2.0,
+            expectedRentIncreasePercent: 1.5,
+          },
+          wizardMode: false, // Switch to expert mode to show results
+        });
+        get().calculate();
       },
 
       // Save current input as a property
