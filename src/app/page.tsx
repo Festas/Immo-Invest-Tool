@@ -1,149 +1,18 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { Tabs } from "@/components/ui/tabs";
 import { BottomNavigation } from "@/components/ui/bottom-navigation";
 import { Sidebar } from "@/components/ui/sidebar";
-import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { ToastProvider } from "@/components/ui/toast";
 import { Onboarding } from "@/components/ui/onboarding";
-import { PresetButton } from "@/components/ui/preset-selector";
 import { SkipLink } from "@/components/ui/skip-link";
-import { FeatureErrorBoundary } from "@/components/ui/error-boundary";
-import { ThemeToggle } from "@/components/theme";
-import { UserMenu } from "@/components/auth/UserMenu";
-import { PropertyCalculatorForm, PropertyWizard, ResultsPanel, SmartTips } from "@/components";
-import { ChartSkeleton, DashboardSkeleton, CalculatorSkeleton } from "@/components/skeletons";
+import { AppHeader } from "@/components/layout/AppHeader";
+import { TabContent } from "@/components/layout/TabContent";
 import { useImmoCalcStore } from "@/store";
 import { cn } from "@/lib/utils";
-import { getCategoryForTab, getNavigationItem } from "@/lib/constants/navigation";
-import { Calculator, BarChart3, RotateCcw, Eraser, Wand2 } from "lucide-react";
-
-// Lazy load heavy components for better performance
-const AmortizationChart = dynamic(
-  () => import("@/components/Charts").then((mod) => ({ default: mod.AmortizationChart })),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false,
-  }
-);
-
-const CumulativeCashflowChart = dynamic(
-  () => import("@/components/Charts").then((mod) => ({ default: mod.CumulativeCashflowChart })),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false,
-  }
-);
-
-const CashflowDevelopmentChart = dynamic(
-  () => import("@/components/Charts").then((mod) => ({ default: mod.CashflowDevelopmentChart })),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false,
-  }
-);
-
-const InterestPrincipalChart = dynamic(
-  () => import("@/components/Charts").then((mod) => ({ default: mod.InterestPrincipalChart })),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false,
-  }
-);
-
-const EquityBuildupChart = dynamic(
-  () => import("@/components/Charts").then((mod) => ({ default: mod.EquityBuildupChart })),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false,
-  }
-);
-
-const ScenarioComparison = dynamic(
-  () =>
-    import("@/components/ScenarioComparison").then((mod) => ({ default: mod.ScenarioComparison })),
-  {
-    loading: () => <DashboardSkeleton />,
-    ssr: false,
-  }
-);
-
-const PortfolioDashboard = dynamic(
-  () =>
-    import("@/components/PortfolioDashboard").then((mod) => ({ default: mod.PortfolioDashboard })),
-  {
-    loading: () => <DashboardSkeleton />,
-    ssr: false,
-  }
-);
-
-const RentIndexCalculator = dynamic(
-  () =>
-    import("@/components/RentIndexCalculator").then((mod) => ({
-      default: mod.RentIndexCalculator,
-    })),
-  {
-    loading: () => <CalculatorSkeleton />,
-    ssr: false,
-  }
-);
-
-const BreakEvenCalculator = dynamic(
-  () =>
-    import("@/components/BreakEvenCalculator").then((mod) => ({
-      default: mod.BreakEvenCalculator,
-    })),
-  {
-    loading: () => <CalculatorSkeleton />,
-    ssr: false,
-  }
-);
-
-const RenovationCalculator = dynamic(
-  () =>
-    import("@/components/RenovationCalculator").then((mod) => ({
-      default: mod.RenovationCalculator,
-    })),
-  {
-    loading: () => <CalculatorSkeleton />,
-    ssr: false,
-  }
-);
-
-const ExitStrategyCalculator = dynamic(
-  () =>
-    import("@/components/ExitStrategyCalculator").then((mod) => ({
-      default: mod.ExitStrategyCalculator,
-    })),
-  {
-    loading: () => <CalculatorSkeleton />,
-    ssr: false,
-  }
-);
-
-const LocationAnalysis = dynamic(
-  () => import("@/components/LocationAnalysis").then((mod) => ({ default: mod.LocationAnalysis })),
-  {
-    loading: () => <CalculatorSkeleton />,
-    ssr: false,
-  }
-);
-
-const DueDiligenceChecklist = dynamic(
-  () =>
-    import("@/components/DueDiligenceChecklist").then((mod) => ({
-      default: mod.DueDiligenceChecklist,
-    })),
-  {
-    loading: () => <CalculatorSkeleton />,
-    ssr: false,
-  }
-);
 
 export default function Home() {
   const {
@@ -159,25 +28,6 @@ export default function Home() {
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const router = useRouter();
-
-  // Get breadcrumb items based on current tab
-  const breadcrumbItems = React.useMemo(() => {
-    const category = getCategoryForTab(activeTab);
-    const navItem = getNavigationItem(activeTab);
-
-    if (!category || !navItem) return [];
-
-    return [
-      {
-        label: category.label,
-        // Category breadcrumb navigates to first item in that category
-        onClick: () => setActiveTab(category.items[0].value),
-      },
-      {
-        label: navItem.label,
-      },
-    ];
-  }, [activeTab, setActiveTab]);
 
   // Initialize calculation on mount
   useEffect(() => {
@@ -243,97 +93,14 @@ export default function Home() {
           className={cn("transition-all duration-300", sidebarCollapsed ? "md:ml-16" : "md:ml-60")}
         >
           {/* Header - Collapsible on mobile */}
-          <header
-            role="banner"
-            className={cn(
-              "sticky top-0 z-50 border-b border-indigo-100/50 bg-white/80 backdrop-blur-xl transition-all duration-300 dark:border-indigo-900/30 dark:bg-slate-900/80",
-              isHeaderCollapsed ? "py-1 md:py-4" : "py-4"
-            )}
-          >
-            <nav
-              role="navigation"
-              aria-label="Hauptnavigation"
-              className="mx-auto max-w-7xl px-4 sm:px-6"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 md:gap-4">
-                  <div className="relative">
-                    <div
-                      className={cn(
-                        "relative rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20",
-                        isHeaderCollapsed ? "p-2 md:p-3" : "p-3"
-                      )}
-                    >
-                      <Calculator
-                        className={cn(
-                          "text-white transition-all duration-300",
-                          isHeaderCollapsed ? "h-5 w-5 md:h-7 md:w-7" : "h-7 w-7"
-                        )}
-                        aria-hidden="true"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <h1
-                      className={cn(
-                        "bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text font-bold tracking-tight text-transparent transition-all duration-300 dark:from-white dark:via-indigo-100 dark:to-white",
-                        isHeaderCollapsed ? "text-lg md:text-2xl" : "text-2xl"
-                      )}
-                    >
-                      ImmoCalc Pro
-                    </h1>
-                    <p
-                      className={cn(
-                        "items-center gap-1.5 text-sm text-slate-500 transition-all duration-300 dark:text-slate-400",
-                        isHeaderCollapsed ? "hidden" : "hidden sm:flex"
-                      )}
-                    >
-                      Das All-in-One Immobilien Investment Tool
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 md:gap-3">
-                  <UserMenu onLoginClick={handleLoginClick} />
-                  <PresetButton />
-                  <ThemeToggle />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearInput}
-                    aria-label="Alle Eingaben leeren"
-                    className={cn("group", isHeaderCollapsed && "h-8 px-2 md:h-9 md:px-4")}
-                  >
-                    <Eraser
-                      className={cn(
-                        "transition-transform",
-                        isHeaderCollapsed ? "h-3.5 w-3.5 md:mr-1.5 md:h-4 md:w-4" : "mr-1.5 h-4 w-4"
-                      )}
-                      aria-hidden="true"
-                    />
-                    <span className="hidden sm:inline">Leeren</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={resetInput}
-                    aria-label="Eingaben zurücksetzen"
-                    className={cn("group", isHeaderCollapsed && "h-8 px-2 md:h-9 md:px-4")}
-                  >
-                    <RotateCcw
-                      className={cn(
-                        "transition-transform group-hover:rotate-180",
-                        isHeaderCollapsed ? "h-3.5 w-3.5 md:mr-1.5 md:h-4 md:w-4" : "mr-1.5 h-4 w-4"
-                      )}
-                      aria-hidden="true"
-                    />
-                    <span className="hidden sm:inline">Zurücksetzen</span>
-                  </Button>
-                </div>
-              </div>
-            </nav>
-          </header>
+          <AppHeader
+            isHeaderCollapsed={isHeaderCollapsed}
+            onClearInput={clearInput}
+            onResetInput={resetInput}
+            onLoginClick={handleLoginClick}
+          />
 
-          {/* Main Content Area with Sidebar offset on desktop */}
+          {/* Main Content Area */}
           <main
             id="main-content"
             tabIndex={-1}
@@ -342,178 +109,15 @@ export default function Home() {
               "px-4 py-8 pb-24 sm:px-6 md:pb-8"
             )}
           >
-            {/* Breadcrumb Navigation - Visible on desktop only */}
-            <div className="mb-6 hidden md:block">
-              <Breadcrumb items={breadcrumbItems} />
-            </div>
-
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              {/* Calculator Tab */}
-              <TabsContent value="calculator">
-                <FeatureErrorBoundary featureName="Rechner">
-                  {/* Mode Toggle */}
-                  <div className="mb-6 flex items-center justify-between">
-                    <div>
-                      <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                        {wizardMode ? "Wizard-Modus" : "Experten-Modus"}
-                      </h2>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">
-                        {wizardMode
-                          ? "Schritt für Schritt zur Immobilienbewertung"
-                          : "Alle Eingabefelder auf einen Blick"}
-                      </p>
-                    </div>
-                    <Button
-                      variant={wizardMode ? "outline" : "default"}
-                      onClick={() => setWizardMode(!wizardMode)}
-                      className="gap-2"
-                      aria-label={
-                        wizardMode ? "Zu Experten-Modus wechseln" : "Zu Wizard-Modus wechseln"
-                      }
-                    >
-                      <Wand2 className="h-4 w-4" aria-hidden="true" />
-                      {wizardMode ? "Experten-Modus" : "Wizard-Modus"}
-                    </Button>
-                  </div>
-
-                  {wizardMode ? (
-                    /* Wizard Mode */
-                    <PropertyWizard />
-                  ) : (
-                    /* Expert Mode - Original Form */
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
-                      {/* Input Form */}
-                      <div className="animate-fade-in" data-onboarding="form">
-                        <div className="mb-6 flex items-center gap-3">
-                          <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
-                            <Calculator className="h-5 w-5 text-white" />
-                          </div>
-                          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                            Eingaben
-                          </h2>
-                        </div>
-                        <PropertyCalculatorForm />
-                        {/* Smart Tips - Show contextual guidance */}
-                        <div className="mt-6">
-                          <SmartTips />
-                        </div>
-                      </div>
-
-                      {/* Results */}
-                      <div className="animate-fade-in animate-delay-200" data-onboarding="results">
-                        <div className="mb-6 flex items-center gap-3">
-                          <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 dark:from-indigo-400 dark:to-indigo-500 dark:shadow-indigo-400/20">
-                            <BarChart3 className="h-5 w-5 text-white" />
-                          </div>
-                          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                            Ergebnisse
-                          </h2>
-                        </div>
-                        <ResultsPanel />
-                      </div>
-                    </div>
-                  )}
-                </FeatureErrorBoundary>
-              </TabsContent>
-
-              {/* Charts Tab */}
-              <TabsContent value="charts">
-                <FeatureErrorBoundary featureName="Charts">
-                  <div className="space-y-6">
-                    <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
-                      <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
-                        📊 Tilgungsanalyse
-                      </h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
-                        Umfassende Analyse der Kredittilgung bis zur vollständigen Rückzahlung
-                      </p>
-                    </div>
-                    <AmortizationChart />
-                    <InterestPrincipalChart />
-
-                    <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
-                      <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
-                        💰 Cashflow-Analyse
-                      </h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
-                        Dynamische Entwicklung des monatlichen Cashflows über die Jahre
-                      </p>
-                    </div>
-                    <CashflowDevelopmentChart />
-
-                    <div className="rounded-lg bg-gradient-to-r from-slate-50 to-slate-100/50 p-4 dark:from-slate-800/50 dark:to-slate-800/30">
-                      <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
-                        📈 Vermögensaufbau
-                      </h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
-                        Gesamtvermögensentwicklung durch Tilgung, Wertsteigerung und Cashflow
-                      </p>
-                    </div>
-                    <EquityBuildupChart />
-                    <CumulativeCashflowChart />
-                  </div>
-                </FeatureErrorBoundary>
-              </TabsContent>
-
-              {/* Comparison Tab */}
-              <TabsContent value="comparison">
-                <FeatureErrorBoundary featureName="Vergleich">
-                  <ScenarioComparison />
-                </FeatureErrorBoundary>
-              </TabsContent>
-
-              {/* Dashboard Tab */}
-              <TabsContent value="dashboard">
-                <FeatureErrorBoundary featureName="Dashboard">
-                  <PortfolioDashboard />
-                </FeatureErrorBoundary>
-              </TabsContent>
-
-              {/* Rent Index Tab */}
-              <TabsContent value="rent-index">
-                <FeatureErrorBoundary featureName="Mietspiegel">
-                  <RentIndexCalculator />
-                </FeatureErrorBoundary>
-              </TabsContent>
-
-              {/* Break-Even Tab */}
-              <TabsContent value="break-even">
-                <FeatureErrorBoundary featureName="Break-Even">
-                  <BreakEvenCalculator />
-                </FeatureErrorBoundary>
-              </TabsContent>
-
-              {/* Renovation Tab */}
-              <TabsContent value="renovation">
-                <FeatureErrorBoundary featureName="Renovierung">
-                  <RenovationCalculator />
-                </FeatureErrorBoundary>
-              </TabsContent>
-
-              {/* Exit Strategy Tab */}
-              <TabsContent value="exit-strategy">
-                <FeatureErrorBoundary featureName="Exit-Strategie">
-                  <ExitStrategyCalculator />
-                </FeatureErrorBoundary>
-              </TabsContent>
-
-              {/* Location Analysis Tab */}
-              <TabsContent value="location">
-                <FeatureErrorBoundary featureName="Standortanalyse">
-                  <LocationAnalysis />
-                </FeatureErrorBoundary>
-              </TabsContent>
-
-              {/* Due Diligence Checklist Tab */}
-              <TabsContent value="checklist">
-                <FeatureErrorBoundary featureName="Checkliste">
-                  <DueDiligenceChecklist />
-                </FeatureErrorBoundary>
-              </TabsContent>
+              <TabContent
+                wizardMode={wizardMode}
+                onToggleWizardMode={() => setWizardMode(!wizardMode)}
+              />
             </Tabs>
           </main>
 
-          {/* Footer - Add sidebar offset on desktop */}
+          {/* Footer */}
           <footer
             className={cn(
               "relative z-10 mt-auto mb-[70px] border-t border-indigo-100/50 bg-gradient-to-b from-white/70 to-indigo-50/30 backdrop-blur-xl transition-all duration-300 md:mb-0 dark:border-indigo-900/30 dark:from-slate-900/70 dark:to-indigo-950/20"
