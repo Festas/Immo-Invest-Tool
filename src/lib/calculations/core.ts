@@ -16,6 +16,7 @@ import {
 } from "@/types";
 import { calculateTax } from "./tax";
 import { generateAmortizationSchedule, calculateCumulativeCashflow } from "./amortization";
+import { calculateInvestmentReturns } from "./returns";
 
 /**
  * Calculate side costs (Nebenkosten)
@@ -264,6 +265,9 @@ export function calculatePropertyKPIs(raw: PropertyInput): PropertyOutput {
     input.expectedAppreciationPercent
   );
 
+  // 10. Calculate time-weighted investment returns (IRR, total return)
+  const investmentReturns = calculateInvestmentReturns(input);
+
   return {
     investmentVolume,
     financing,
@@ -272,6 +276,7 @@ export function calculatePropertyKPIs(raw: PropertyInput): PropertyOutput {
     tax,
     amortizationSchedule,
     cumulativeCashflow,
+    investmentReturns,
   };
 }
 

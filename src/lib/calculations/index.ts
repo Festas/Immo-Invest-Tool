@@ -44,3 +44,6 @@ export {
 
 // Utilities
 export { calculateLoanAmount, getChartInterval, addCumulativeCashflow } from "./utils";
+
+// Investment returns (IRR, total return, equity multiplier)
+export { calculateIRR, calculateInvestmentReturns } from "./returns";

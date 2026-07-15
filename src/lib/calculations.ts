@@ -25,4 +25,6 @@ export {
   calculateLoanAmount,
   getChartInterval,
   addCumulativeCashflow,
+  calculateIRR,
+  calculateInvestmentReturns,
 } from "./calculations/index";
