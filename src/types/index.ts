@@ -143,6 +143,41 @@ export interface YieldMetrics {
 }
 
 /**
+ * Investment return metrics derived from the full projected cashflow stream.
+ *
+ * Unlike the point-in-time {@link YieldMetrics}, these are time-weighted
+ * measures that account for equity invested at t0, every projected after-tax
+ * cashflow, and the equity recovered on exit (sale proceeds net of remaining
+ * debt). They answer "what did the investment actually earn per year".
+ */
+export interface InvestmentReturns {
+  /** Exit year used for the terminal value (end of the analysed horizon). */
+  exitYear: number;
+  /** Equity invested at t0 (down payment + purchase side costs financed by equity). */
+  initialEquity: number;
+  /** Sum of all projected after-tax cashflows over the horizon (excl. sale). */
+  totalCashflow: number;
+  /** Property value at exit after compound appreciation. */
+  exitPropertyValue: number;
+  /** Remaining loan balance at exit. */
+  exitRemainingDebt: number;
+  /** Net sale proceeds at exit: value − selling costs − speculation tax − debt. */
+  exitNetProceeds: number;
+  /** Total profit: cumulative cashflow + net proceeds − initial equity. */
+  totalProfit: number;
+  /** Equity multiplier: (initial equity + total profit) / initial equity. */
+  equityMultiplier: number;
+  /**
+   * After-tax internal rate of return (%) of the equity cashflow stream.
+   * Returns `null` when no sign change makes an IRR undefined
+   * (e.g. all-negative or all-positive flows).
+   */
+  irr: number | null;
+  /** Simple annualised return (%) derived from the equity multiplier. */
+  annualizedReturn: number;
+}
+
+/**
  * Tax calculation result
  */
 export interface TaxResult {
@@ -223,6 +258,12 @@ export interface PropertyOutput {
   tax: TaxResult;
   amortizationSchedule: AmortizationYear[];
   cumulativeCashflow: CumulativeCashflowPoint[];
+  /**
+   * Time-weighted investment returns (after-tax IRR, total return, equity
+   * multiplier) over the default holding period. Optional so existing
+   * consumers and serialized outputs remain backward compatible.
+   */
+  investmentReturns?: InvestmentReturns;
 }
 
 /**
