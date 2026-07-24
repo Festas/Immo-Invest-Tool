@@ -62,13 +62,13 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Install prisma CLI and required dependencies for migrations
-# Prisma 7.x requires 'effect' package for @prisma/config
+# Prisma 7.x requires 'effect', 'c12', 'deepmerge-ts', and 'empathic' packages for @prisma/config
 # This properly creates the node_modules/.bin/prisma symlink
 # IMPORTANT: Must run AFTER copying standalone to avoid being overwritten
-RUN npm install prisma@7.2.0 effect@3.18.4 c12@2.0.1 --save-exact
+RUN npm install prisma@7.2.0 effect@3.18.4 c12@2.0.1 deepmerge-ts@7.1.5 empathic@2.0.0 --save-exact
 
 # Fix ownership of prisma files and dependencies for nextjs user
-RUN chown -R nextjs:nodejs ./prisma ./node_modules/.prisma ./node_modules/@prisma ./node_modules/prisma ./node_modules/effect ./node_modules/c12 && \
+RUN chown -R nextjs:nodejs ./prisma ./node_modules/.prisma ./node_modules/@prisma ./node_modules/prisma ./node_modules/effect ./node_modules/c12 ./node_modules/deepmerge-ts ./node_modules/empathic && \
     chown nextjs:nodejs ./node_modules/.bin/prisma
 
 USER nextjs
