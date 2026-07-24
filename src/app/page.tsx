@@ -12,19 +12,10 @@ import { SkipLink } from "@/components/ui/skip-link";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { TabContent } from "@/components/layout/TabContent";
 import { useImmoCalcStore } from "@/store";
-import { cn } from "@/lib/utils";
 
 export default function Home() {
-  const {
-    activeTab,
-    setActiveTab,
-    resetInput,
-    clearInput,
-    calculate,
-    wizardMode,
-    setWizardMode,
-    sidebarCollapsed,
-  } = useImmoCalcStore();
+  const { activeTab, setActiveTab, resetInput, clearInput, calculate, wizardMode, setWizardMode } =
+    useImmoCalcStore();
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const router = useRouter();
@@ -82,66 +73,58 @@ export default function Home() {
         {/* Subtle background pattern */}
         <div className="bg-pattern pointer-events-none fixed inset-0 z-0" aria-hidden="true" />
 
-        {/* Desktop Sidebar Navigation */}
-        <Sidebar />
-
         {/* Command Palette */}
         <CommandPalette />
 
-        {/* Layout wrapper with dynamic margin for sidebar offset on desktop */}
-        <div
-          className={cn("transition-all duration-300", sidebarCollapsed ? "md:ml-16" : "md:ml-60")}
-        >
-          {/* Header - Collapsible on mobile */}
-          <AppHeader
-            isHeaderCollapsed={isHeaderCollapsed}
-            onClearInput={clearInput}
-            onResetInput={resetInput}
-            onLoginClick={handleLoginClick}
-          />
+        {/* Layout wrapper */}
+        <div className="md:flex">
+          <Sidebar />
 
-          {/* Main Content Area */}
-          <main
-            id="main-content"
-            tabIndex={-1}
-            className={cn(
-              "relative z-10 transition-all duration-300",
-              "px-4 py-8 pb-24 sm:px-6 md:pb-8"
-            )}
-          >
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabContent
-                wizardMode={wizardMode}
-                onToggleWizardMode={() => setWizardMode(!wizardMode)}
-              />
-            </Tabs>
-          </main>
+          <div className="min-w-0 flex-1">
+            {/* Header - Collapsible on mobile */}
+            <AppHeader
+              isHeaderCollapsed={isHeaderCollapsed}
+              onClearInput={clearInput}
+              onResetInput={resetInput}
+              onLoginClick={handleLoginClick}
+            />
 
-          {/* Footer */}
-          <footer
-            className={cn(
-              "relative z-10 mt-auto mb-[70px] border-t border-indigo-100/50 bg-gradient-to-b from-white/70 to-indigo-50/30 backdrop-blur-xl transition-all duration-300 md:mb-0 dark:border-indigo-900/30 dark:from-slate-900/70 dark:to-indigo-950/20"
-            )}
-          >
-            <div className="px-4 py-6 sm:px-6">
-              <div className="space-y-3 text-center">
-                <p className="flex flex-wrap items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-100/80 px-3 py-1 text-xs font-medium text-amber-700 backdrop-blur-sm transition-all hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50">
-                    ⚠️ Hinweis
-                  </span>
-                  <span>
-                    Dieses Tool dient nur zu Informationszwecken und ersetzt keine professionelle
-                    Finanzberatung.
-                  </span>
-                </p>
-                <div className="mx-auto h-px w-48 bg-gradient-to-r from-transparent via-indigo-300 to-transparent dark:via-indigo-700" />
-                <p className="text-sm text-slate-400 dark:text-slate-500">
-                  Entwickelt mit ❤️ | Next.js, TypeScript, Tailwind CSS | Deutsches Steuerrecht
-                  (Stand 2024)
-                </p>
+            {/* Main Content Area */}
+            <main
+              id="main-content"
+              tabIndex={-1}
+              className="relative z-10 px-4 py-8 pb-24 transition-all duration-300 sm:px-6 md:pb-8"
+            >
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <TabContent
+                  wizardMode={wizardMode}
+                  onToggleWizardMode={() => setWizardMode(!wizardMode)}
+                />
+              </Tabs>
+            </main>
+
+            {/* Footer */}
+            <footer className="relative z-10 mt-auto mb-[70px] border-t border-indigo-100/50 bg-gradient-to-b from-white/70 to-indigo-50/30 backdrop-blur-xl transition-all duration-300 md:mb-0 dark:border-indigo-900/30 dark:from-slate-900/70 dark:to-indigo-950/20">
+              <div className="px-4 py-6 sm:px-6">
+                <div className="space-y-3 text-center">
+                  <p className="flex flex-wrap items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100/80 px-3 py-1 text-xs font-medium text-amber-700 backdrop-blur-sm transition-all hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50">
+                      ⚠️ Hinweis
+                    </span>
+                    <span>
+                      Dieses Tool dient nur zu Informationszwecken und ersetzt keine professionelle
+                      Finanzberatung.
+                    </span>
+                  </p>
+                  <div className="mx-auto h-px w-48 bg-gradient-to-r from-transparent via-indigo-300 to-transparent dark:via-indigo-700" />
+                  <p className="text-sm text-slate-400 dark:text-slate-500">
+                    Entwickelt mit ❤️ | Next.js, TypeScript, Tailwind CSS | Deutsches Steuerrecht
+                    (Stand 2024)
+                  </p>
+                </div>
               </div>
-            </div>
-          </footer>
+            </footer>
+          </div>
         </div>
 
         {/* Mobile Bottom Navigation */}

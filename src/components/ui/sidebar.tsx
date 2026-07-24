@@ -44,8 +44,9 @@ export function Sidebar({ className }: SidebarProps) {
       role="navigation"
       aria-label="Hauptnavigation"
       className={cn(
-        "fixed top-0 left-0 z-40 h-screen border-r border-indigo-100/50 bg-white/95 backdrop-blur-xl transition-all duration-300 ease-out dark:border-indigo-900/30 dark:bg-slate-900/95",
+        "z-40 h-screen border-r border-indigo-100/50 bg-white/95 backdrop-blur-xl transition-all duration-300 ease-out dark:border-indigo-900/30 dark:bg-slate-900/95",
         "hidden md:flex md:flex-col",
+        "md:sticky md:top-0 md:shrink-0",
         "shadow-[4px_0_20px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_20px_rgba(0,0,0,0.3)]",
         sidebarCollapsed ? "w-16" : "w-60",
         className
@@ -54,7 +55,7 @@ export function Sidebar({ className }: SidebarProps) {
       {/* Header with toggle button */}
       <div
         className={cn(
-          "flex items-center border-b border-indigo-100/50 p-4 dark:border-indigo-900/30",
+          "relative z-10 flex items-center border-b border-indigo-100/50 p-4 dark:border-indigo-900/30",
           sidebarCollapsed ? "justify-center" : "justify-between"
         )}
       >
@@ -67,7 +68,7 @@ export function Sidebar({ className }: SidebarProps) {
           className={cn(
             "rounded-lg p-2 text-slate-500 transition-colors hover:bg-indigo-100 hover:text-indigo-600",
             "dark:text-slate-400 dark:hover:bg-indigo-900/50 dark:hover:text-indigo-400",
-            "focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
+            "relative z-20 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
           )}
         >
           {sidebarCollapsed ? (
