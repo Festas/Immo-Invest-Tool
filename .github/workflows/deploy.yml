@@ -94,7 +94,7 @@ jobs:
             mkdir -p "${DEPLOY_DIR}"
             cd "${DEPLOY_DIR}"
 
-            echo "[1/5] Writing configuration..."
+            echo "[1/6] Writing configuration..."
             # Erstelle .env Datei mit Datenbank-Konfiguration
             cat > .env << EOF
             NODE_ENV=production
@@ -105,11 +105,11 @@ jobs:
             DATABASE_URL=postgresql://immo_user:${DB_PASSWORD}@db:5432/immo_invest?schema=public
             EOF
 
-            echo "[2/5] Authenticating & Pulling..."
+            echo "[2/6] Authenticating & Pulling..."
             echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_ACTOR}" --password-stdin
             docker pull "${REGISTRY}/${IMAGE_NAME}:${IMAGE_SHA}"
 
-            echo "[3/5] Generating Docker Compose..."
+            echo "[3/6] Generating Docker Compose..."
             # Docker Compose mit PostgreSQL
             cat > docker-compose.yml <<EOF_COMPOSE
             services:
@@ -140,7 +140,9 @@ jobs:
                 container_name: immocalc
                 restart: unless-stopped
                 ports:
-                  - "127.0.0.1:8086:3000"
+                  # IMPORTANT: This port MUST match proxy_pass in
+                  # Festas/Link-in-Bio nginx/sites-available/immocalc.festas-builds.com.conf
+                  - "127.0.0.1:3100:3000"
                 env_file:
                   - .env
                 depends_on:
@@ -156,7 +158,7 @@ jobs:
                 driver: local
             EOF_COMPOSE
 
-            echo "[4/5] Restarting Containers..."
+            echo "[4/6] Restarting Containers..."
             docker compose down --remove-orphans || true
             docker compose up -d
 
@@ -177,7 +179,7 @@ jobs:
                 exit 1
             fi
 
-            echo "[5/5] Running database migrations..."
+            echo "[5/6] Running database migrations..."
             # Run Prisma migrations
             if ! docker compose exec -T immocalc npx prisma migrate deploy 2>&1; then
                 echo "⚠️ Migration deployment failed. This might be the first deployment."
@@ -196,6 +198,28 @@ jobs:
             fi
 
             echo "✅ Deployment finished successfully!"
+
+            echo "[6/6] Health check..."
+            # Verify the app responds on the host port (which nginx proxies to)
+            # Accepts both 200 (healthy/degraded) and 503 (unhealthy but running)
+            MAX_RETRIES=10
+            SLEEP_SECONDS=5
+            APP_URL="http://127.0.0.1:3100/api/health"
+            for i in $(seq 1 $MAX_RETRIES); do
+                HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${APP_URL}" 2>/dev/null || echo "000")
+                if [ "${HTTP_STATUS}" = "200" ] || [ "${HTTP_STATUS}" = "503" ]; then
+                    echo "✅ Health check passed (HTTP ${HTTP_STATUS}) after ${i} attempt(s)."
+                    break
+                fi
+                if [ "$i" -eq "$MAX_RETRIES" ]; then
+                    echo "❌ Health check failed after ${MAX_RETRIES} attempts (last HTTP status: ${HTTP_STATUS})."
+                    echo "nginx will return 502 Bad Gateway. Container logs:"
+                    docker logs immocalc --tail 50
+                    exit 1
+                fi
+                echo "⏳ Attempt ${i}/${MAX_RETRIES}: HTTP ${HTTP_STATUS} — retrying in ${SLEEP_SECONDS}s..."
+                sleep "${SLEEP_SECONDS}"
+            done
 
             # Aufräumen (Images älter als 24h)
             docker image prune -f --filter "until=24h"
