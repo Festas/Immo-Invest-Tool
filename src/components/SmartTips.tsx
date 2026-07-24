@@ -245,7 +245,7 @@ const SMART_TIPS: SmartTip[] = [
     icon: <Wallet className="h-4 w-4" />,
     title: "Kein Eigenkapital",
     message:
-      "Ohne Eigenkapital (100% Finanzierung) ist die Eigenkapitalrendite nicht definiert und wird als 'n/v' ausgewiesen. Zudem ist eine Vollfinanzierung mit erhöhtem Risiko verbunden.",
+      "Ohne Eigenkapital (100% Finanzierung) ist die Eigenkapitalrendite mathematisch nicht definiert (Division durch 0) und wird als 0 dargestellt. Zudem ist eine Vollfinanzierung mit erhöhtem Risiko verbunden.",
     condition: (input) => {
       return input.equity <= 0 && input.purchasePrice > 0;
     },

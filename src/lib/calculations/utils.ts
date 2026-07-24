@@ -15,6 +15,8 @@ export function sanitizeNumber(
   min?: number,
   max?: number
 ): number {
+  // Number.isFinite is false for NaN, Infinity and -Infinity, so this single
+  // check covers all non-finite cases.
   if (!Number.isFinite(value)) return defaultValue;
   let result = value;
   if (min !== undefined) result = Math.max(result, min);
