@@ -142,7 +142,7 @@ export function BreakEvenCalculator() {
                 <div className="rounded-lg bg-orange-50 p-4 text-center dark:bg-orange-950">
                   <p className="text-sm text-orange-600 dark:text-orange-400">Nur durch Cashflow</p>
                   <p className="text-3xl font-bold text-orange-900 dark:text-orange-100">
-                    {result.breakEvenYearsCashflow < 100
+                    {result.breakEvenYearsCashflow !== null
                       ? `${result.breakEvenYearsCashflow} Jahre`
                       : "Nie (neg. Cashflow)"}
                   </p>
@@ -153,7 +153,7 @@ export function BreakEvenCalculator() {
                 <div className="rounded-lg bg-green-50 p-4 text-center dark:bg-green-950">
                   <p className="text-sm text-green-600 dark:text-green-400">Inkl. Wertsteigerung</p>
                   <p className="text-3xl font-bold text-green-900 dark:text-green-100">
-                    {result.breakEvenYearsTotal < 100
+                    {result.breakEvenYearsTotal !== null
                       ? `${result.breakEvenYearsTotal} Jahre`
                       : "Nie"}
                   </p>

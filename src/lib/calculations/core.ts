@@ -17,6 +17,7 @@ import {
 import { calculateTax } from "./tax";
 import { generateAmortizationSchedule, calculateCumulativeCashflow } from "./amortization";
 import { calculateInvestmentReturns } from "./returns";
+import { sanitizeNumber } from "./utils";
 
 /**
  * Calculate side costs (Nebenkosten)
@@ -173,17 +174,6 @@ export function calculateYields(
     cashflowYield,
     objectYield,
   };
-}
-
-/**
- * Sanitize a numeric value: replace NaN/Infinity with a default, clamp to range
- */
-function sanitizeNumber(value: number, defaultValue: number, min?: number, max?: number): number {
-  if (!Number.isFinite(value)) return defaultValue;
-  let result = value;
-  if (min !== undefined) result = Math.max(result, min);
-  if (max !== undefined) result = Math.min(result, max);
-  return result;
 }
 
 /**

@@ -524,7 +524,8 @@ export function PropertyWizard() {
                   placeholder="Optional - für Potenzialanalyse"
                 />
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Zukünftig erreichbare Miete (optional)
+                  Zukünftig erreichbare Miete – fließt nur in die Potenzialanalyse (KI-Bewertung)
+                  ein, nicht in Cashflow oder Rendite.
                 </p>
               </div>
 

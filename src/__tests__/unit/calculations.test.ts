@@ -799,7 +799,8 @@ describe("calculateBreakEven", () => {
     const result = calculateBreakEven(input);
 
     expect(result.breakEvenYearsCashflow).toBe(20); // 100000 / 5000
-    expect(result.breakEvenYearsTotal).toBeLessThan(result.breakEvenYearsCashflow);
+    expect(result.breakEvenYearsTotal).not.toBeNull();
+    expect(result.breakEvenYearsTotal!).toBeLessThan(result.breakEvenYearsCashflow!);
     expect(result.totalReturnAt5Years).toBeGreaterThan(0);
     expect(result.totalReturnAt10Years).toBeGreaterThan(result.totalReturnAt5Years);
   });
@@ -815,7 +816,7 @@ describe("calculateBreakEven", () => {
 
     const result = calculateBreakEven(input);
 
-    expect(result.breakEvenYearsCashflow).toBe(999); // Cashflow alone never covers investment
+    expect(result.breakEvenYearsCashflow).toBeNull(); // Cashflow alone never covers investment
     // But with appreciation, might still break even
     expect(result.breakEvenYearsTotal).toBeGreaterThan(0);
   });
@@ -847,7 +848,7 @@ describe("calculateBreakEven", () => {
 
     const result = calculateBreakEven(input);
 
-    expect(result.breakEvenYearsCashflow).toBe(999);
+    expect(result.breakEvenYearsCashflow).toBeNull();
   });
 
   it("should use marketValue as starting point if provided", () => {
@@ -959,9 +960,9 @@ describe("calculateRenovationROI", () => {
     const result = calculateRenovationROI(input);
 
     // Annual interest: 20000 * 5% = 1000
-    // Net benefit: 960 - 1000 = -40
+    // Net benefit: 960 - 1000 = -40 (negative) → never pays back
     expect(result.annualRentIncrease).toBe(960);
-    expect(result.paybackPeriodYears).toBeGreaterThan(20);
+    expect(result.paybackPeriodYears).toBeNull();
   });
 
   it("should recommend highly profitable renovations", () => {
@@ -2043,6 +2044,155 @@ describe("Movable Assets Depreciation", () => {
 
       // Cashflow should benefit from additional tax deductions
       expect(result.cashflow.taxEffect).toBeGreaterThan(0); // Tax benefit
+    });
+  });
+});
+
+// ===========================================
+// In-Depth Boundary & Consistency Tests
+// (vacancy tax basis, movable-assets AfA base,
+//  0/∞ inputs, sentinel-free feature results)
+// ===========================================
+describe("In-Depth boundary and consistency checks", () => {
+  describe("tax uses vacancy-adjusted rent (consistent with cashflow)", () => {
+    it("reduces taxable rental income by the vacancy loss", () => {
+      const input = createStandardInput();
+      input.coldRentActual = 1000;
+      input.vacancyRiskPercent = 10;
+
+      const noVacancy = { ...input, vacancyRiskPercent: 0 };
+
+      const withVacancy = calculateTax(input, 5000);
+      const without = calculateTax(noVacancy, 5000);
+
+      // Higher vacancy => lower taxable income => larger tax benefit (more positive effect)
+      expect(withVacancy.rentalIncomeAfterDeductions).toBeLessThan(
+        without.rentalIncomeAfterDeductions
+      );
+      expect(withVacancy.taxEffect).toBeGreaterThan(without.taxEffect);
+    });
+
+    it("taxable income equals net (post-vacancy) rent minus deductions", () => {
+      const input = createStandardInput();
+      input.coldRentActual = 1200;
+      input.vacancyRiskPercent = 5;
+      const result = calculateTax(input, 4000);
+
+      const grossRent = 1200 * 12;
+      const netRent = grossRent - grossRent * 0.05;
+      expect(result.rentalIncomeAfterDeductions).toBeCloseTo(netRent - result.totalDeductions, 4);
+    });
+  });
+
+  describe("movable-assets AfA base never exceeds purchase price", () => {
+    it("excludes movable assets from the building AfA base", () => {
+      const base = calculateAfA(300000, 75, "ALTBAU_AB_1925", 0);
+      const withMovable = calculateAfA(300000, 75, "ALTBAU_AB_1925", 20000);
+      // (300000 - 20000) * 75% * 2% = 4200
+      expect(withMovable).toBeCloseTo(4200, 4);
+      expect(withMovable).toBeLessThan(base);
+    });
+
+    it("keeps total depreciation base <= purchase price", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 300000;
+      input.buildingSharePercent = 100;
+      input.movableAssetsValue = 30000;
+      input.movableAssetsDepreciationYears = 10;
+      const result = calculateTax(input, 0);
+
+      // Building base (excl. movable) + movable base <= purchase price
+      const afaRate = 0.02; // ALTBAU_AB_1925 default in getDefaultPropertyInput
+      const buildingBase = result.afaAmount / afaRate;
+      expect(buildingBase + input.movableAssetsValue).toBeLessThanOrEqual(
+        input.purchasePrice + 1e-6
+      );
+    });
+  });
+
+  describe("full KPI pipeline stays finite at boundaries", () => {
+    const expectAllFinite = (obj: unknown) => {
+      const walk = (v: unknown) => {
+        if (typeof v === "number") expect(Number.isFinite(v)).toBe(true);
+        else if (v && typeof v === "object") Object.values(v).forEach(walk);
+      };
+      walk(obj);
+    };
+
+    it("handles zero equity (100% financing) without NaN/Infinity", () => {
+      const input = createStandardInput();
+      input.equity = 0;
+      const out = calculatePropertyKPIs(input);
+      // returnOnEquity is undefined -> reported as 0, still finite
+      expect(Number.isFinite(out.yields.returnOnEquity)).toBe(true);
+      // irr may be null (undefined), but must not be NaN
+      expect(out.investmentReturns.irr === null || Number.isFinite(out.investmentReturns.irr)).toBe(
+        true
+      );
+      expectAllFinite({ ...out, investmentReturns: { ...out.investmentReturns, irr: 0 } });
+    });
+
+    it("handles equity exceeding total investment", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 100000;
+      input.equity = 500000; // more than total investment
+      const out = calculatePropertyKPIs(input);
+      expect(out.financing.loanAmount).toBeLessThanOrEqual(0 + 1e-6);
+      expect(out.amortizationSchedule.length).toBe(0);
+      expectAllFinite({ ...out, investmentReturns: { ...out.investmentReturns, irr: 0 } });
+    });
+
+    it("handles zero purchase price", () => {
+      const input = createStandardInput();
+      input.purchasePrice = 0;
+      const out = calculatePropertyKPIs(input);
+      expectAllFinite({ ...out, investmentReturns: { ...out.investmentReturns, irr: 0 } });
+    });
+
+    it("handles zero rent and zero repayment", () => {
+      const input = createStandardInput();
+      input.coldRentActual = 0;
+      input.coldRentTarget = 0;
+      input.repaymentRate = 0;
+      const out = calculatePropertyKPIs(input);
+      expectAllFinite({ ...out, investmentReturns: { ...out.investmentReturns, irr: 0 } });
+    });
+  });
+
+  describe("feature calculators return null instead of magic sentinels", () => {
+    it("breakEven cashflow is null when cashflow is non-positive", () => {
+      const result = calculateBreakEven({
+        totalInvestment: 300000,
+        equity: 60000,
+        annualCashflow: 0,
+        annualAppreciation: 0,
+        sellingCostsPercent: 6,
+      });
+      expect(result.breakEvenYearsCashflow).toBeNull();
+    });
+
+    it("renovation payback is null when the benefit is non-positive", () => {
+      const result = calculateRenovationROI({
+        renovationType: "SONSTIGE",
+        estimatedCost: 10000,
+        expectedRentIncrease: 0,
+        expectedValueIncrease: 0,
+        financingPercent: 0,
+        interestRate: 0,
+      });
+      expect(result.paybackPeriodYears).toBeNull();
+    });
+
+    it("sanitizes non-finite feature inputs", () => {
+      const result = calculateBreakEven({
+        totalInvestment: Number.POSITIVE_INFINITY,
+        equity: Number.NaN,
+        annualCashflow: 5000,
+        annualAppreciation: 2,
+        sellingCostsPercent: 6,
+      });
+      expect(Number.isFinite(result.roiAt5Years)).toBe(true);
+      expect(Number.isFinite(result.totalReturnAt10Years)).toBe(true);
     });
   });
 });

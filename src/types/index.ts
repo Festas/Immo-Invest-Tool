@@ -57,6 +57,11 @@ export interface PropertyInput {
 
   // Financing
   equity: number;
+  /**
+   * @deprecated Not used as an input. The effective loan amount is always
+   * derived as `totalInvestment − equity` in calculatePropertyKPIs and exposed
+   * via PropertyOutput.financing.loanAmount. Any value set here is ignored.
+   */
   loanAmount?: number;
   interestRate: number;
   repaymentRate: number;
@@ -366,8 +371,8 @@ export interface BreakEvenInput {
  * Break-even calculation result
  */
 export interface BreakEvenResult {
-  breakEvenYearsCashflow: number; // years until cumulative cashflow covers investment
-  breakEvenYearsTotal: number; // years until total return (incl. appreciation) covers investment
+  breakEvenYearsCashflow: number | null; // years until cumulative cashflow covers investment, null if never
+  breakEvenYearsTotal: number | null; // years until total return (incl. appreciation) covers investment, null if never
   totalReturnAt5Years: number;
   totalReturnAt10Years: number;
   totalReturnAt15Years: number;
@@ -408,7 +413,7 @@ export interface RenovationInput {
 export interface RenovationResult {
   totalCost: number;
   annualRentIncrease: number;
-  paybackPeriodYears: number;
+  paybackPeriodYears: number | null; // null if the renovation never pays back
   roiPercent: number;
   valueIncreaseRoi: number;
   isRecommended: boolean;
