@@ -191,13 +191,16 @@ export function calculateExtendedCashflowProjection(
 
   const years = Math.min(yearsToProject, amortizationSchedule.length);
 
-  // Calculate AfA (depreciation) - constant for simplified calculation
-  const buildingValue = (input.purchasePrice * input.buildingSharePercent) / 100;
+  // Calculate AfA (depreciation) - constant for simplified calculation.
+  // Movable assets are depreciated separately, so their value is excluded from
+  // the building AfA base to prevent double-counting.
+  const movableAssetsValue = input.movableAssetsValue ?? 0;
+  const realEstateValue = Math.max(0, input.purchasePrice - Math.max(0, movableAssetsValue));
+  const buildingValue = (realEstateValue * input.buildingSharePercent) / 100;
   const afaRate = AfARates[input.afaType].rate;
   const afaAmount = (buildingValue * afaRate) / 100;
 
   // Calculate movable assets AfA (e.g., fitted kitchen)
-  const movableAssetsValue = input.movableAssetsValue ?? 0;
   const movableAssetsDepreciationYears = input.movableAssetsDepreciationYears ?? 10;
   const movableAssetsAfAPerYear =
     movableAssetsValue > 0 && movableAssetsDepreciationYears > 0
@@ -231,7 +234,9 @@ export function calculateExtendedCashflowProjection(
     // Calculate tax deductions (including movable assets AfA if within depreciation period)
     const totalDeductions =
       afaAmount + currentMovableAssetsAfA + interestPayment + currentOperatingCosts;
-    const rentalIncomeAfterDeductions = currentRent - totalDeductions;
+    // Taxable income is based on the rent actually received (net of vacancy),
+    // consistent with the cashflow and the core tax calculation.
+    const rentalIncomeAfterDeductions = netRent - totalDeductions;
 
     // Tax effect: negative income = tax benefit, positive income = tax liability
     const taxEffect = -(rentalIncomeAfterDeductions * input.personalTaxRate) / 100;
@@ -281,7 +286,8 @@ export function calculateExtendedCashflowProjection(
 
     // Calculate tax deductions (only AfA, movable assets AfA if applicable, and operating costs, no interest)
     const totalDeductions = afaAmount + currentMovableAssetsAfA + currentOperatingCosts;
-    const rentalIncomeAfterDeductions = currentRent - totalDeductions;
+    // Taxable income is based on the rent actually received (net of vacancy).
+    const rentalIncomeAfterDeductions = netRent - totalDeductions;
 
     // Tax effect: negative income = tax benefit, positive income = tax liability
     const taxEffect = -(rentalIncomeAfterDeductions * input.personalTaxRate) / 100;

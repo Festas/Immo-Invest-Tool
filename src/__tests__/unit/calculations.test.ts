@@ -1812,14 +1812,14 @@ describe("Movable Assets Depreciation", () => {
       const annualInterest = 8000;
       const result = calculateTax(input, annualInterest);
 
-      // Building AfA: 300000 * 75% * 2% = 4500
-      expect(result.afaAmount).toBeCloseTo(4500, 0);
+      // Building AfA base excludes movable assets: (300000 - 5000) * 75% * 2% = 4425
+      expect(result.afaAmount).toBeCloseTo(4425, 0);
 
       // Movable assets AfA: 5000 / 10 = 500
       expect(result.movableAssetsAfA).toBeCloseTo(500, 0);
 
       // Total deductions should include movable assets AfA
-      const expectedDeductions = 4500 + 500 + 8000 + (100 + 50) * 12;
+      const expectedDeductions = 4425 + 500 + 8000 + (100 + 50) * 12;
       expect(result.totalDeductions).toBeCloseTo(expectedDeductions, 0);
     });
 
