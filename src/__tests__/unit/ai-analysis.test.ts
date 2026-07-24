@@ -116,16 +116,11 @@ describe("analyzeDeal", () => {
     const { input, output } = createStandardProperty();
     const locationData: LocationAnalysisResult = {
       overallScore: 85,
+      locationQuality: "A",
+      investmentRecommendation: "STARK_EMPFOHLEN",
       riskLevel: "NIEDRIG",
       strengths: ["Gute Infrastruktur", "Wachsende Bevölkerung"],
       weaknesses: [],
-      recommendation: "Sehr guter Standort",
-      details: {
-        infrastructure: 80,
-        economy: 75,
-        demographics: 90,
-        livingQuality: 85,
-      },
     };
 
     const analysis = analyzeDeal(input, output, locationData);
@@ -192,16 +187,11 @@ describe("analyzeDeal", () => {
     const { input, output } = createStandardProperty();
     const locationData: LocationAnalysisResult = {
       overallScore: 25,
+      locationQuality: "D",
+      investmentRecommendation: "NICHT_EMPFOHLEN",
       riskLevel: "HOCH",
       strengths: [],
       weaknesses: ["Schrumpfende Bevölkerung", "Schwache Wirtschaft"],
-      recommendation: "Vorsicht",
-      details: {
-        infrastructure: 30,
-        economy: 20,
-        demographics: 25,
-        livingQuality: 30,
-      },
     };
 
     const analysis = analyzeDeal(input, output, locationData);
