@@ -5,6 +5,26 @@
 import { ExtendedCashflowPoint } from "@/types";
 
 /**
+ * Sanitize a numeric value: replace NaN/Infinity with a default and clamp to
+ * an optional [min, max] range. Shared guard used across the calculation
+ * engine to keep boundary inputs (0, ∞, negative) from producing NaN/Infinity.
+ */
+export function sanitizeNumber(
+  value: number,
+  defaultValue: number,
+  min?: number,
+  max?: number
+): number {
+  // Number.isFinite is false for NaN, Infinity and -Infinity, so this single
+  // check covers all non-finite cases.
+  if (!Number.isFinite(value)) return defaultValue;
+  let result = value;
+  if (min !== undefined) result = Math.max(result, min);
+  if (max !== undefined) result = Math.min(result, max);
+  return result;
+}
+
+/**
  * Calculate loan amount from investment volume and equity
  */
 export function calculateLoanAmount(totalInvestment: number, equity: number): number {

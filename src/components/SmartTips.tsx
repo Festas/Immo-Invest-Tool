@@ -221,6 +221,49 @@ const SMART_TIPS: SmartTip[] = [
     },
     relatedTabs: ["charts", "break-even"],
   },
+  {
+    id: "no-repayment",
+    type: "warning",
+    icon: <Percent className="h-4 w-4" />,
+    title: "Keine Tilgung",
+    message:
+      "Ohne Tilgung (0%) wird das Darlehen innerhalb des Betrachtungszeitraums nie vollständig zurückgezahlt. Kennzahlen zur Entschuldung sind daher nicht aussagekräftig.",
+    condition: (input, output) => {
+      if (!output) return false;
+      return (
+        input.repaymentRate <= 0 &&
+        input.interestRate > 0 &&
+        output.financing.loanAmount > 0 &&
+        input.purchasePrice > 0
+      );
+    },
+    relatedTabs: ["charts", "break-even"],
+  },
+  {
+    id: "no-equity",
+    type: "warning",
+    icon: <Wallet className="h-4 w-4" />,
+    title: "Kein Eigenkapital",
+    message:
+      "Ohne Eigenkapital (100% Finanzierung) ist die Eigenkapitalrendite mathematisch nicht definiert (Division durch 0) und wird als 0 dargestellt. Zudem ist eine Vollfinanzierung mit erhöhtem Risiko verbunden.",
+    condition: (input) => {
+      return input.equity <= 0 && input.purchasePrice > 0;
+    },
+    relatedTabs: ["calculator"],
+  },
+  {
+    id: "excess-equity",
+    type: "info",
+    icon: <Wallet className="h-4 w-4" />,
+    title: "Eigenkapital übersteigt Investition",
+    message:
+      "Ihr Eigenkapital ist höher als das gesamte Investitionsvolumen. Der überschüssige Betrag wird nicht in dieses Objekt investiert und fließt nicht in die Renditeberechnung ein.",
+    condition: (input, output) => {
+      if (!output) return false;
+      return input.equity > output.investmentVolume.totalInvestment && input.purchasePrice > 0;
+    },
+    relatedTabs: ["calculator"],
+  },
 ];
 
 /**

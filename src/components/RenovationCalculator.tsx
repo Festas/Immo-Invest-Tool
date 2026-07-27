@@ -257,14 +257,14 @@ export function RenovationCalculator() {
               </div>
               <div
                 className={`rounded-lg border p-3 text-center ${
-                  result.paybackPeriodYears <= 10
+                  result.paybackPeriodYears !== null && result.paybackPeriodYears <= 10
                     ? "border-green-100 bg-green-50 dark:border-green-900/50 dark:bg-green-950/50"
                     : "border-orange-100 bg-orange-50 dark:border-orange-900/50 dark:bg-orange-950/50"
                 }`}
               >
                 <p
                   className={`text-xs ${
-                    result.paybackPeriodYears <= 10
+                    result.paybackPeriodYears !== null && result.paybackPeriodYears <= 10
                       ? "text-green-600 dark:text-green-400"
                       : "text-orange-600 dark:text-orange-400"
                   }`}
@@ -272,7 +272,7 @@ export function RenovationCalculator() {
                   Amortisation
                 </p>
                 <p className="text-lg font-bold">
-                  {result.paybackPeriodYears < 100
+                  {result.paybackPeriodYears !== null
                     ? `${result.paybackPeriodYears.toFixed(1)} Jahre`
                     : "Nie"}
                 </p>
@@ -350,7 +350,7 @@ export function RenovationCalculator() {
                 <li>
                   • Die Amortisationszeit beträgt{" "}
                   <strong>
-                    {result.paybackPeriodYears < 100
+                    {result.paybackPeriodYears !== null
                       ? `${result.paybackPeriodYears.toFixed(1)} Jahre`
                       : "mehr als die Nutzungsdauer"}
                   </strong>

@@ -101,7 +101,10 @@ function calculateCategoryScores(
 
   // Financing score (0-100)
   let financingScore = 50;
-  const equityRatio = (input.equity / output.investmentVolume.totalInvestment) * 100;
+  const equityRatio =
+    (output.investmentVolume.totalInvestment > 0
+      ? input.equity / output.investmentVolume.totalInvestment
+      : 0) * 100;
   const interestRate = input.interestRate;
 
   if (equityRatio >= 30 && interestRate <= 3.0) financingScore = 90;
@@ -115,7 +118,11 @@ function calculateCategoryScores(
 
   // Potential score (rent increase potential, appreciation)
   let potentialScore = 50;
-  const rentDiff = ((input.coldRentTarget - input.coldRentActual) / input.coldRentActual) * 100;
+  // Guard against division by zero when no actual rent is entered.
+  const rentDiff =
+    input.coldRentActual > 0
+      ? ((input.coldRentTarget - input.coldRentActual) / input.coldRentActual) * 100
+      : 0;
   if (rentDiff >= 20) potentialScore = 85;
   else if (rentDiff >= 10) potentialScore = 70;
   else if (rentDiff >= 5) potentialScore = 55;
@@ -178,7 +185,10 @@ function identifyRisks(
   }
 
   // Low equity ratio risk
-  const equityRatio = (input.equity / output.investmentVolume.totalInvestment) * 100;
+  const equityRatio =
+    (output.investmentVolume.totalInvestment > 0
+      ? input.equity / output.investmentVolume.totalInvestment
+      : 0) * 100;
   if (equityRatio < 10) {
     risks.push({
       type: "CRITICAL",
@@ -294,7 +304,10 @@ function identifyStrengthsWeaknesses(
   }
 
   // Additional analysis
-  const equityRatio = (input.equity / output.investmentVolume.totalInvestment) * 100;
+  const equityRatio =
+    (output.investmentVolume.totalInvestment > 0
+      ? input.equity / output.investmentVolume.totalInvestment
+      : 0) * 100;
   if (equityRatio >= 30) {
     strengths.push("Hoher Eigenkapitalanteil");
   }
@@ -370,7 +383,10 @@ Nettomietrendite: ${output.yields.netRentalYield.toFixed(2)}%
 Eigenkapitalrendite: ${output.yields.returnOnEquity.toFixed(2)}%`);
 
   // Financing analysis
-  const equityRatio = (input.equity / output.investmentVolume.totalInvestment) * 100;
+  const equityRatio =
+    (output.investmentVolume.totalInvestment > 0
+      ? input.equity / output.investmentVolume.totalInvestment
+      : 0) * 100;
   sections.push(`**Finanzierung (${scores.financing}/100)**
 Eigenkapitalquote: ${equityRatio.toFixed(1)}%
 Zinssatz: ${input.interestRate}%
@@ -412,7 +428,10 @@ export function generateInsights(input: PropertyInput, output: PropertyOutput): 
   }
 
   // Equity optimization
-  const equityRatio = (input.equity / output.investmentVolume.totalInvestment) * 100;
+  const equityRatio =
+    (output.investmentVolume.totalInvestment > 0
+      ? input.equity / output.investmentVolume.totalInvestment
+      : 0) * 100;
   if (equityRatio > 40) {
     insights.push({
       title: "Kapitaleffizienz",

@@ -19,6 +19,7 @@ import {
   LocationAnalysisResult,
   LocationQuality,
 } from "@/types";
+import { sanitizeNumber } from "./utils";
 
 // Reusable currency formatter for German locale
 const currencyFormatter = new Intl.NumberFormat("de-DE", {
@@ -115,25 +116,24 @@ export function calculateRentIndex(input: RentIndexInput): RentIndexResult {
  * Calculate break-even analysis
  */
 export function calculateBreakEven(input: BreakEvenInput): BreakEvenResult {
-  const {
-    totalInvestment,
-    equity,
-    annualCashflow,
-    annualAppreciation,
-    sellingCostsPercent,
-    marketValue,
-    amortizationSchedule,
-  } = input;
+  const totalInvestment = sanitizeNumber(input.totalInvestment, 0, 0);
+  const equity = sanitizeNumber(input.equity, 0, 0);
+  const annualCashflow = sanitizeNumber(input.annualCashflow, 0);
+  const annualAppreciation = sanitizeNumber(input.annualAppreciation, 0, -100, 100);
+  const sellingCostsPercent = sanitizeNumber(input.sellingCostsPercent, 0, 0, 100);
+  const marketValue =
+    input.marketValue !== undefined ? sanitizeNumber(input.marketValue, 0, 0) : undefined;
+  const amortizationSchedule = input.amortizationSchedule;
 
   // Use marketValue as starting point if provided, otherwise use totalInvestment
   const startValue = marketValue && marketValue > 0 ? marketValue : totalInvestment;
 
-  // Break-even through cashflow only
+  // Break-even through cashflow only (null when cashflow never covers the investment)
   const breakEvenYearsCashflow =
-    annualCashflow > 0 ? Math.ceil(totalInvestment / annualCashflow) : 999;
+    annualCashflow > 0 ? Math.ceil(totalInvestment / annualCashflow) : null;
 
-  // Break-even including appreciation
-  let breakEvenYearsTotal = 999;
+  // Break-even including appreciation (null when never reached within 50 years)
+  let breakEvenYearsTotal: number | null = null;
   let cumulativeReturn = 0;
   let propertyValue = startValue;
 
@@ -143,7 +143,7 @@ export function calculateBreakEven(input: BreakEvenInput): BreakEvenResult {
     const appreciation = propertyValue - startValue;
     const netAppreciation = appreciation * (1 - sellingCostsPercent / 100);
 
-    if (cumulativeReturn + netAppreciation >= totalInvestment && breakEvenYearsTotal === 999) {
+    if (cumulativeReturn + netAppreciation >= totalInvestment && breakEvenYearsTotal === null) {
       breakEvenYearsTotal = year;
       break;
     }
@@ -206,13 +206,11 @@ export function calculateBreakEven(input: BreakEvenInput): BreakEvenResult {
  * Calculate renovation ROI
  */
 export function calculateRenovationROI(input: RenovationInput): RenovationResult {
-  const {
-    estimatedCost,
-    expectedRentIncrease,
-    expectedValueIncrease,
-    financingPercent,
-    interestRate,
-  } = input;
+  const estimatedCost = sanitizeNumber(input.estimatedCost, 0, 0);
+  const expectedRentIncrease = sanitizeNumber(input.expectedRentIncrease, 0);
+  const expectedValueIncrease = sanitizeNumber(input.expectedValueIncrease, 0);
+  const financingPercent = sanitizeNumber(input.financingPercent, 0, 0, 100);
+  const interestRate = sanitizeNumber(input.interestRate, 0, 0, 100);
 
   const annualRentIncrease = expectedRentIncrease * 12;
 
@@ -221,8 +219,8 @@ export function calculateRenovationROI(input: RenovationInput): RenovationResult
   const annualInterestCost = financed * (interestRate / 100);
   const netAnnualBenefit = annualRentIncrease - annualInterestCost;
 
-  // Payback period
-  const paybackPeriodYears = netAnnualBenefit > 0 ? estimatedCost / netAnnualBenefit : 999;
+  // Payback period (null when the renovation never pays back)
+  const paybackPeriodYears = netAnnualBenefit > 0 ? estimatedCost / netAnnualBenefit : null;
 
   // ROI from rent increase
   const roiPercent = estimatedCost > 0 ? (netAnnualBenefit / estimatedCost) * 100 : 0;
@@ -231,14 +229,15 @@ export function calculateRenovationROI(input: RenovationInput): RenovationResult
   const valueIncreaseRoi = estimatedCost > 0 ? (expectedValueIncrease / estimatedCost) * 100 : 0;
 
   // Combined assessment
-  const isRecommended = paybackPeriodYears <= 10 || valueIncreaseRoi >= 100;
+  const hasPayback = paybackPeriodYears !== null;
+  const isRecommended = (hasPayback && paybackPeriodYears <= 10) || valueIncreaseRoi >= 100;
 
   let recommendation: string;
-  if (paybackPeriodYears <= 5 && valueIncreaseRoi >= 100) {
+  if (hasPayback && paybackPeriodYears <= 5 && valueIncreaseRoi >= 100) {
     recommendation = "🟢 Sehr empfehlenswert! Schnelle Amortisation und gute Wertsteigerung.";
-  } else if (paybackPeriodYears <= 8 || valueIncreaseRoi >= 80) {
+  } else if ((hasPayback && paybackPeriodYears <= 8) || valueIncreaseRoi >= 80) {
     recommendation = "🟡 Empfehlenswert. Solide Investition mit gutem Potenzial.";
-  } else if (paybackPeriodYears <= 12 || valueIncreaseRoi >= 50) {
+  } else if ((hasPayback && paybackPeriodYears <= 12) || valueIncreaseRoi >= 50) {
     recommendation = "🟠 Bedingt empfehlenswert. Langfristige Investition.";
   } else {
     recommendation = "🔴 Nicht empfohlen. Kosten übersteigen den erwarteten Nutzen.";
