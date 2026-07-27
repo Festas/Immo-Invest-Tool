@@ -2,11 +2,10 @@
  * Navigation structure and constants
  * Defines the hierarchical navigation categories and items
  *
- * Grouped into 4 primary views:
+ * Grouped into 3 primary views:
  * - Analyze: Core calculator + results flow
  * - Visualize: All charts and projections
  * - Compare: Scenario comparison + portfolio dashboard
- * - Tools: Rent index, renovation, location analysis, etc.
  */
 
 import {
@@ -14,11 +13,8 @@ import {
   BarChart3,
   GitCompare,
   LayoutDashboard,
-  MapPin,
   Target,
-  Wrench,
   LogOut,
-  ClipboardCheck,
   LucideIcon,
 } from "lucide-react";
 
@@ -39,7 +35,7 @@ export interface NavigationCategory {
 
 /**
  * Navigation categories with their items
- * Grouped into 4 primary views to reduce tab overload
+ * Grouped into 3 primary views to reduce tab overload
  */
 export const NAVIGATION_CATEGORIES: NavigationCategory[] = [
   {
@@ -102,38 +98,6 @@ export const NAVIGATION_CATEGORIES: NavigationCategory[] = [
       },
     ],
   },
-  {
-    id: "werkzeuge",
-    label: "Werkzeuge",
-    emoji: "🛠️",
-    description: "Zusätzliche Tools",
-    items: [
-      {
-        value: "rent-index",
-        label: "Mietspiegel",
-        icon: MapPin,
-        description: "Mietpreis-Vergleich",
-      },
-      {
-        value: "renovation",
-        label: "Renovierung",
-        icon: Wrench,
-        description: "Renovierungskalkulator",
-      },
-      {
-        value: "location",
-        label: "Standort",
-        icon: MapPin,
-        description: "Standortanalyse",
-      },
-      {
-        value: "checklist",
-        label: "Checkliste",
-        icon: ClipboardCheck,
-        description: "Due Diligence Checkliste",
-      },
-    ],
-  },
 ];
 
 /**
@@ -167,10 +131,6 @@ export const NAVIGATION_SHORTCUTS: Record<string, string> = {
   charts: "2",
   dashboard: "3",
   comparison: "4",
-  "rent-index": "5",
   "break-even": "6",
-  renovation: "7",
   "exit-strategy": "8",
-  location: "9",
-  checklist: "0",
 };

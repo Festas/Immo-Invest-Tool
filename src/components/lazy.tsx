@@ -45,14 +45,6 @@ export const PortfolioDashboard = dynamic(
   { loading: () => <DashboardSkeleton />, ssr: false }
 );
 
-export const RentIndexCalculator = dynamic(
-  () =>
-    import("@/components/RentIndexCalculator").then((mod) => ({
-      default: mod.RentIndexCalculator,
-    })),
-  { loading: () => <CalculatorSkeleton />, ssr: false }
-);
-
 export const BreakEvenCalculator = dynamic(
   () =>
     import("@/components/BreakEvenCalculator").then((mod) => ({
@@ -61,31 +53,10 @@ export const BreakEvenCalculator = dynamic(
   { loading: () => <CalculatorSkeleton />, ssr: false }
 );
 
-export const RenovationCalculator = dynamic(
-  () =>
-    import("@/components/RenovationCalculator").then((mod) => ({
-      default: mod.RenovationCalculator,
-    })),
-  { loading: () => <CalculatorSkeleton />, ssr: false }
-);
-
 export const ExitStrategyCalculator = dynamic(
   () =>
     import("@/components/ExitStrategyCalculator").then((mod) => ({
       default: mod.ExitStrategyCalculator,
-    })),
-  { loading: () => <CalculatorSkeleton />, ssr: false }
-);
-
-export const LocationAnalysis = dynamic(
-  () => import("@/components/LocationAnalysis").then((mod) => ({ default: mod.LocationAnalysis })),
-  { loading: () => <CalculatorSkeleton />, ssr: false }
-);
-
-export const DueDiligenceChecklist = dynamic(
-  () =>
-    import("@/components/DueDiligenceChecklist").then((mod) => ({
-      default: mod.DueDiligenceChecklist,
     })),
   { loading: () => <CalculatorSkeleton />, ssr: false }
 );

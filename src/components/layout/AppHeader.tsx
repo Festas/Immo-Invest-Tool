@@ -4,23 +4,51 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { PresetButton } from "@/components/ui/preset-selector";
 import { ThemeToggle } from "@/components/theme";
-import { UserMenu } from "@/components/auth/UserMenu";
+import { useImmoCalcStore } from "@/store";
+import { buildShareUrl } from "@/lib/url-share";
 import { cn } from "@/lib/utils";
-import { Calculator, RotateCcw, Eraser } from "lucide-react";
+import { Calculator, RotateCcw, Eraser, Share2, Check } from "lucide-react";
 
 interface AppHeaderProps {
   isHeaderCollapsed: boolean;
   onClearInput: () => void;
   onResetInput: () => void;
-  onLoginClick: () => void;
 }
 
-export function AppHeader({
-  isHeaderCollapsed,
-  onClearInput,
-  onResetInput,
-  onLoginClick,
-}: AppHeaderProps) {
+export function AppHeader({ isHeaderCollapsed, onClearInput, onResetInput }: AppHeaderProps) {
+  const currentInput = useImmoCalcStore((state) => state.currentInput);
+  const [shared, setShared] = React.useState(false);
+
+  const handleShare = React.useCallback(async () => {
+    const url = buildShareUrl(currentInput);
+    const showCopied = () => {
+      setShared(true);
+      window.setTimeout(() => setShared(false), 2000);
+    };
+
+    // Prefer the native share sheet where available (mobile).
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "ImmoCalc Pro", url });
+        showCopied();
+        return;
+      } catch (error) {
+        // The user cancelled the share dialog – do nothing.
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        // Otherwise fall through to the clipboard as a fallback.
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      showCopied();
+    } catch {
+      // Clipboard unavailable (e.g. insecure context): show the URL so the
+      // user can copy it manually.
+      window.prompt("Link zum Teilen kopieren:", url);
+    }
+  }, [currentInput]);
+
   return (
     <header
       role="banner"
@@ -72,7 +100,32 @@ export function AppHeader({
             </div>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
-            <UserMenu onLoginClick={onLoginClick} />
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleShare}
+              aria-label="Objekt über Link teilen"
+              className={cn("group", isHeaderCollapsed && "h-8 px-2 md:h-9 md:px-4")}
+            >
+              {shared ? (
+                <Check
+                  className={cn(
+                    "text-green-300",
+                    isHeaderCollapsed ? "h-3.5 w-3.5 md:mr-1.5 md:h-4 md:w-4" : "mr-1.5 h-4 w-4"
+                  )}
+                  aria-hidden="true"
+                />
+              ) : (
+                <Share2
+                  className={cn(
+                    "transition-transform",
+                    isHeaderCollapsed ? "h-3.5 w-3.5 md:mr-1.5 md:h-4 md:w-4" : "mr-1.5 h-4 w-4"
+                  )}
+                  aria-hidden="true"
+                />
+              )}
+              <span className="hidden sm:inline">{shared ? "Kopiert!" : "Teilen"}</span>
+            </Button>
             <PresetButton />
             <ThemeToggle />
             <Button
