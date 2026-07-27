@@ -46,24 +46,6 @@ test.describe("Property Calculator", () => {
       await expect(page.locator("svg").first()).toBeVisible({ timeout: 5000 });
     }
   });
-
-  test("should display rent index calculator", async ({ page }) => {
-    // Navigate to Mietspiegel section
-    const mietspiegelTab = page.getByRole("tab", { name: /Mietspiegel/i });
-    if (await mietspiegelTab.isVisible()) {
-      await mietspiegelTab.click();
-      await expect(page.getByText(/Mietpreis/i).first()).toBeVisible({ timeout: 5000 });
-    }
-  });
-
-  test("should display due diligence checklist", async ({ page }) => {
-    // Navigate to Checkliste section
-    const checklistTab = page.getByRole("tab", { name: /Checkliste/i });
-    if (await checklistTab.isVisible()) {
-      await checklistTab.click();
-      await expect(page.getByText(/Due Diligence|Prüfung/i).first()).toBeVisible({ timeout: 5000 });
-    }
-  });
 });
 
 test.describe("Scenario Comparison", () => {
@@ -115,22 +97,6 @@ test.describe("Extended Features", () => {
     if (await exitTab.isVisible()) {
       await exitTab.click();
       await expect(page.getByText(/Verkauf|Exit/i).first()).toBeVisible({ timeout: 5000 });
-    }
-  });
-
-  test("should access location analysis", async ({ page }) => {
-    const standortTab = page.getByRole("tab", { name: /Standort/i });
-    if (await standortTab.isVisible()) {
-      await standortTab.click();
-      await expect(page.getByText(/Standort|Lage/i).first()).toBeVisible({ timeout: 5000 });
-    }
-  });
-
-  test("should access renovation calculator", async ({ page }) => {
-    const renovationTab = page.getByRole("tab", { name: /Renovierung/i });
-    if (await renovationTab.isVisible()) {
-      await renovationTab.click();
-      await expect(page.getByText(/Renovierung|ROI/i).first()).toBeVisible({ timeout: 5000 });
     }
   });
 });

@@ -81,16 +81,6 @@ const TAB_TIPS: TabTip[] = [
     relatedTabs: ["calculator", "charts"],
   },
   {
-    id: "rent-index-tip",
-    tab: "rent-index",
-    type: "info",
-    icon: <HelpCircle className="h-4 w-4" />,
-    title: "Was kann ich hier tun?",
-    message:
-      "Analysieren Sie Mietpreisentwicklungen und vergleichen Sie mit dem regionalen Mietspiegel. Optimieren Sie Ihre Mietstrategie.",
-    relatedTabs: ["location", "calculator"],
-  },
-  {
     id: "break-even-tip",
     tab: "break-even",
     type: "info",
@@ -101,16 +91,6 @@ const TAB_TIPS: TabTip[] = [
     relatedTabs: ["calculator", "charts"],
   },
   {
-    id: "renovation-tip",
-    tab: "renovation",
-    type: "info",
-    icon: <HelpCircle className="h-4 w-4" />,
-    title: "Was kann ich hier tun?",
-    message:
-      "Planen Sie Renovierungen und Sanierungen. Kalkulieren Sie Kosten und deren Einfluss auf Rendite und Wert.",
-    relatedTabs: ["calculator", "exit-strategy"],
-  },
-  {
     id: "exit-strategy-tip",
     tab: "exit-strategy",
     type: "info",
@@ -118,27 +98,7 @@ const TAB_TIPS: TabTip[] = [
     title: "Was kann ich hier tun?",
     message:
       "Planen Sie den Verkauf Ihrer Immobilie. Berechnen Sie Verkaufserlös, Steuern und Nettogewinn.",
-    relatedTabs: ["calculator", "renovation"],
-  },
-  {
-    id: "location-tip",
-    tab: "location",
-    type: "info",
-    icon: <HelpCircle className="h-4 w-4" />,
-    title: "Was kann ich hier tun?",
-    message:
-      "Analysieren Sie die Lage und das Umfeld der Immobilie. Bewerten Sie Infrastruktur, Entwicklungspotenzial und Risiken.",
-    relatedTabs: ["rent-index", "calculator"],
-  },
-  {
-    id: "checklist-tip",
-    tab: "checklist",
-    type: "info",
-    icon: <HelpCircle className="h-4 w-4" />,
-    title: "Was kann ich hier tun?",
-    message:
-      "Nutzen Sie die Due Diligence Checkliste für einen strukturierten Kaufprozess. Vergessen Sie keine wichtigen Prüfpunkte.",
-    relatedTabs: ["location", "calculator"],
+    relatedTabs: ["calculator", "charts"],
   },
 ];
 
@@ -157,7 +117,7 @@ const SMART_TIPS: SmartTip[] = [
       if (!output) return false;
       return output.yields.grossRentalYield < 3 && input.purchasePrice > 0;
     },
-    relatedTabs: ["comparison", "rent-index"],
+    relatedTabs: ["comparison"],
   },
   {
     id: "low-equity",
@@ -358,12 +318,8 @@ function getTabLabel(tabValue: string): string {
     charts: "Charts",
     comparison: "Vergleich",
     dashboard: "Dashboard",
-    "rent-index": "Mietspiegel",
     "break-even": "Break-Even",
-    renovation: "Renovierung",
     "exit-strategy": "Exit-Strategie",
-    location: "Standort",
-    checklist: "Checkliste",
   };
   return labels[tabValue] || tabValue;
 }

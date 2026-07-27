@@ -25,31 +25,6 @@ function generateId(): string {
   return crypto.randomUUID();
 }
 
-/**
- * Helper function to handle server sync errors
- */
-async function handleSyncError(
-  response: Response,
-  operation: string,
-  set: (state: Partial<ImmoCalcState>) => void
-): Promise<void> {
-  if (!response.ok) {
-    let errorText: string;
-    try {
-      errorText = await response.text();
-    } catch {
-      errorText = `HTTP ${response.status}`;
-    }
-    set({ syncError: `Fehler beim ${operation}: ${errorText}` });
-    console.error(`Failed to ${operation}:`, errorText);
-  } else {
-    set({ syncError: null });
-  }
-}
-
-/** Default timeout for server sync operations (15 seconds) */
-const SYNC_TIMEOUT_MS = 15_000;
-
 interface ImmoCalcState {
   // Current calculator input
   currentInput: PropertyInput;
@@ -80,20 +55,14 @@ interface ImmoCalcState {
   updateInput: (updates: Partial<PropertyInput>) => void;
   resetInput: () => void;
   clearInput: () => void;
+  loadInput: (input: PropertyInput) => void;
   calculate: () => void;
   loadSampleProperty: () => void;
 
   // Property actions
-  saveProperty: (name: string, address?: string) => Promise<void>;
+  saveProperty: (name: string, address?: string) => void;
   loadProperty: (id: string) => void;
-  deleteProperty: (id: string) => Promise<void>;
-
-  // Server sync actions
-  syncWithServer: () => Promise<void>;
-  isServerSyncEnabled: boolean;
-  setServerSyncEnabled: (enabled: boolean) => void;
-  syncError: string | null;
-  setSyncError: (error: string | null) => void;
+  deleteProperty: (id: string) => void;
 
   // Scenario actions
   addScenario: (name: string) => void;
@@ -129,8 +98,6 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       wizardMode: true,
       preFamilyPurchaseTaxPercent: null,
       preFamilyPurchaseBrokerPercent: null,
-      isServerSyncEnabled: false,
-      syncError: null,
 
       // Navigation state
       sidebarCollapsed: false,
@@ -223,6 +190,15 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
         get().calculate();
       },
 
+      // Load a complete input (e.g. from a shared URL) and recalculate
+      loadInput: (input) => {
+        set({
+          currentInput: input,
+          currentOutput: calculatePropertyKPIs(input),
+          selectedPropertyId: null,
+        });
+      },
+
       // Manual calculate
       calculate: () => {
         set((state) => ({
@@ -269,7 +245,7 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       },
 
       // Save current input as a property
-      saveProperty: async (name, address) => {
+      saveProperty: (name, address) => {
         const state = get();
         const output = calculatePropertyKPIs(state.currentInput);
 
@@ -283,28 +259,11 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
           output,
         };
 
-        // Update local state
+        // Update local state (persisted in localStorage)
         set((state) => ({
           properties: [...state.properties, newProperty],
           selectedPropertyId: newProperty.id,
         }));
-
-        // Sync with server if enabled
-        if (state.isServerSyncEnabled) {
-          try {
-            const response = await fetch("/api/portfolio", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ property: newProperty }),
-              signal: AbortSignal.timeout(SYNC_TIMEOUT_MS),
-            });
-            await handleSyncError(response, "Speichern auf dem Server", set);
-          } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler";
-            set({ syncError: `Fehler beim Speichern auf dem Server: ${errorMessage}` });
-            console.error("Failed to sync property with server:", error);
-          }
-        }
       },
 
       // Load a saved property
@@ -320,29 +279,12 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
       },
 
       // Delete a property
-      deleteProperty: async (id) => {
-        const state = get();
-
-        // Update local state
+      deleteProperty: (id) => {
+        // Update local state (persisted in localStorage)
         set((state) => ({
           properties: state.properties.filter((p) => p.id !== id),
           selectedPropertyId: state.selectedPropertyId === id ? null : state.selectedPropertyId,
         }));
-
-        // Sync with server if enabled
-        if (state.isServerSyncEnabled) {
-          try {
-            const response = await fetch(`/api/portfolio/${id}`, {
-              method: "DELETE",
-              signal: AbortSignal.timeout(SYNC_TIMEOUT_MS),
-            });
-            await handleSyncError(response, "Löschen auf dem Server", set);
-          } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler";
-            set({ syncError: `Fehler beim Löschen auf dem Server: ${errorMessage}` });
-            console.error("Failed to delete property from server:", error);
-          }
-        }
       },
 
       // Add a new scenario for comparison
@@ -467,54 +409,6 @@ export const useImmoCalcStore = create<ImmoCalcState>()(
           totalAnnualCashflow,
           averageYield: yieldSum / properties.length,
         };
-      },
-
-      // Sync portfolio with server
-      syncWithServer: async () => {
-        try {
-          const response = await fetch("/api/portfolio", {
-            signal: AbortSignal.timeout(SYNC_TIMEOUT_MS),
-          });
-          if (response.ok) {
-            const data = await response.json();
-            set({
-              properties: data.properties,
-              isServerSyncEnabled: true,
-            });
-          } else if (response.status === 401) {
-            // Not authenticated
-            // Only clear properties if they were server-synced (to prevent showing wrong user's data)
-            // Keep properties that were saved to localStorage
-            const currentState = get();
-            if (currentState.isServerSyncEnabled) {
-              // We were synced, so clear to prevent stale data from wrong user
-              set({
-                isServerSyncEnabled: false,
-                properties: [],
-                syncError: null,
-              });
-            } else {
-              // Already not synced, just ensure flag is off
-              set({ isServerSyncEnabled: false });
-            }
-          }
-        } catch (error) {
-          console.error("Failed to sync with server:", error);
-          set({ isServerSyncEnabled: false });
-        }
-      },
-
-      // Enable/disable server sync
-      setServerSyncEnabled: (enabled) => {
-        set({ isServerSyncEnabled: enabled });
-        if (enabled) {
-          get().syncWithServer();
-        }
-      },
-
-      // Set sync error message
-      setSyncError: (error) => {
-        set({ syncError: error });
       },
     }),
     {

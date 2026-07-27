@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Tabs } from "@/components/ui/tabs";
 import { BottomNavigation } from "@/components/ui/bottom-navigation";
 import { Sidebar } from "@/components/ui/sidebar";
@@ -12,22 +11,44 @@ import { SkipLink } from "@/components/ui/skip-link";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { TabContent } from "@/components/layout/TabContent";
 import { useImmoCalcStore } from "@/store";
+import { SHARE_PARAM, encodeInput, readSharedInputFromUrl } from "@/lib/url-share";
 
 export default function Home() {
-  const { activeTab, setActiveTab, resetInput, clearInput, calculate, wizardMode, setWizardMode } =
-    useImmoCalcStore();
+  const {
+    activeTab,
+    setActiveTab,
+    resetInput,
+    clearInput,
+    calculate,
+    loadInput,
+    currentInput,
+    wizardMode,
+    setWizardMode,
+  } = useImmoCalcStore();
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const router = useRouter();
+  const hydratedFromUrl = useRef(false);
 
-  // Initialize calculation on mount
+  // On first mount: load a shared object from the URL if present, otherwise
+  // recalculate from the cached (localStorage) input.
   useEffect(() => {
-    calculate();
-  }, [calculate]);
+    const shared = readSharedInputFromUrl();
+    if (shared) {
+      loadInput(shared);
+    } else {
+      calculate();
+    }
+    hydratedFromUrl.current = true;
+  }, [calculate, loadInput]);
 
-  const handleLoginClick = () => {
-    router.push("/auth");
-  };
+  // Keep the URL in sync with the currently opened object, so it can always be
+  // shared by copying the address bar.
+  useEffect(() => {
+    if (!hydratedFromUrl.current) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set(SHARE_PARAM, encodeInput(currentInput));
+    window.history.replaceState(window.history.state, "", url.toString());
+  }, [currentInput]);
 
   // Handle header collapse on scroll (mobile only)
   const handleScroll = useCallback(() => {
@@ -86,7 +107,6 @@ export default function Home() {
               isHeaderCollapsed={isHeaderCollapsed}
               onClearInput={clearInput}
               onResetInput={resetInput}
-              onLoginClick={handleLoginClick}
             />
 
             {/* Main Content Area */}

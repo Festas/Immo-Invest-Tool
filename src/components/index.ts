@@ -10,11 +10,7 @@ export {
 } from "./Charts";
 export { ScenarioComparison } from "./ScenarioComparison";
 export { PortfolioDashboard } from "./PortfolioDashboard";
-export { RentIndexCalculator } from "./RentIndexCalculator";
 export { BreakEvenCalculator } from "./BreakEvenCalculator";
-export { RenovationCalculator } from "./RenovationCalculator";
 export { ExitStrategyCalculator } from "./ExitStrategyCalculator";
-export { DueDiligenceChecklist } from "./DueDiligenceChecklist";
-export { LocationAnalysis } from "./LocationAnalysis";
 export { SmartTips } from "./SmartTips";
 export { WizardLivePreview } from "./WizardLivePreview";

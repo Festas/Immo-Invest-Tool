@@ -15,12 +15,8 @@ import {
   EquityBuildupChart,
   ScenarioComparison,
   PortfolioDashboard,
-  RentIndexCalculator,
   BreakEvenCalculator,
-  RenovationCalculator,
   ExitStrategyCalculator,
-  LocationAnalysis,
-  DueDiligenceChecklist,
 } from "@/components/lazy";
 
 interface TabContentProps {
@@ -164,23 +160,9 @@ export function TabContent({ wizardMode, onToggleWizardMode }: TabContentProps) 
       </TabsContent>
 
       {/* Rent Index Tab */}
-      <TabsContent value="rent-index">
-        <FeatureErrorBoundary featureName="Mietspiegel">
-          <RentIndexCalculator />
-        </FeatureErrorBoundary>
-      </TabsContent>
-
-      {/* Break-Even Tab */}
       <TabsContent value="break-even">
         <FeatureErrorBoundary featureName="Break-Even">
           <BreakEvenCalculator />
-        </FeatureErrorBoundary>
-      </TabsContent>
-
-      {/* Renovation Tab */}
-      <TabsContent value="renovation">
-        <FeatureErrorBoundary featureName="Renovierung">
-          <RenovationCalculator />
         </FeatureErrorBoundary>
       </TabsContent>
 
@@ -188,20 +170,6 @@ export function TabContent({ wizardMode, onToggleWizardMode }: TabContentProps) 
       <TabsContent value="exit-strategy">
         <FeatureErrorBoundary featureName="Exit-Strategie">
           <ExitStrategyCalculator />
-        </FeatureErrorBoundary>
-      </TabsContent>
-
-      {/* Location Analysis Tab */}
-      <TabsContent value="location">
-        <FeatureErrorBoundary featureName="Standortanalyse">
-          <LocationAnalysis />
-        </FeatureErrorBoundary>
-      </TabsContent>
-
-      {/* Due Diligence Checklist Tab */}
-      <TabsContent value="checklist">
-        <FeatureErrorBoundary featureName="Checkliste">
-          <DueDiligenceChecklist />
         </FeatureErrorBoundary>
       </TabsContent>
     </>
