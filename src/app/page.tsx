@@ -13,6 +13,9 @@ import { TabContent } from "@/components/layout/TabContent";
 import { useImmoCalcStore } from "@/store";
 import { SHARE_PARAM, encodeInput, readSharedInputFromUrl } from "@/lib/url-share";
 
+/** Debounce delay before reflecting input changes into the URL (ms). */
+const URL_UPDATE_DEBOUNCE_MS = 400;
+
 export default function Home() {
   const {
     activeTab,
@@ -27,7 +30,7 @@ export default function Home() {
   } = useImmoCalcStore();
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const hydratedFromUrl = useRef(false);
+  const hasLoadedInitialState = useRef(false);
 
   // On first mount: load a shared object from the URL if present, otherwise
   // recalculate from the cached (localStorage) input.
@@ -38,19 +41,19 @@ export default function Home() {
     } else {
       calculate();
     }
-    hydratedFromUrl.current = true;
+    hasLoadedInitialState.current = true;
   }, [calculate, loadInput]);
 
   // Keep the URL in sync with the currently opened object, so it can always be
   // shared by copying the address bar. Debounced to avoid excessive history
   // updates while typing in the form.
   useEffect(() => {
-    if (!hydratedFromUrl.current) return;
+    if (!hasLoadedInitialState.current) return;
     const timeout = window.setTimeout(() => {
       const url = new URL(window.location.href);
       url.searchParams.set(SHARE_PARAM, encodeInput(currentInput));
       window.history.replaceState(window.history.state, "", url.toString());
-    }, 400);
+    }, URL_UPDATE_DEBOUNCE_MS);
     return () => window.clearTimeout(timeout);
   }, [currentInput]);
 
