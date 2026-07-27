@@ -56,14 +56,21 @@ const SHARE_KEYS = Object.keys(FIELD_SCHEMA) as (keyof PropertyInput)[];
 
 /** Encode a UTF-8 string to a URL-safe base64 representation. */
 function toBase64Url(value: string): string {
-  const base64 = btoa(unescape(encodeURIComponent(value)));
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  const base64 = btoa(binary);
   return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
 /** Decode a URL-safe base64 representation back to a UTF-8 string. */
 function fromBase64Url(value: string): string {
   const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
-  return decodeURIComponent(escape(atob(base64)));
+  const binary = atob(base64);
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
 }
 
 /**

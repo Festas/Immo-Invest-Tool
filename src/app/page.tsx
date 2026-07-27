@@ -42,12 +42,16 @@ export default function Home() {
   }, [calculate, loadInput]);
 
   // Keep the URL in sync with the currently opened object, so it can always be
-  // shared by copying the address bar.
+  // shared by copying the address bar. Debounced to avoid excessive history
+  // updates while typing in the form.
   useEffect(() => {
     if (!hydratedFromUrl.current) return;
-    const url = new URL(window.location.href);
-    url.searchParams.set(SHARE_PARAM, encodeInput(currentInput));
-    window.history.replaceState(window.history.state, "", url.toString());
+    const timeout = window.setTimeout(() => {
+      const url = new URL(window.location.href);
+      url.searchParams.set(SHARE_PARAM, encodeInput(currentInput));
+      window.history.replaceState(window.history.state, "", url.toString());
+    }, 400);
+    return () => window.clearTimeout(timeout);
   }, [currentInput]);
 
   // Handle header collapse on scroll (mobile only)

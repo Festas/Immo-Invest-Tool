@@ -21,16 +21,31 @@ export function AppHeader({ isHeaderCollapsed, onClearInput, onResetInput }: App
 
   const handleShare = React.useCallback(async () => {
     const url = buildShareUrl(currentInput);
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: "ImmoCalc Pro", url });
-      } else {
-        await navigator.clipboard.writeText(url);
-      }
+    const showCopied = () => {
       setShared(true);
       window.setTimeout(() => setShared(false), 2000);
+    };
+
+    // Prefer the native share sheet where available (mobile).
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "ImmoCalc Pro", url });
+        showCopied();
+        return;
+      } catch (error) {
+        // The user cancelled the share dialog – do nothing.
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        // Otherwise fall through to the clipboard as a fallback.
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      showCopied();
     } catch {
-      // User cancelled the share dialog or clipboard is unavailable – ignore.
+      // Clipboard unavailable (e.g. insecure context): show the URL so the
+      // user can copy it manually.
+      window.prompt("Link zum Teilen kopieren:", url);
     }
   }, [currentInput]);
 
