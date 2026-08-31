@@ -66,7 +66,7 @@ jobs:
 
     steps:
       - name: Deploy to server via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.4
         env:
           # Hier greifen wir auf die Outputs des vorigen Jobs zu
           IMAGE_SHA: ${{ needs.build-and-push.outputs.image_sha }}
